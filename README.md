@@ -23,16 +23,6 @@ This section should also address:
 This section should reduce your game to a set of individual features (remember iterative development?).  Your team should
 assign these features to individual group members and assign each one a priority from one to four (1 = game cannot work without this, 4 = cool but not necessary).
 
-To turn priorities into a grade at the end of the term, we will apply the following rules:
-- If all priority 1 features are implemented, we guarantee a minimum grade of D on the team portion of the game.
-- If all priority 2 features are implemented, we guarantee a minimum grade of C on the team portion of the game.
-- If all priority 3 features are implemented, we guarantee a minimum grade of B on the team portion of the game.
-- If all priority 4 features are implemented, we guarantee a minimum grade of A- on the team portion of the game.
-
-If your group does not distribute work evenly, we recind all promises made above.
-
-You *must* have a minimum of **four** features (one of each priority) per group member.  Features will vary in difficulty, and we understand that, but nonetheless, we're expecting at least that many total.
-
 We have gathered together the following list of some example features you might choose to implement:
 - make your own graphics or sprites
 - add sound effects
