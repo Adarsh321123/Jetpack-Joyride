@@ -6,13 +6,13 @@ This section should tell the reader what to expect in the future sections.  In p
 - a list of your team members (and their roles if decided)
 - a "concept statement" of your game ("your game in a tweet")
 
-Title: Pong++
+Title: Jetpack Joyride
 
 Team Members: Adarsh Kumarappan, Dhruv Sheth, Rayhan Zirvi
 
 We do not have discrete roles for each person, but please see the sections below to see how we assigned the features to each person.
 
-Concept: We will take the traditional game of 2 player pong and add new features such as an AI enemy and sound effects.
+Concept: We will be replicating the popular Jetpack Joyride game with some changes.
 
 ## Section 1: Gameplay
 This section should address simple questions about how your game works:
@@ -27,15 +27,16 @@ This section should also address:
 - **game flow** (what does the game look like from start to end for the player?)
 - **graphics** (will you draw polygons? use sprites? make your own vector graphics?)
 
-The game starts with the ball at the center and the paddles on the sides. Then, when the game starts, the ball moves randomly in some direction. It can bounce off the top and bottom walls and the paddles. The goal of the game is to have the players use the arrow keys to move their paddle up and down until the ball leaves the other side of the screen behind the opponent’s paddles. Then, that player wins. The ball accelerates even faster as time goes on. See more details below for features. In addition to a 2 player game, we can have different difficulties of the AI enemy as “levels” which the user can choose or as the user does better the AI becomes more difficult and can do things like move faster. Either side gets 5 points when they win. We can allow the player to have the game continue forever and later implement stopping the game when a player gets to some limit like 50 points. For additional features, we’ll also be implementing sound effects to the ball as it undergoes a collision and add a background music for all times. We will also be adding a scrolling environment later in the weeks and sprites for the tables and pong balls.
+The game starts with the player at the bottom left of the screen and the idea is that, instead of moving the player forward, we move the obstacles and background relative to the position and velocity of the player. The main menu of the game allows the player to see their recent stats, highest record so far in that instance of the game, custom sprite store, enter different levels and start playing in that instance of the game. We add several different levels to the game and add a probabilistic complexity to each level of the game. We associate a pseudorandomness to the generation of obstacles and power ups in the game and the velocity. The main controls of the game are the space bar that the user can use to shoot pellets that propel the jetpack character upwards. When they release the space bar, the jetpack character falls towards the floor. The user tries to keep going unlimited times until the user hits the zapper, rocket, or lasers. Then, the user loses and the game over screen shows up. Also, if the user tries the story mode the game will progress based on that like different levels. There are no win conditions but the user can try to achieve the achievements. For point we keep track of number of coins collected and distance covered.
 
-As mentioned, the right user use the up and down arrow keys to move the paddle up and down and the left user uses s and w keys.
+We will use the space bar for the moving up and down of the jetpack.
 
-The physics engine will be used in the collisions detection, time dependent ball motion, and drag force mentioned below.
+The physics engine will be used in the collision detection and the coin collecting mechanics mentioned below.
 
 Please see above for the game flow.
 
-We will use sprites for the ball and paddle. Please see below.
+We will use sprites for the jetpack character, the zappers, lasers, and rockets. Please see below.
+
 
 ## Section 2: Feature Set
 This section should reduce your game to a set of individual features (remember iterative development?).  Your team should
@@ -55,44 +56,52 @@ We have gathered together the following list of some example features you might 
 - implement music
 
 Priority 1 Features
-- Keyboard handler for movement (assuming multiplayer game, we will implement the AI version later) - Dhruv
-    - We will keep track of the up and down arrow keys for the right player and the s and w keys for the left player 
-- Collision detection / elasticity - Rayhan
-    - We can check if the ball collides with the paddle and if so make an elastic collision
-    - Can test varying levels of elasticity
-- Add background and images to each bodies - Adarsh
-    - Assign a list of bodies and initialize images and attribute them to bodies such as pong racquets, pong ball and background.
+- Scrolling background and pseudo-randomly generating bodies for obstacles such as Zappers in the game. We will implement relative motion of the obstacles to the player and ensure that the pseudorandomness allows it to be passable. (Adarsh)
+    - So, we will keep the player the same horizontally
+    - The player only moves vertically
+    - The obstacles and background moves to the left of the player
+    - Also, we will make the obstacle randomly span vertically but within some random and acceptable time period so the game is not impossible to beat
+    - We also need to handle the part where the objects enter and leave the screen and dynamically destroy all the objects that leave the screen. 
+- Porting all the features from the physics engine implemented so far, namely the controls using keyboard and mouse handler, implementing the layout and position of the static bodies in the background and associating assets with bodies. (Dhruv)
+    - We also need to port over the collision ability with the zapper and the forces and impulses with things like the zappers
+- Home Screen and navigation, ability to navigate to multiple menus and associating a specific menu with objects in that menu. (Rayhan)
+    - We will also include a settings UI that will use the features that we will implement in the future like the difficulty level potentially
+    - This will also include the game over screen when the user hits the obstacle
+    - This is extensible to the rockets and lasers too
 
 Priority 2 Features
-- Keep track of score as text - Rayhan
-    - We can have a score at the top for each of the players
-- Implement AI for an enemy- Dhruv
-    - We have two options for this:
-        - Implement a random position change for x depending on the difficulty level and make the pong for the computer move to the randomized offset position rather than the actual x position. Depending on the difficulty level, the offset could be decreased.
-        - Another option is to always make the AI go to the correct x position of the ball, but add extra conveniences based on the difficulty, such as the ability to move left and right as well as being able to move to the ball faster
-- Mouse handler for selection of difficulty level - Adarsh
-    - Multiplayer or AI game
-        - The user can choose in settings of it is a 2 player game or an AI game
-    - Difficulty level selection:
-        - Select a difficulty level at the start of the game
+- Implement position of Lasers and rockets. Add forces here and associate a specific type of force associated when the main player collides with either of the obstacles. Ensure the compatibility of placement of lasers and rockets with the pseudorandomness of the zappers introduced earlier. Ensure that the speed of the rockets generates is commensurate with the speed of the movement of other obstacles and the background.
+    - Also ensure that the rockets are moving to the left (Dhruv)
+    - The laser ends should appear on both ends of the screen and then the laser activates a bit later
+- Implementation of custom sound effects and background music. Associate a specific type of sound effect with each collision or force creator and have a specific randomly selected music chosen for each game chosen from a preexisting list of music tracks added to the game. Additionally, modify the sound effect frequency depending upon the collision with a specific type of object.  (Adarsh)
+    - For example, based on how fast the collsioin with the zapper is, we can change the frequency of the resulting sound
+    - Also, we can use custom music or the music from jetpack joyride if we are allowed to
+- Add levels to the main menu to select from. The difficulty of the levels could be probabilistic and the generation of each obstacle could be randomly scaled depending on the difficulty of the level. Velocity of the background could be associated with each level and the frequency of generation of different obstacles could be attributed with each level. (Rayhan)
+    - For example, the placement of the rockets is probabilistic but can track the user better for more difficult levels
 
 Priority 3 Features
-- Time dependant ball motion - Dhruv
-    - We can set a `free for all` gameplay mode where the speed of the ball keeps increasing depending on the time passed or the number of hits against walls or paddles
-- Use drag force - Rayhan
-    - We can simulate air resistance by using the drag force force creator that exists in force.c
-- Add sound effects when hit ball - Adarsh
-    - We can add a hitting sound when the ball makes contact with the paddle
-    - The frequency of the sound can change based on how fast the ball hits the paddle
-    - We can make a “whooshing” sound when the ball leaves the edge of the screen
+- Add coins to the game. We must generate multiple coins in a cluster depending upon the placement of the obstacles in the game (The main function determining the pseudorandomness of different obstacles added so far could be modified to include the generation of coins). Similar to the game, multiple coins can be generated with a specific shape at different positions. Add a magnet powerup to the game and associate a gravitational force with all the coin objects relative to the coin powerup collected. Attribute time period for the existence of the magnetic powerup in the game. Add different sprites for the coin to add a rotating effect for the coin as it remains on the screen. (Rayhan)
+    - We can also update the shape of the coins to be different sizes of blocks probabilistically
+    - This can change based on the level difficulty too
+    - We can get the magnetic effect with gear icon upgrade that appears in the real game
+- To store the previous records and achievements of the player playing the game, we can add a local memory in the game. The way this might work (we can modify this with better ideas later) is to use a text or storage file to store the current stats of the player and the records made so far and add it to the file. When the game is loaded, the text from the file can be rendered in a specific section of the menu. (Adarsh)
+    - We can use the text file to keep track of progress toward some achievement
+    - For example, we can have an achievement of total number of coins collected and read and write to the text file to update the progress towards this achievement
+- Adding power ups to the game. The idea over here is to replicate the powerups in the jetpack joyride game such as boost, disable obstacles for a specific period of time and implement a random weight to the randomness of each powerup depending on the assistance it offers to the player playing the game.  (Dhruv)
+    - This can also depend on the difficulty of game
+    - So harder difficulties might mean the power up lasts for less time
 
 Priority 4 Features
-- Customizable pong board sprite - Dhruv
-    - Color for the pong board
-- Scrolling environment - Rayhan
-    - We can have a cool image for a background that we move based on time of the game being run
-- Use background music - Adarsh
-    - We can have Mortal Kombat music playing in the background for good vibes 🙂
+- Mechanics that are more similar to the real game: Here are some of these things (Adarsh)
+    - We want to ensure that as the user presses the space bar, the jetpack moves up AND has bullets that spray downward
+    - These bullets should spray in a bit of random direction instead of straight down to be more realistic
+    - Also, we want the zappers to rotate at times like the real game
+    - We also want multiple lasers to show up at a time and move down and up sometimes
+- Gravity swap: Power-up that can switch gravity of Jetpack character (Rayhan)
+    - We want to be able to walk on the ceiling and then switch to move down to the ground 
+- Custom sprites: Depending upon the local memory feature that we implement, we can also add a menu in the home screen for custom sprites which use the coins collected and distance covered across the levels so far to buy different sprites. Each sprite can change the avatar of the player or the background or both depending on the amount the player spends on the custom sprites. (Dhruv)
+    - This can aid customizability so we can easily add things here 
+
 
 
 ## Section 3: Timeline
@@ -108,13 +117,11 @@ Week 3:
 Everyone will implement their Priority 3 and 4 Features
 
 ## Section 4: Disaster Recovery
-This section should describe how each member plans to get back on track if they fall behind.  Please take this section seriously.
-
 Since every group member has different amounts of time they can spend on this project and reasons they may fall behind, we will deal with this one by one.
 
-If one of us falls behind, the first course of action will be to figure it out themselves. The second course is asking the rest of the team how to help. We will meet up and help this person catch up.
+If one of us falls behind, the first course of action will be to try and figure it out ourselves. The second course is asking the rest of the team how to help. We will meet up and help this person catch up.
 
-Adarsh is getting a head start on his SURF, so if he were to fall behind, it would be at the beginning and not the end of the week. So, he should be able to get back on track easily. Otherwise, Rayhan can take this since he is more free in the beginning of the week.
+Adarsh is getting a head start on his SURF, so if he were to fall behind, it would be at the beginning and not the end of the week. So, he should be able to get back on track easily. Otherwise, Rayhan can take this since he is more free during the beginning of the week.
 
 Rayhan is in CS 38 and so he spends more time on that class in the middle and end of the week. So, he can pass his work to Adarsh if he falls behind.
 
@@ -122,5 +129,5 @@ Dhruv is also in CS 38 but starts early and works on it at the end of the week a
 
 If any of us swap work or give work to other people, we will ensure that we make up for this in future days or the next week.
 
-We also all have a group chat that we are very active on, and we often ask help from each other on there, so we will continue to use that to do our best that we do not fall behind.
+We also all have a group chat that we are very active on, and we often ask help from each other on there, so we will continue to use that to do our best so that we do not fall behind.
 
