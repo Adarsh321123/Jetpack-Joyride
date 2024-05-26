@@ -79,7 +79,6 @@ asset_t *create_background_from_info(state_t *state, background_info_t info) {
   SDL_Rect bounding_box =
         make_texr(info.bg_loc.x, info.bg_loc.y,
                   info.bg_size.x, info.bg_size.y);
-  fprintf(stdout, "calm\n");
   asset_t *background_asset = asset_make_image(info.bg_path, bounding_box);
   return background_asset;
 }
