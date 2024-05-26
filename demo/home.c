@@ -175,8 +175,8 @@ home_state_t *home_init() {
   home_state->backgrounds = list_init(NUM_BACKGROUNDS, NULL);
   create_backgrounds(home_state);
 
-  game_over_state->text = list_init(NUM_TEXT, NULL);
-  create_text(game_over_state);
+  home_state->text = list_init(NUM_TEXT, NULL);
+  create_text(home_state);
 
   home_state->manual_buttons = list_init(NUM_BUTTONS_HOME, NULL);
   // We store the assets used for buttons to be freed at the end.
@@ -217,6 +217,7 @@ state_type_t home_main(home_state_t *home_state) {
 void home_free(home_state_t *home_state) {
   TTF_Quit();
   list_free(home_state->backgrounds);
+  list_free(home_state->text);
   list_free(home_state->manual_buttons);
   list_free(home_state->button_assets);
   asset_cache_destroy();

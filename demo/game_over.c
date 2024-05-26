@@ -219,6 +219,7 @@ state_type_t game_over_main(game_over_state_t *game_over_state) {
 void game_over_free(game_over_state_t *game_over_state) {
   TTF_Quit();
   list_free(game_over_state->backgrounds);
+  list_free(game_over_state->text);
   list_free(game_over_state->manual_buttons);
   list_free(game_over_state->button_assets);
   asset_cache_destroy();
