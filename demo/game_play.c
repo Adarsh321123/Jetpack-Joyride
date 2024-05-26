@@ -16,7 +16,7 @@ game_play_state_t *game_play_init() {
   TTF_Init();
   asset_cache_init();
   game_play_state->time = 0;
-  return NULL;
+  return game_play_state;
 }
 
 bool game_play_main(game_play_state_t *game_play_state) {
