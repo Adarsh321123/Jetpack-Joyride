@@ -29,7 +29,7 @@ void run_home(state_t *state) {
     home_free(home_state);
   }
   else if (next_state != HOME) {
-    fprintf(stdout, "calm");
+    fprintf(stdout, "calm\n");
     home_free(home_state);
     state->curr_state = next_state;
   }
