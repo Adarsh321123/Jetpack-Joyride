@@ -11,7 +11,7 @@
 #include "sdl_wrapper.h"
 
 struct state {
-  state_type_t state_type;
+  state_type_t curr_state;
   home_state_t *home_state;
   game_play_state_t *game_play_state;
   game_over_state_t *game_over_state;
@@ -25,13 +25,13 @@ void run_home(state_t *state) {
     home_state = home_init();
   }
   state_type_t next_state = home_main(home_state);
-  assert(next_state == HOME);
-  // if (sdl_is_done((void *)home_state)) { 
-  //   home_free(home_state);
-  // }
-  // else if (game_over) {
-  //   SDL_Quit();
-  // }
+  if (sdl_is_done((void *)home_state)) { 
+    home_free(home_state);
+  }
+  else if (next_state != HOME) {
+    home_free(home_state);
+    state->curr_state = next_state;
+  }
 }
 
 void run_game_play(state_t *state) {
@@ -68,7 +68,7 @@ void run_game_over(state_t *state) {
 
 state_t *emscripten_init() {
   state_t *state = malloc(sizeof(state_t));
-  state->state_type = HOME;
+  state->curr_state = HOME;
   state->home_state = NULL;
   state->game_play_state = NULL;
   state->game_over_state = NULL;
@@ -76,7 +76,7 @@ state_t *emscripten_init() {
 }
 
 bool emscripten_main(state_t *state) {
-  switch (state->state_type) {
+  switch (state->curr_state) {
       case HOME: {
           run_home(state);
           break;
