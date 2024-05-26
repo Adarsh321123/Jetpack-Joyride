@@ -80,7 +80,7 @@ asset_t *create_background_from_info(state_t *state, background_info_t info) {
         make_texr(info.bg_loc.x, info.bg_loc.y,
                   info.bg_size.x, info.bg_size.y);
   asset_t *background_asset = asset_make_image(info.bg_path, bounding_box);
-  asset_cache_register_button(background_asset);
+  // asset_cache_register_button(background_asset);
   return background_asset;
 }
 
@@ -157,19 +157,15 @@ bool emscripten_main(state_t *state) {
   sdl_clear();
   state->time += time_since_last_tick();
 
-  // // render the backgrounds
-  // for (size_t i = 0; i < NUM_BACKGROUNDS; i++){
-  //   list_t *background = list_get(state->backgrounds, i);
-  //   size_t size = list_size(background);
-  //   for (size_t j = 0; j < size; j++) {
-  //     asset_render(list_get(background, j));
-  //   }
-  // }
+  // render the backgrounds
+  list_t *backgrounds = state->backgrounds;
+  for (size_t i = 0; i < NUM_BACKGROUNDS; i++){
+    asset_render(list_get(background, i));
+  }
 
   // render the "play" button
   list_t *buttons = state->manual_buttons;
-  size_t size = list_size(buttons);
-  for (size_t i = 0; i < size; i++) {
+  for (size_t i = 0; i < NUM_BUTTONS; i++) {
     asset_render(list_get(buttons, i));
   }
 
