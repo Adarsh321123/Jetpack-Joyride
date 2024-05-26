@@ -18,7 +18,6 @@ struct state {
 };
 
 void run_home(state_t *state) {
-  // If needed, generate a pointer to our initial state
   home_state_t *home_state = state->home_state;
 
   if (!home_state) {
@@ -31,12 +30,11 @@ void run_home(state_t *state) {
   else if (next_state != HOME) {
     home_free(home_state);
     state->curr_state = next_state;
-    SDL_Quit();
+    // SDL_Quit();
   }
 }
 
 void run_game_play(state_t *state) {
-  // If needed, generate a pointer to our initial state
   game_play_state_t *game_play_state = state->game_play_state;
   
   if (!game_play_state) {
@@ -52,7 +50,6 @@ void run_game_play(state_t *state) {
 }
 
 void run_game_over(state_t *state) {
-  // If needed, generate a pointer to our initial state
   game_over_state_t *game_over_state = state->game_over_state;
   if (!game_over_state) {
     game_over_state = game_over_init();
