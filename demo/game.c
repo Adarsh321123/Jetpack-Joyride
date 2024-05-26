@@ -88,6 +88,9 @@ bool emscripten_main(state_t *state) {
           run_game_over(state);
           break;
       }
+      case EXIT: {
+          return true;
+      }
       default: {
           printf("Unknown state!\n");
           exit(1);

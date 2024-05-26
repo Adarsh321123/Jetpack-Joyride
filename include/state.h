@@ -16,7 +16,8 @@ typedef struct state state_t;
 typedef enum {
     HOME,
     GAME_PLAY,
-    GAME_OVER
+    GAME_OVER,
+    EXIT
 } state_type_t;
 
 /**
