@@ -64,7 +64,7 @@ static button_info_t button_templates[] = {
      .text = "Play Again",
      .handler = (void *)home},
      {.font_path = "assets/New Athletic M54.ttf",
-     .text_box = (SDL_Rect){525, 75, 150, 50},
+     .text_box = (SDL_Rect){625, 50, 150, 50},
      .text_color = (rgb_color_t){255, 255, 255},
      .text = "Game Over..."}
      };
