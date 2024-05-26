@@ -42,12 +42,6 @@ typedef struct button_info {
   button_handler_t handler;
 } button_info_t;
 
-void next_meme(state_t *state);
-
-void previous_meme(state_t *state);
-
-void toggle_play(state_t *state);
-
 button_info_t button_templates[] = {
     {.image_path = "assets/black_circle.png",
      .font_path = "assets/Roboto-Regular.ttf",
