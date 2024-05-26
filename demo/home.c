@@ -46,13 +46,13 @@ typedef struct button_info {
  */
 static void play(home_state_t *home_state);
 
-background_info_t background_templates[] = {
+static background_info_t background_templates[] = {
      {.bg_path = "assets/jetpack_joyride_wallpaper.jpg",
      .bg_loc = (vector_t){0, 0},
      .bg_size = (vector_t){1000, 500}}
      };
 
-button_info_t button_templates[] = {
+static button_info_t button_templates[] = {
     {.image_path = "assets/home_button.png",
      .font_path = "assets/New Athletic M54.ttf",
      .image_box = (SDL_Rect){350, 300, 300, 100},
