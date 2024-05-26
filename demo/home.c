@@ -40,6 +40,9 @@ typedef struct button_info {
   button_handler_t handler;
 } button_info_t;
 
+/**
+ * Handler for entering game play
+ */
 void play(home_state_t *home_state);
 
 background_info_t background_templates[] = {
@@ -144,7 +147,7 @@ home_state_t *home_init() {
   return home_state;
 }
 
-bool home_main(home_state_t *home_state) {
+home_next_state_t home_main(home_state_t *home_state) {
   sdl_clear();
   home_state->time += time_since_last_tick();
 
