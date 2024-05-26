@@ -104,7 +104,7 @@ static void create_backgrounds(home_state_t *home_state) {
  *
  * @param info the text info struct used to initialize the text
  */
-static asset_t *create_text_from_info(game_over_state_t *game_over_state, text_info_t info) {
+static asset_t *create_text_from_info(home_state_t *home_state, text_info_t info) {
   asset_t *text_asset = NULL;
   if (info.font_path != NULL) {
     text_asset = asset_make_text(info.font_path, info.text_box, info.text,
@@ -114,13 +114,13 @@ static asset_t *create_text_from_info(game_over_state_t *game_over_state, text_i
 }
 
 /**
- * Initializes and stores the text assets in the game_over_state.
+ * Initializes and stores the text assets in the home_state.
  */
-static void create_text(game_over_state_t *game_over_state) {
+static void create_text(home_state_t *home_state) {
   for (size_t i = 0; i < NUM_TEXT; i++) {
     text_info_t info = text_templates[i];
-    asset_t *text = create_text_from_info(game_over_state, info);
-    list_add(game_over_state->text, text);
+    asset_t *text = create_text_from_info(home_state, info);
+    list_add(home_state->text, text);
   }
 }
 
