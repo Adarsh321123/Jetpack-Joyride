@@ -44,7 +44,7 @@ typedef struct button_info {
 /**
  * Handler for entering game play
  */
-static void play(game_over_state_t *game_over_state);
+static void home(game_over_state_t *game_over_state);
 
 static background_info_t background_templates[] = {
      {.bg_path = "assets/jetpack_joyride_wallpaper.jpg",
@@ -59,11 +59,11 @@ static button_info_t button_templates[] = {
      .text_box = (SDL_Rect){450, 325, 150, 50},
      .text_color = (rgb_color_t){255, 255, 255},
      .text = "Calm",
-     .handler = (void *)play}
+     .handler = (void *)home}
      };
 
-static void play(game_over_state_t *game_over_state){
-  game_over_state->curr_state = GAME_OVER;
+static void home(game_over_state_t *game_over_state){
+  game_over_state->curr_state = HOME;
 }
 
 /**
