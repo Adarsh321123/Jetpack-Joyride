@@ -42,6 +42,8 @@ typedef struct button_info {
   button_handler_t handler;
 } button_info_t;
 
+void play(state_t *state);
+
 button_info_t button_templates[] = {
     {.image_path = "assets/black_circle.png",
      .font_path = "assets/Roboto-Regular.ttf",
@@ -58,7 +60,8 @@ button_info_t button_templates[] = {
      .text = "Next",
      .handler = (void *)play}};
 
-void play(){
+
+void play(state_t *state){
   return;
 }
 
