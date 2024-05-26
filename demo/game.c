@@ -89,7 +89,7 @@ asset_t *create_background_from_info(state_t *state, background_info_t info) {
 void create_backgrounds(state_t *state) {
   for (size_t i = 0; i < NUM_BACKGROUNDS; i++) {
     background_info_t info = background_templates[i];
-    fprintf(stdout, "calm");
+    fprintf(stdout, "calm\n");
     asset_t *background = create_background_from_info(state, info);
     list_add(state->backgrounds, background);
   }
