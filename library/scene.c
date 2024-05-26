@@ -57,18 +57,19 @@ void scene_tick(scene_t *scene, double dt) {
     apply_force_creator(info);
   }
 
-  for (ssize_t i = 0; i < (ssize_t)scene->num_bodies; i++) {
+  for (ssize_t i = 0; i < scene->num_bodies; i++) {
     body_t *current_body = list_get(scene->bodies, i);
     bool check_body_removed = body_is_removed(current_body);
 
     if (check_body_removed) {
+
       ssize_t j = 0;
-      while (j < (ssize_t)num_force_creators) {
+      while (j < num_force_creators) {
         force_creator_info_t *fc_info = list_get(scene->force_creators, j);
         list_t *list_force_creators = get_bodies_force_creator(fc_info);
         size_t size_force_creator = list_size(list_force_creators);
 
-        for (ssize_t k = 0; k < (ssize_t)size_force_creator; k++) {
+        for (ssize_t k = 0; k < size_force_creator; k++) {
           if (current_body == list_get(list_force_creators, k)) {
             force_creator_info_t *removed_fc_info =
                 list_remove(scene->force_creators, j);
@@ -82,6 +83,7 @@ void scene_tick(scene_t *scene, double dt) {
       }
       body_t *body_remove = list_remove(scene->bodies, i);
       assert(body_remove != NULL);
+      body_free(body_remove);
       scene->num_bodies--;
       i--;
     } else {
@@ -92,8 +94,7 @@ void scene_tick(scene_t *scene, double dt) {
 
 void scene_add_force_creator(scene_t *scene, force_creator_t force_creator,
                              void *aux) {
-  scene_add_bodies_force_creator(scene, force_creator, aux,
-                                 list_init(0, (free_func_t)body_free));
+  scene_add_bodies_force_creator(scene, force_creator, aux, list_init(0, free));
 }
 
 void scene_add_bodies_force_creator(scene_t *scene, force_creator_t forcer,

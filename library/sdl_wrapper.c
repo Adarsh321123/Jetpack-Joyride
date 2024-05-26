@@ -227,35 +227,6 @@ SDL_Rect make_texr(size_t x, size_t y, size_t w, size_t h) {
   return texr;
 }
 
-SDL_Rect find_bounding_box(body_t *body) {
-  double min_x = __DBL_MAX__;
-  double max_x = -__DBL_MAX__;
-  double min_y = __DBL_MAX__;
-  double max_y = -__DBL_MAX__;
-
-  vector_t window_center = get_window_center();
-
-  list_t *points = body_get_shape(body);
-  size_t num_vertices = list_size(points);
-  for (size_t i = 0; i < num_vertices; i++) {
-    vector_t *vertex = list_get(points, i);
-    vector_t pixel = get_window_position(*vertex, window_center);
-    if (pixel.x < min_x) {
-      min_x = pixel.x;
-    }
-    if (pixel.x > max_x) {
-      max_x = pixel.x;
-    }
-    if (pixel.y < min_y) {
-      min_y = pixel.y;
-    }
-    if (pixel.y > max_y) {
-      max_y = pixel.y;
-    }
-  }
-  return make_texr(min_x, max_y, (max_x - min_x), (max_y - min_y));
-}
-
 void render_text(const char *text, TTF_Font *fontin, rgb_color_t rgb_color,
                  SDL_Rect texr) {
   SDL_Color color = {rgb_color.r, rgb_color.g, rgb_color.b};

@@ -15,15 +15,13 @@ list_t *list_init(size_t initial_capacity, free_func_t freer) {
   for (size_t i = 0; i < initial_capacity; i++) {
     v_list->elements[i] = NULL;
   }
-  v_list->freer = freer;
+  if (freer != NULL) {
+    v_list->freer = freer;
+  }
   return v_list;
 }
 
 void list_free(list_t *list) {
-  if (list == NULL) {
-    return;
-  }
-  assert(list->elements != NULL);
   for (size_t i = 0; i < list->size; i++) {
     if (list->elements[i] != NULL) {
       if (list->freer != NULL) {
@@ -35,10 +33,7 @@ void list_free(list_t *list) {
   free(list);
 }
 
-size_t list_size(list_t *list) {
-  assert(list != NULL);
-  return list->size;
-}
+size_t list_size(list_t *list) { return list->size; }
 
 void *list_get(list_t *list, size_t index) {
   assert(index < list_size(list));

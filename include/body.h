@@ -181,13 +181,6 @@ void body_add_force(body_t *body, vector_t force);
 void body_add_impulse(body_t *body, vector_t impulse);
 
 /**
- * Clear the forces and impulses on the body.
- *
- * @param body a pointer to a body returned from body_init()
- */
-void body_reset(body_t *body);
-
-/**
  * Marks a body for removal--future calls to body_is_removed() will return true.
  * Does not free the body.
  * If the body is already marked for removal, does nothing.

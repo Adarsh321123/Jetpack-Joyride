@@ -22,7 +22,6 @@ typedef struct text_asset {
 typedef struct image_asset {
   asset_t base;
   SDL_Texture *texture;
-  body_t *body;
 } image_asset_t;
 
 typedef struct button_asset {
@@ -68,36 +67,11 @@ static asset_t *asset_init(asset_type_t ty, SDL_Rect bounding_box) {
 
 asset_type_t asset_get_type(asset_t *asset) { return asset->type; }
 
-/**
- * Encapsulates the duplicate code used by both the functions
- *
- * @param filepath file path to the image
- * @param bounding_box the bounding box containing the location and dimensions
- * of the asset when it is rendered
- * @param body body to render it on
- * @return a pointer to the newly allocated image_asset_t
- */
-static image_asset_t *asset_encapsulate_image(const char *filepath,
-                                              SDL_Rect bounding_box,
-                                              body_t *body) {
+asset_t *asset_make_image(const char *filepath, SDL_Rect bounding_box) {
   image_asset_t *image_asset = malloc(sizeof(image_asset_t));
   assert(image_asset != NULL);
-  image_asset->texture = asset_cache_obj_get_or_create(ASSET_IMAGE, filepath);
   image_asset->base = *asset_init(ASSET_IMAGE, bounding_box);
-  image_asset->body = body;
-  return image_asset;
-}
-
-asset_t *asset_make_image(const char *filepath, SDL_Rect bounding_box) {
-  image_asset_t *image_asset =
-      asset_encapsulate_image(filepath, bounding_box, NULL);
-  return (asset_t *)image_asset;
-}
-
-asset_t *asset_make_image_with_body(const char *filepath, body_t *body) {
-  SDL_Rect bounding_box = make_texr(0, 0, 0, 0);
-  image_asset_t *image_asset =
-      asset_encapsulate_image(filepath, bounding_box, body);
+  image_asset->texture = asset_cache_obj_get_or_create(ASSET_IMAGE, filepath);
   return (asset_t *)image_asset;
 }
 
@@ -156,9 +130,6 @@ void asset_render(asset_t *asset) {
   switch (asset->type) {
   case ASSET_IMAGE: {
     image_asset_t *image_asset = (image_asset_t *)asset;
-    if (image_asset->body != NULL) {
-      image_asset->base.bounding_box = find_bounding_box(image_asset->body);
-    }
     render_copy(image_asset->texture, image_asset->base.bounding_box);
     break;
   }

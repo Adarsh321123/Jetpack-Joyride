@@ -127,13 +127,6 @@ TTF_Font *init_font(const char *FONT_PATH, size_t size);
 SDL_Rect make_texr(size_t x, size_t y, size_t w, size_t h);
 
 /**
- * Find the bounding box of a body given as the input
- *
- * @param body input body to find the bounding box of
- */
-SDL_Rect find_bounding_box(body_t *body);
-
-/**
  * Creates a surface and texture to render the given text.
  *
  * @param text string to output

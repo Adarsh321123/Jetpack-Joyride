@@ -13,8 +13,7 @@ typedef struct state state_t;
 /**
  * Initializes sdl as well as the variables needed
  * Creates and stores all necessary variables for the demo in a created state
- * variable 
- * Returns the pointer to this state (This is the state emscripten_main
+ * variable Returns the pointer to this state (This is the state emscripten_main
  * and emscripten_free work with)
  */
 state_t *emscripten_init();

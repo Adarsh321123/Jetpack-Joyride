@@ -1,7 +1,6 @@
 #ifndef __FORCES_H__
 #define __FORCES_H__
 
-#include "collision.h"
 #include "scene.h"
 
 typedef struct force_creator_info force_creator_info_t;
@@ -30,18 +29,6 @@ list_t *get_bodies_force_creator(void *info);
 void apply_force_creator(force_creator_info_t *info);
 
 /**
- * A function called when a collision occurs.
- * @param body1 the first body passed to create_collision()
- * @param body2 the second body passed to create_collision()
- * @param axis a unit vector pointing from body1 towards body2
- *   that defines the direction the two bodies are colliding in
- * @param aux the auxiliary value passed to create_collision()
- * @param force_const the force constant passed to create_collision()
- */
-typedef void (*collision_handler_t)(body_t *body1, body_t *body2, vector_t axis,
-                                    void *aux, double force_const);
-
-/**
  * Adds a force creator to a scene that applies gravity between two bodies.
  * The force creator will be called each tick
  * to compute the Newtonian gravitational force between the bodies.
@@ -59,6 +46,14 @@ void create_newtonian_gravity(scene_t *scene, double G, body_t *body1,
                               body_t *body2);
 
 /**
+ * The force creator for gravitational forces between objects. Calculates
+ * the magnitude of the force components and adds the force to each
+ * associated body.
+ * @param info auxiliary information about the force and associated bodies
+ */
+void newtonian_gravity(void *info);
+
+/**
  * Adds a force creator to a scene that acts like a spring between two bodies.
  * The force creator will be called each tick
  * to compute the Hooke's-Law spring force between the bodies.
@@ -70,6 +65,14 @@ void create_newtonian_gravity(scene_t *scene, double G, body_t *body1,
  * @param body2 the second body
  */
 void create_spring(scene_t *scene, double k, body_t *body1, body_t *body2);
+
+/**
+ * The force creator for spring forces between objects. Calculates
+ * the magnitude of the force components and adds the force to each
+ * associated body.
+ * @param info auxiliary information about the force and associated bodies
+ */
+void spring_force(void *info);
 
 /**
  * Adds a force creator to a scene that applies a drag force on a body.
@@ -85,29 +88,16 @@ void create_spring(scene_t *scene, double k, body_t *body1, body_t *body2);
 void create_drag(scene_t *scene, double gamma, body_t *body);
 
 /**
- * Adds a force creator to a scene that calls a given collision handler
- * function each time two bodies collide.
- * This generalizes create_destructive_collision() from last week,
- * allowing different things to happen on a collision.
- * The handler is passed the bodies, the collision axis, and an auxiliary value.
- * It should only be called once while the bodies are still colliding.
- *
- * @param scene the scene containing the bodies
- * @param body1 the first body
- * @param body2 the second body
- * @param handler a function to call whenever the bodies collide
- * @param aux an auxiliary value to pass to the handler
- * @param force_const a constant to pass to the handler
+ * The force creator for drag forces on an object. Calculates
+ * the magnitude of the force components and adds the force to the
+ * associated body.
+ * @param info auxiliary information about the force and associated body
  */
-void create_collision(scene_t *scene, body_t *body1, body_t *body2,
-                      collision_handler_t handler, void *aux,
-                      double force_const);
+void drag_force(void *info);
 
 /**
  * Adds a force creator to a scene that destroys two bodies when they collide.
  * The bodies should be destroyed by calling body_remove().
- * This should be represented as an on-collision callback
- * registered with create_collision().
  *
  * @param scene the scene containing the bodies
  * @param body1 the first body
@@ -116,30 +106,10 @@ void create_collision(scene_t *scene, body_t *body1, body_t *body2,
 void create_destructive_collision(scene_t *scene, body_t *body1, body_t *body2);
 
 /**
- * The collision handler for for physics collisions. Applies impulses to
- * bodies according to the elasticity in `aux`.
+ * The force creator for destructive collisions between objects. Checks
+ * if two bodies collide and marks both bodies for removal if so.
+ * @param info auxiliary information about the force and associated body
  */
-void physics_collision_handler(body_t *body1, body_t *body2, vector_t axis,
-                               void *aux, double force_const);
-
-/**
- * Adds a force creator to a scene that applies impulses
- * to resolve collisions between two bodies in the scene.
- * This should be represented as an on-collision callback
- * registered with create_collision().
- *
- * You may remember from project01 that you should avoid applying impulses
- * multiple times while the bodies are still colliding.
- * You should also have a special case that allows either body1 or body2
- * to have mass INFINITY, as this is useful for simulating walls.
- *
- * @param scene the scene containing the bodies
- * @param body1 the first body
- * @param body2 the second body
- * @param elasticity the "coefficient of restitution" of the collision;
- * 0 is a perfectly inelastic collision and 1 is a perfectly elastic collision
- */
-void create_physics_collision(scene_t *scene, body_t *body1, body_t *body2,
-                              double elasticity);
+void destructive_collision(void *info);
 
 #endif // #ifndef __FORCES_H__

@@ -29,16 +29,6 @@ asset_type_t asset_get_type(asset_t *asset);
 asset_t *asset_make_image(const char *filepath, SDL_Rect bounding_box);
 
 /**
- * Allocates memory for an image asset with an attached body. When the asset
- * is rendered, the image will be rendered on top of the body.
- *
- * @param filepath the filepath to the image file
- * @param body the body to render the image on top of
- * @return a pointer to the newly allocated image asset
- */
-asset_t *asset_make_image_with_body(const char *filepath, body_t *body);
-
-/**
  * Allocates memory for a text asset with the given parameters.
  *
  * @param filepath the filepath to the .ttf file
