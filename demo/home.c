@@ -61,7 +61,7 @@ static text_info_t text_templates[] = {
      {.font_path = "assets/New Athletic M54.ttf",
      .text_box = (SDL_Rect){625, 50, 150, 50},
      .text_color = (rgb_color_t){255, 255, 255},
-     .text = "Game Over..."}
+     .text = "Jetpack Joyride"}
      };
 
 static button_info_t button_templates[] = {
