@@ -4,6 +4,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+#ifndef STATE_H
+#define STATE_H
+
 /**
  * Stores the demo state
  * Use this to store any variable needed every 'tick' of your demo
