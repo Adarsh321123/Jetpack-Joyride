@@ -92,15 +92,7 @@ void create_buttons(state_t *state) {
   for (size_t i = 0; i < NUM_BUTTONS; i++) {
     button_info_t info = button_templates[i];
     asset_t *button = create_button_from_info(state, info);
-    if (info.font_path == NULL) {
-      if (strcmp(info.image_path, "assets/play_button.png") == 0) {
-        state->play_button = button;
-      } else {
-        state->pause_button = button;
-      }
-    } else {
-      list_add(state->manual_buttons, button);
-    }
+    list_add(state->manual_buttons, button);
   }
 }
 
