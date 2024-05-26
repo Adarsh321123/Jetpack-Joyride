@@ -48,19 +48,11 @@ typedef struct button_info {
 
 void play(state_t *state);
 
-// background_info_t background_templates[] = {
-//      {.bg_path = "assets/jetpack_joyride_wallpaper.jpg",
-//      .bg_loc = (vector_t){0, 0},
-//      .bg_size = (vector_t){1000, 500}}
-//      };
-
 background_info_t background_templates[] = {
-    {
-        .bg_path = "assets/jetpack_joyride_wallpaper.jpg",
-        .bg_loc = {0, 0},
-        .bg_size = {1000, 500}
-    }
-};
+     {.bg_path = "assets/jetpack_joyride_wallpaper.jpg",
+     .bg_loc = (vector_t){0, 0},
+     .bg_size = (vector_t){1000, 500}}
+     };
 
 button_info_t button_templates[] = {
     {.image_path = "assets/home_button.png",
