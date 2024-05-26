@@ -9,7 +9,10 @@
  * Use this to store any variable needed every 'tick' of your game
  */
 typedef struct home_state {
-    int calm;
+  double time;
+  list_t *backgrounds;
+  list_t *manual_buttons;
+  list_t *button_assets;
 } home_state_t;
 
 /**
