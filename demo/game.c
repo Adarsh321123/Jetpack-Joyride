@@ -69,7 +69,7 @@ void run_game_over(state_t *state) {
 
 state_t *emscripten_init() {
   state_t *state = malloc(sizeof(state_t));
-  state->curr_state = HOME;
+  state->curr_state = GAME_OVER;
   state->home_state = NULL;
   state->game_play_state = NULL;
   state->game_over_state = NULL;

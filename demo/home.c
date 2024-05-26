@@ -172,6 +172,7 @@ state_type_t home_main(home_state_t *home_state) {
 
 void home_free(home_state_t *home_state) {
   TTF_Quit();
+  list_free(home_state->backgrounds);
   list_free(home_state->manual_buttons);
   list_free(home_state->button_assets);
   asset_cache_destroy();
