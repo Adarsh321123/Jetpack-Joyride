@@ -52,8 +52,8 @@ void play(state_t *state);
 
 background_info_t background_templates[] = {
      {.bg_path = "assets/jetpack_joyride_wallpaper.jpg",
-     .bg_loc = (vector_t){170, 0},
-     .bg_size = (vector_t){660, 440}}
+     .bg_loc = (vector_t){0, 0},
+     .bg_size = (vector_t){1000, 500}}
      };
 
 button_info_t button_templates[] = {
@@ -162,11 +162,11 @@ bool emscripten_main(state_t *state) {
     asset_render(list_get(backgrounds, i));
   }
 
-  // // render the "play" button
-  // list_t *buttons = state->manual_buttons;
-  // for (size_t i = 0; i < NUM_BUTTONS; i++) {
-  //   asset_render(list_get(buttons, i));
-  // }
+  // render the "play" button
+  list_t *buttons = state->manual_buttons;
+  for (size_t i = 0; i < NUM_BUTTONS; i++) {
+    asset_render(list_get(buttons, i));
+  }
 
   handle_mouse_events(state);
   sdl_show();
