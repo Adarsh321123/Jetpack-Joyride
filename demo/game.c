@@ -130,7 +130,7 @@ static void on_mouse(char key, void *state, SDL_Event event) {
   }
 }
 
-state_t *home_init() {
+state_t *emscripten_init() {
   state_t *state = malloc(sizeof(state_t));
   assert(state);
   sdl_on_mouse(on_mouse);
@@ -150,7 +150,7 @@ state_t *home_init() {
   return state;
 }
 
-bool home_main(state_t *state) {
+bool emscripten_main(state_t *state) {
   sdl_clear();
   state->time += time_since_last_tick();
 
@@ -171,7 +171,7 @@ bool home_main(state_t *state) {
   return false;
 }
 
-void home_free(state_t *state) {
+void emscripten_free(state_t *state) {
   TTF_Quit();
   list_free(state->manual_buttons);
   list_free(state->button_assets);
