@@ -66,7 +66,7 @@ static button_info_t button_templates[] = {
      {.font_path = "assets/New Athletic M54.ttf",
      .text_box = (SDL_Rect){525, 75, 150, 50},
      .text_color = (rgb_color_t){255, 255, 255},
-     .text = "Game Over!"}
+     .text = "Game Over..."}
      };
 
 static void exit_game(game_over_state_t *game_over_state){
