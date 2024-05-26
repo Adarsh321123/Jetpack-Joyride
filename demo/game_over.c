@@ -53,7 +53,7 @@ static background_info_t background_templates[] = {
      };
 
 static button_info_t button_templates[] = {
-    {.image_path = "assets/game_over_button.png",
+    {.image_path = "assets/button.png",
      .font_path = "assets/New Athletic M54.ttf",
      .image_box = (SDL_Rect){350, 300, 300, 100},
      .text_box = (SDL_Rect){450, 325, 150, 50},
