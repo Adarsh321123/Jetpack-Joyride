@@ -147,7 +147,7 @@ home_state_t *home_init() {
   return home_state;
 }
 
-bool home_main(home_state_t *home_state) {
+state_type_t home_main(home_state_t *home_state) {
   sdl_clear();
   home_state->time += time_since_last_tick();
 

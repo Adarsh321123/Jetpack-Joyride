@@ -10,12 +10,6 @@
 #include "asset_cache.h"
 #include "sdl_wrapper.h"
 
-// typedef enum {
-//     HOME,
-//     GAME_PLAY,
-//     GAME_OVER
-// } state_type_t;
-
 struct state {
   state_type_t state_type;
   home_state_t *home_state;
@@ -30,13 +24,13 @@ void run_home(state_t *state) {
   if (!home_state) {
     home_state = home_init();
   }
-  bool game_over = home_main(home_state);
-  if (sdl_is_done((void *)home_state)) { 
-    home_free(home_state);
-  }
-  else if (game_over) {
-    SDL_Quit();
-  }
+  state_type_t next_state = home_main(home_state);
+  // if (sdl_is_done((void *)home_state)) { 
+  //   home_free(home_state);
+  // }
+  // else if (game_over) {
+  //   SDL_Quit();
+  // }
 }
 
 void run_game_play(state_t *state) {
