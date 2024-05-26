@@ -45,3 +45,6 @@ bool emscripten_main(state_t *state);
  * @param state pointer to a state object with info about demo
  */
 void emscripten_free(state_t *state);
+
+
+#endif // STATE_H
