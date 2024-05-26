@@ -115,7 +115,7 @@ static asset_t *create_button_from_info(home_state_t *home_state, button_info_t 
  * Initializes and stores the button assets in the home_state.
  */
 static void create_buttons(home_state_t *home_state) {
-  for (size_t i = 0; i < NUM_BUTTONS; i++) {
+  for (size_t i = 0; i < NUM_BUTTONS_HOME; i++) {
     button_info_t info = button_templates[i];
     asset_t *button = create_button_from_info(home_state, info);
     list_add(home_state->manual_buttons, button);
@@ -141,9 +141,9 @@ home_state_t *home_init() {
   home_state->backgrounds = list_init(NUM_BACKGROUNDS, NULL);
   create_backgrounds(home_state);
 
-  home_state->manual_buttons = list_init(NUM_BUTTONS, NULL);
+  home_state->manual_buttons = list_init(NUM_BUTTONS_HOME, NULL);
   // We store the assets used for buttons to be freed at the end.
-  home_state->button_assets = list_init(NUM_BUTTONS, (free_func_t)asset_destroy);
+  home_state->button_assets = list_init(NUM_BUTTONS_HOME, (free_func_t)asset_destroy);
   create_buttons(home_state);
 
   home_state->curr_state = HOME;
@@ -162,7 +162,7 @@ state_type_t home_main(home_state_t *home_state) {
 
   // render the "play" button
   list_t *buttons = home_state->manual_buttons;
-  for (size_t i = 0; i < NUM_BUTTONS; i++) {
+  for (size_t i = 0; i < NUM_BUTTONS_HOME; i++) {
     asset_render(list_get(buttons, i));
   }
 

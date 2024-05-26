@@ -9,21 +9,7 @@
 #include "asset_cache.h"
 #include "sdl_wrapper.h"
 
-// const vector_t MIN = {0, 0};
-// const vector_t MAX = {1000, 500};
-// const vector_t CENTER = {500, 250};
-
-// const size_t INITIAL_ASSET_CAPACITY = 10;
-
-// const size_t TEXT_SIZE = 50;
-// const size_t TEXT_HEIGHT_SCALE = 2;
-// const size_t NUM_BACKGROUNDS = 1;
-// const size_t NUM_BUTTONS = 1;
-
-// const size_t DEFAULT_WIDTH = 0;
-// const size_t DEFAULT_HEIGHT = 0;
-
-// const double INTERVAL = 1;
+const size_t NUM_BUTTONS_GAME_OVER = 2;
 
 typedef struct background_info {
   const char *bg_path;
@@ -115,7 +101,7 @@ static asset_t *create_button_from_info(game_over_state_t *game_over_state, butt
  * Initializes and stores the button assets in the game_over_state.
  */
 static void create_buttons(game_over_state_t *game_over_state) {
-  for (size_t i = 0; i < NUM_BUTTONS; i++) {
+  for (size_t i = 0; i < NUM_BUTTONS_GAME_OVER; i++) {
     button_info_t info = button_templates[i];
     asset_t *button = create_button_from_info(game_over_state, info);
     list_add(game_over_state->manual_buttons, button);
@@ -141,9 +127,9 @@ game_over_state_t *game_over_init() {
   game_over_state->backgrounds = list_init(NUM_BACKGROUNDS, NULL);
   create_backgrounds(game_over_state);
 
-  game_over_state->manual_buttons = list_init(NUM_BUTTONS, NULL);
+  game_over_state->manual_buttons = list_init(NUM_BUTTONS_GAME_OVER, NULL);
   // We store the assets used for buttons to be freed at the end.
-  game_over_state->button_assets = list_init(NUM_BUTTONS, (free_func_t)asset_destroy);
+  game_over_state->button_assets = list_init(NUM_BUTTONS_GAME_OVER, (free_func_t)asset_destroy);
   create_buttons(game_over_state);
 
   game_over_state->curr_state = GAME_OVER;
@@ -162,7 +148,7 @@ state_type_t game_over_main(game_over_state_t *game_over_state) {
 
   // render the "play" button
   list_t *buttons = game_over_state->manual_buttons;
-  for (size_t i = 0; i < NUM_BUTTONS; i++) {
+  for (size_t i = 0; i < NUM_BUTTONS_GAME_OVER; i++) {
     asset_render(list_get(buttons, i));
   }
 
