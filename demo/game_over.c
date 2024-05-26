@@ -9,8 +9,6 @@
 #include "asset_cache.h"
 #include "sdl_wrapper.h"
 
-const size_t NUM_BUTTONS_GAME_OVER = 2;
-
 typedef struct background_info {
   const char *bg_path;
   vector_t bg_loc;
