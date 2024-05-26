@@ -63,14 +63,10 @@ static button_info_t button_templates[] = {
      .text_color = (rgb_color_t){255, 255, 255},
      .text = "Play Again",
      .handler = (void *)home},
-     {
-      // .image_path = "assets/button.png",
-     .font_path = "assets/New Athletic M54.ttf",
-    //  .image_box = (SDL_Rect){500, 50, 300, 100},
+     {.font_path = "assets/New Athletic M54.ttf",
      .text_box = (SDL_Rect){525, 75, 150, 50},
      .text_color = (rgb_color_t){255, 255, 255},
-     .text = "Play Again",
-     .handler = (void *)home}
+     .text = "Game Over!"}
      };
 
 static void exit_game(game_over_state_t *game_over_state){
