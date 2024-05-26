@@ -11,20 +11,23 @@ typedef enum {
     HOME,
     GAME_PLAY,
     GAME_OVER
-} game_state_t;
+} state_type_t;
 
 struct state {
-  game_state_t game_state;
+  state_type_t state_type;
+  home_state_t *home_state;
+  game_play_state_t *game_play_state;
+  game_over_state_t *game_over_state;
 };
 
 void run_home(state_t *state) {
   // If needed, generate a pointer to our initial state
   if (!state) {
-    state = emscripten_home_init();
+    state = home_init();
   }
-  bool game_over = emscripten_home_main(state);
+  bool game_over = home_main(state);
   if (sdl_is_done((void *)state)) { 
-    emscripten_home_free(state);
+    home_free(state);
   }
   else if (game_over) {
     SDL_Quit();
@@ -33,18 +36,21 @@ void run_home(state_t *state) {
 
 state_t *emscripten_init() {
   state_t *state = malloc(sizeof(state));
-  state->game_state = HOME;
+  state->state_type = HOME;
+  state->home_state = NULL;
+  state->game_play_state = NULL;
+  state->game_over_state = NULL;
   return state;
 }
 
 bool emscripten_main(state_t *state) {
-  switch (state->game_state) {
+  switch (state->state_type) {
       case HOME: {
-          run_home();
+          run_home(state);
           break;
       }
       case GAME_PLAY: {
-          run_game_play();
+          run_game_play(state);
           break;
       }
       case GAME_OVER: {
