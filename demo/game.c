@@ -10,12 +10,6 @@
 #include "asset_cache.h"
 #include "sdl_wrapper.h"
 
-typedef enum {
-    HOME,
-    GAME_PLAY,
-    GAME_OVER
-} state_type_t;
-
 struct state {
   state_type_t state_type;
   home_state_t *home_state;

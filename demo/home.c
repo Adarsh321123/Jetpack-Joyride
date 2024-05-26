@@ -157,8 +157,6 @@ bool home_main(home_state_t *home_state) {
     asset_render(list_get(backgrounds, i));
   }
 
-  state_type_t state;
-
   // render the "play" button
   list_t *buttons = home_state->manual_buttons;
   for (size_t i = 0; i < NUM_BUTTONS; i++) {
