@@ -29,7 +29,6 @@ void run_home(state_t *state) {
     home_free(home_state);
   }
   else if (next_state != HOME) {
-    fprintf(stdout, "calm\n");
     home_free(home_state);
     state->curr_state = next_state;
   }
@@ -42,6 +41,7 @@ void run_game_play(state_t *state) {
   if (!game_play_state) {
     game_play_state = game_play_init();
   }
+  fprintf(stdout, "calm\n");
   bool game_over = game_play_main(game_play_state);
   if (sdl_is_done((void *)game_play_state)) { 
     game_play_free(game_play_state);
