@@ -205,7 +205,7 @@ void sdl_destroy(void) {
 
 SDL_Texture *get_texture(const char *IMG_PATH) {
   fprintf(stdout, "calm\n");
-  fprintf(stdout, IMG_PATH);
+  fprintf(stdout, *IMG_PATH);
   return IMG_LoadTexture(renderer, IMG_PATH);
 }
 
