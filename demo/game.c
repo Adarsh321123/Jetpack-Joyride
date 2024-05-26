@@ -58,12 +58,14 @@ void run_game_over(state_t *state) {
     game_over_state = game_over_init();
   }
   fprintf(stdout, "calm\n");
-  state_type_t game_over = game_over_main(game_over_state);
+
+  state_type_t next_state = game_over_main(game_over_state);
   if (sdl_is_done((void *)game_over_state)) { 
     game_over_free(game_over_state);
   }
-  else if (game_over) {
-    SDL_Quit();
+  else if (next_state != GAME_OVER) {
+    game_over_free(game_over_state);
+    state->curr_state = next_state;
   }
 }
 
