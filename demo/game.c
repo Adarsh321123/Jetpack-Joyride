@@ -79,6 +79,7 @@ asset_t *create_background_from_info(state_t *state, background_info_t info) {
   SDL_Rect bounding_box =
         make_texr(info.bg_loc.x, info.bg_loc.y,
                   info.bg_size.x, info.bg_size.y);
+  fprintf(stdout, "calm\n");
   asset_t *background_asset = asset_make_image(info.bg_path, bounding_box);
   return background_asset;
 }
@@ -89,7 +90,6 @@ asset_t *create_background_from_info(state_t *state, background_info_t info) {
 void create_backgrounds(state_t *state) {
   for (size_t i = 0; i < NUM_BACKGROUNDS; i++) {
     background_info_t info = background_templates[i];
-    fprintf(stdout, "calm\n");
     asset_t *background = create_background_from_info(state, info);
     list_add(state->backgrounds, background);
   }
@@ -144,7 +144,6 @@ state_t *emscripten_init() {
   // Note that `free_func` is NULL because `asset_cache` is reponsible for
   // freeing the button assets.
   state->backgrounds = list_init(NUM_BACKGROUNDS, NULL);
-  fprintf(stdout, "calm\n");
   create_backgrounds(state);
 
   state->manual_buttons = list_init(NUM_BUTTONS, NULL);
