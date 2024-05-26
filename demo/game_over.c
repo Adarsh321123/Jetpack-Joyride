@@ -63,10 +63,11 @@ static button_info_t button_templates[] = {
      .text_color = (rgb_color_t){255, 255, 255},
      .text = "Play Again",
      .handler = (void *)home},
-     {.image_path = "assets/button.png",
+     {
+      // .image_path = "assets/button.png",
      .font_path = "assets/New Athletic M54.ttf",
-     .image_box = (SDL_Rect){500, 100, 300, 100},
-     .text_box = (SDL_Rect){525, 125, 150, 50},
+    //  .image_box = (SDL_Rect){500, 50, 300, 100},
+     .text_box = (SDL_Rect){525, 75, 150, 50},
      .text_color = (rgb_color_t){255, 255, 255},
      .text = "Play Again",
      .handler = (void *)home}
