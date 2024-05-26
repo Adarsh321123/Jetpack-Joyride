@@ -57,7 +57,7 @@ void run_game_play(state_t *state) {
 
 void run_game_over(state_t *state) {
   // If needed, generate a pointer to our initial state
-  game_play_state_t *game_over_state = state->game_over_state;
+  game_over_state_t *game_over_state = state->game_over_state;
 
   if (!game_over_state) {
     game_over_state = game_over_init();
