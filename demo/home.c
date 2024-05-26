@@ -30,6 +30,13 @@ typedef struct background_info {
   SDL_Rect bg_box;
 } background_info_t;
 
+typedef struct text_info {
+  const char *font_path;
+  SDL_Rect text_box;
+  rgb_color_t text_color;
+  const char *text;
+} text_info_t;
+
 typedef struct button_info {
   const char *image_path;
   const char *font_path;
@@ -48,6 +55,13 @@ static void play(home_state_t *home_state);
 static background_info_t background_templates[] = {
      {.bg_path = "assets/jetpack_joyride_home.jpg",
      .bg_box = (SDL_Rect){0, 0, 1000, 500}}
+     };
+
+static text_info_t text_templates[] = {
+     {.font_path = "assets/New Athletic M54.ttf",
+     .text_box = (SDL_Rect){625, 50, 150, 50},
+     .text_color = (rgb_color_t){255, 255, 255},
+     .text = "Game Over..."}
      };
 
 static button_info_t button_templates[] = {
@@ -82,6 +96,31 @@ static void create_backgrounds(home_state_t *home_state) {
     background_info_t info = background_templates[i];
     asset_t *background = create_background_from_info(home_state, info);
     list_add(home_state->backgrounds, background);
+  }
+}
+
+/**
+ * Using `info`, initializes text in the scene.
+ *
+ * @param info the text info struct used to initialize the text
+ */
+static asset_t *create_text_from_info(game_over_state_t *game_over_state, text_info_t info) {
+  asset_t *text_asset = NULL;
+  if (info.font_path != NULL) {
+    text_asset = asset_make_text(info.font_path, info.text_box, info.text,
+                                 info.text_color);
+  }
+  return text_asset;
+}
+
+/**
+ * Initializes and stores the text assets in the game_over_state.
+ */
+static void create_text(game_over_state_t *game_over_state) {
+  for (size_t i = 0; i < NUM_TEXT; i++) {
+    text_info_t info = text_templates[i];
+    asset_t *text = create_text_from_info(game_over_state, info);
+    list_add(game_over_state->text, text);
   }
 }
 
@@ -136,6 +175,9 @@ home_state_t *home_init() {
   home_state->backgrounds = list_init(NUM_BACKGROUNDS, NULL);
   create_backgrounds(home_state);
 
+  game_over_state->text = list_init(NUM_TEXT, NULL);
+  create_text(game_over_state);
+
   home_state->manual_buttons = list_init(NUM_BUTTONS_HOME, NULL);
   // We store the assets used for buttons to be freed at the end.
   home_state->button_assets = list_init(NUM_BUTTONS_HOME, (free_func_t)asset_destroy);
@@ -155,7 +197,13 @@ state_type_t home_main(home_state_t *home_state) {
     asset_render(list_get(backgrounds, i));
   }
 
-  // render the "play" button
+  // render the text
+  list_t *text = game_over_state->text;
+  for (size_t i = 0; i < NUM_TEXT; i++){
+    asset_render(list_get(text, i));
+  }
+
+  // render the buttons
   list_t *buttons = home_state->manual_buttons;
   for (size_t i = 0; i < NUM_BUTTONS_HOME; i++) {
     asset_render(list_get(buttons, i));
