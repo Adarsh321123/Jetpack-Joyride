@@ -62,7 +62,7 @@ button_info_t button_templates[] = {
      };
 
 void play(home_state_t *home_state){
-  return;
+  home_state->curr_state = GAME_OVER;
 }
 
 /**
@@ -144,6 +144,8 @@ home_state_t *home_init() {
   // We store the assets used for buttons to be freed at the end.
   home_state->button_assets = list_init(NUM_BUTTONS, (free_func_t)asset_destroy);
   create_buttons(home_state);
+
+  home_state->curr_state = HOME;
   return home_state;
 }
 
@@ -165,7 +167,7 @@ state_type_t home_main(home_state_t *home_state) {
 
   handle_mouse_events(home_state);
   sdl_show();
-  return false;
+  return home_state->curr_state;
 }
 
 void home_free(home_state_t *home_state) {

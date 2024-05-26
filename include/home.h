@@ -13,6 +13,7 @@ typedef struct home_state {
   list_t *backgrounds;
   list_t *manual_buttons;
   list_t *button_assets;
+  state_type_t curr_state;
 } home_state_t;
 
 /**
