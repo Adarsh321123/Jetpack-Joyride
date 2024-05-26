@@ -8,10 +8,6 @@
 #include "asset_cache.h"
 #include "sdl_wrapper.h"
 
-struct home_state {
-  
-};
-
 home_state_t *home_init() {
   return NULL;
 }
