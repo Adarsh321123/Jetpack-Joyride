@@ -27,48 +27,48 @@ void run_home(state_t *state) {
   // If needed, generate a pointer to our initial state
   home_state_t *home_state = state->home_state;
 
-  if (!home_state) {
-    home_state = home_init();
-  }
-  bool game_over = home_main(home_state);
-  if (sdl_is_done((void *)home_state)) { 
-    home_free(home_state);
-  }
-  else if (game_over) {
-    SDL_Quit();
-  }
+  // if (!home_state) {
+  //   home_state = home_init();
+  // }
+  // bool game_over = home_main(home_state);
+  // if (sdl_is_done((void *)home_state)) { 
+  //   home_free(home_state);
+  // }
+  // else if (game_over) {
+  //   SDL_Quit();
+  // }
 }
 
 void run_game_play(state_t *state) {
   // If needed, generate a pointer to our initial state
   game_play_state_t *game_play_state = state->game_play_state;
 
-  if (!game_play_state) {
-    game_play_state = game_play_init();
-  }
-  bool game_over = game_play_main(game_play_state);
-  if (sdl_is_done((void *)game_play_state)) { 
-    game_play_free(game_play_state);
-  }
-  else if (game_over) {
-    SDL_Quit();
-  }
+  // if (!game_play_state) {
+  //   game_play_state = game_play_init();
+  // }
+  // bool game_over = game_play_main(game_play_state);
+  // if (sdl_is_done((void *)game_play_state)) { 
+  //   game_play_free(game_play_state);
+  // }
+  // else if (game_over) {
+  //   SDL_Quit();
+  // }
 }
 
 void run_game_over(state_t *state) {
   // If needed, generate a pointer to our initial state
   game_over_state_t *game_over_state = state->game_over_state;
 
-  if (!game_over_state) {
-    game_over_state = game_over_init();
-  }
-  bool game_over = game_over_main(game_over_state);
-  if (sdl_is_done((void *)game_over_state)) { 
-    game_over_free(game_over_state);
-  }
-  else if (game_over) {
-    SDL_Quit();
-  }
+  // if (!game_over_state) {
+  //   game_over_state = game_over_init();
+  // }
+  // bool game_over = game_over_main(game_over_state);
+  // if (sdl_is_done((void *)game_over_state)) { 
+  //   game_over_free(game_over_state);
+  // }
+  // else if (game_over) {
+  //   SDL_Quit();
+  // }
 }
 
 state_t *emscripten_init() {
