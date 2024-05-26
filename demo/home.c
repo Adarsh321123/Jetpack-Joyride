@@ -27,8 +27,7 @@
 
 typedef struct background_info {
   const char *bg_path;
-  vector_t bg_loc;
-  vector_t bg_size;
+  SDL_Rect bg_box;
 } background_info_t;
 
 typedef struct button_info {
@@ -48,8 +47,7 @@ static void play(home_state_t *home_state);
 
 static background_info_t background_templates[] = {
      {.bg_path = "assets/jetpack_joyride_home.jpg",
-     .bg_loc = (vector_t){0, 0},
-     .bg_size = (vector_t){1000, 500}}
+     .bg_box = (SDL_Rect){0, 0, 1000, 500}}
      };
 
 static button_info_t button_templates[] = {
@@ -72,10 +70,7 @@ static void play(home_state_t *home_state){
  * @param info the background info struct used to initialize the background
  */
 static asset_t *create_background_from_info(home_state_t *home_state, background_info_t info) {
-  SDL_Rect bounding_box =
-        make_texr(info.bg_loc.x, info.bg_loc.y,
-                  info.bg_size.x, info.bg_size.y);
-  asset_t *background_asset = asset_make_image(info.bg_path, bounding_box);
+  asset_t *background_asset = asset_make_image(info.bg_path, info.bg_box);
   return background_asset;
 }
 
