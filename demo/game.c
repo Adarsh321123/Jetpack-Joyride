@@ -25,6 +25,7 @@ void run_home(state_t *state) {
     home_state = home_init();
   }
   state_type_t next_state = home_main(home_state);
+  assert(next_state == HOME);
   // if (sdl_is_done((void *)home_state)) { 
   //   home_free(home_state);
   // }
