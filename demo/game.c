@@ -3,6 +3,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+#include "home.c"
 #include "home_state.h"
 #include "game_play_state.h"
 #include "game_over_state.h"
@@ -27,16 +28,16 @@ void run_home(state_t *state) {
   // If needed, generate a pointer to our initial state
   home_state_t *home_state = state->home_state;
 
-  // if (!home_state) {
-  //   home_state = home_init();
-  // }
-  // bool game_over = home_main(home_state);
-  // if (sdl_is_done((void *)home_state)) { 
-  //   home_free(home_state);
-  // }
-  // else if (game_over) {
-  //   SDL_Quit();
-  // }
+  if (!home_state) {
+    home_state = home_init();
+  }
+  bool game_over = home_main(home_state);
+  if (sdl_is_done((void *)home_state)) { 
+    home_free(home_state);
+  }
+  else if (game_over) {
+    SDL_Quit();
+  }
 }
 
 void run_game_play(state_t *state) {
