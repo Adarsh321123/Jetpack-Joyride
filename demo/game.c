@@ -3,10 +3,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#include "home.c"
-#include "home_state.h"
-#include "game_play_state.h"
-#include "game_over_state.h"
+#include "home.h"
+#include "game_play.h"
+#include "game_over.h"
 #include "asset.h"
 #include "asset_cache.h"
 #include "sdl_wrapper.h"
