@@ -19,7 +19,6 @@ struct state {
 
 void run_home(state_t *state) {
   home_state_t *home_state = state->home_state;
-
   if (!home_state) {
     home_state = home_init();
   }
@@ -30,13 +29,11 @@ void run_home(state_t *state) {
   else if (next_state != HOME) {
     home_free(home_state);
     state->curr_state = next_state;
-    // SDL_Quit();
   }
 }
 
 void run_game_play(state_t *state) {
   game_play_state_t *game_play_state = state->game_play_state;
-  
   if (!game_play_state) {
     game_play_state = game_play_init();
   }
@@ -45,7 +42,8 @@ void run_game_play(state_t *state) {
     game_play_free(game_play_state);
   }
   else if (game_over) {
-    SDL_Quit();
+    game_play_free(game_play_state);
+    state->curr_state = GAME_OVER;
   }
 }
 
@@ -54,7 +52,6 @@ void run_game_over(state_t *state) {
   if (!game_over_state) {
     game_over_state = game_over_init();
   }
-
   state_type_t next_state = game_over_main(game_over_state);
   if (sdl_is_done((void *)game_over_state)) { 
     game_over_free(game_over_state);
