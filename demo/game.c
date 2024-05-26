@@ -3,105 +3,171 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#include "home.h"
-#include "game_play.h"
-#include "game_over.h"
 #include "asset.h"
 #include "asset_cache.h"
 #include "sdl_wrapper.h"
 
-typedef enum {
-    HOME,
-    GAME_PLAY,
-    GAME_OVER
-} state_type_t;
+const vector_t MIN = {0, 0};
+const vector_t MAX = {1000, 500};
+const vector_t CENTER = {500, 250};
 
-struct state {
-  state_type_t state_type;
-  home_state_t *home_state;
-  game_play_state_t *game_play_state;
-  game_over_state_t *game_over_state;
-};
+const size_t INITIAL_ASSET_CAPACITY = 10;
 
-void run_home(state_t *state) {
-  // If needed, generate a pointer to our initial state
-  home_state_t *home_state = state->home_state;
+const size_t TEXT_SIZE = 50;
+const size_t TEXT_HEIGHT_SCALE = 2;
+const size_t NUM_BACKGROUNDS = 1;
+const size_t NUM_BUTTONS = 1;
 
-  if (!home_state) {
-    home_state = home_init();
-  }
-  bool game_over = home_main(home_state);
-  if (sdl_is_done((void *)home_state)) { 
-    home_free(home_state);
-  }
-  else if (game_over) {
-    SDL_Quit();
+const size_t DEFAULT_WIDTH = 0;
+const size_t DEFAULT_HEIGHT = 0;
+
+const double INTERVAL = 1;
+
+typedef struct background_info {
+  const char *bg_path;
+  vector_t bg_loc;
+  vector_t bg_size;
+} background_info_t;
+
+typedef struct button_info {
+  const char *image_path;
+  const char *font_path;
+  SDL_Rect image_box;
+  SDL_Rect text_box;
+  rgb_color_t text_color;
+  const char *text;
+  button_handler_t handler;
+} button_info_t;
+
+void play(state_t *state);
+
+background_info_t background_templates[] = {
+     {.bg_path = "assets/jetpack_joyride_wallpaper.jpg",
+     .bg_loc = (vector_t){0, 0},
+     .bg_size = (vector_t){1000, 500}}
+     };
+
+button_info_t button_templates[] = {
+    {.image_path = "assets/home_button.png",
+     .font_path = "assets/New Athletic M54.ttf",
+     .image_box = (SDL_Rect){350, 300, 300, 100},
+     .text_box = (SDL_Rect){450, 325, 150, 50},
+     .text_color = (rgb_color_t){255, 255, 255},
+     .text = "Play",
+     .handler = (void *)play}
+     };
+
+void play(state_t *state){
+  return;
+}
+
+/**
+ * Using `info`, initializes a background in the scene.
+ *
+ * @param info the background info struct used to initialize the background
+ */
+asset_t *create_background_from_info(state_t *state, background_info_t info) {
+  SDL_Rect bounding_box =
+        make_texr(info.bg_loc.x, info.bg_loc.y,
+                  info.bg_size.x, info.bg_size.y);
+  asset_t *background_asset = asset_make_image(info.bg_path, bounding_box);
+  return background_asset;
+}
+
+/**
+ * Initializes and stores the background assets in the state.
+ */
+void create_backgrounds(state_t *state) {
+  for (size_t i = 0; i < NUM_BACKGROUNDS; i++) {
+    background_info_t info = background_templates[i];
+    asset_t *background = create_background_from_info(state, info);
+    list_add(state->backgrounds, background);
   }
 }
 
-void run_game_play(state_t *state) {
-  // If needed, generate a pointer to our initial state
-  game_play_state_t *game_play_state = state->game_play_state;
+/**
+ * Using `info`, initializes a button in the scene.
+ *
+ * @param info the button info struct used to initialize the button
+ */
+asset_t *create_button_from_info(state_t *state, button_info_t info) {
+  asset_t *image_asset = NULL;
+  if (info.image_path != NULL) {
+    image_asset = asset_make_image(info.image_path, info.image_box);
+  }
+  asset_t *text_asset = NULL;
+  if (info.font_path != NULL) {
+    text_asset = asset_make_text(info.font_path, info.text_box, info.text,
+                                 info.text_color);
+  }
+  asset_t *button_asset =
+      asset_make_button(info.image_box, image_asset, text_asset, info.handler);
+  asset_cache_register_button(button_asset);
+  return button_asset;
+}
 
-  if (!game_play_state) {
-    game_play_state = game_play_init();
-  }
-  bool game_over = game_play_main(game_play_state);
-  if (sdl_is_done((void *)game_play_state)) { 
-    game_play_free(game_play_state);
-  }
-  else if (game_over) {
-    SDL_Quit();
+/**
+ * Initializes and stores the button assets in the state.
+ */
+void create_buttons(state_t *state) {
+  for (size_t i = 0; i < NUM_BUTTONS; i++) {
+    button_info_t info = button_templates[i];
+    asset_t *button = create_button_from_info(state, info);
+    list_add(state->manual_buttons, button);
   }
 }
 
-void run_game_over(state_t *state) {
-  // If needed, generate a pointer to our initial state
-  game_over_state_t *game_over_state = state->game_over_state;
-
-  if (!game_over_state) {
-    game_over_state = game_over_init();
-  }
-  bool game_over = game_over_main(game_over_state);
-  if (sdl_is_done((void *)game_over_state)) { 
-    game_over_free(game_over_state);
-  }
-  else if (game_over) {
-    SDL_Quit();
+static void on_mouse(char key, void *state, SDL_Event event) {
+  if (key == MOUSE_RIGHT || key == MOUSE_LEFT) {
+    asset_cache_handle_buttons(state, event.button.x, event.button.y);
   }
 }
 
-state_t *emscripten_init() {
-  state_t *state = malloc(sizeof(state));
-  state->state_type = HOME;
-  state->home_state = NULL;
-  state->game_play_state = NULL;
-  state->game_over_state = NULL;
+state_t *home_init() {
+  state_t *state = malloc(sizeof(state_t));
+  assert(state);
+  sdl_on_mouse(on_mouse);
+  sdl_init(MIN, MAX);
+  TTF_Init();
+  asset_cache_init();
+  state->time = 0;
+  // Note that `free_func` is NULL because `asset_cache` is reponsible for
+  // freeing the button assets.
+  state->backgrounds = list_init(NUM_BACKGROUNDS, NULL);
+  create_backgrounds(state);
+
+  state->manual_buttons = list_init(NUM_BUTTONS, NULL);
+  // We store the assets used for buttons to be freed at the end.
+  state->button_assets = list_init(NUM_BUTTONS, (free_func_t)asset_destroy);
+  create_buttons(state);
   return state;
 }
 
-bool emscripten_main(state_t *state) {
-  switch (state->state_type) {
-      case HOME: {
-          run_home(state);
-          break;
-      }
-      case GAME_PLAY: {
-          run_game_play(state);
-          break;
-      }
-      case GAME_OVER: {
-          run_game_over(state);
-          break;
-      }
-      default: {
-          printf("Unknown state!\n");
-          exit(1);
-      }
+bool home_main(state_t *state) {
+  sdl_clear();
+  state->time += time_since_last_tick();
+
+  // render the backgrounds
+  list_t *backgrounds = state->backgrounds;
+  for (size_t i = 0; i < NUM_BACKGROUNDS; i++){
+    asset_render(list_get(backgrounds, i));
   }
+
+  // render the "play" button
+  list_t *buttons = state->manual_buttons;
+  for (size_t i = 0; i < NUM_BUTTONS; i++) {
+    asset_render(list_get(buttons, i));
+  }
+
+  handle_mouse_events(state);
+  sdl_show();
   return false;
 }
 
-void emscripten_free(state_t *state) {
+void home_free(state_t *state) {
+  TTF_Quit();
+  list_free(state->manual_buttons);
+  list_free(state->button_assets);
+  asset_cache_destroy();
   free(state);
 }
