@@ -198,7 +198,7 @@ state_type_t home_main(home_state_t *home_state) {
   }
 
   // render the text
-  list_t *text = game_over_state->text;
+  list_t *text = home_state->text;
   for (size_t i = 0; i < NUM_TEXT; i++){
     asset_render(list_get(text, i));
   }
