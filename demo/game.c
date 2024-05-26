@@ -23,6 +23,13 @@ const size_t DEFAULT_HEIGHT = 0;
 
 const double INTERVAL = 1;
 
+struct state {
+  double time;
+  list_t *backgrounds;
+  list_t *manual_buttons;
+  list_t *button_assets;
+} state_t;
+
 typedef struct background_info {
   const char *bg_path;
   vector_t bg_loc;
