@@ -10,18 +10,18 @@
 #include "asset_cache.h"
 #include "sdl_wrapper.h"
 
+typedef enum {
+    HOME,
+    GAME_PLAY,
+    GAME_OVER
+} state_type_t;
+
 struct state {
   state_type_t state_type;
   home_state_t *home_state;
   game_play_state_t *game_play_state;
   game_over_state_t *game_over_state;
 };
-
-typedef enum {
-    HOME,
-    GAME_PLAY,
-    GAME_OVER
-} state_type_t;
 
 void run_home(state_t *state) {
   // If needed, generate a pointer to our initial state
