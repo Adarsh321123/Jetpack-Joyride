@@ -88,7 +88,7 @@ asset_t *create_background_from_info(state_t *state, background_info_t info) {
  * Initializes and stores the background assets in the state.
  */
 void create_backgrounds(state_t *state) {
-  for (size_t i = 0; i < NUM_BUTTONS; i++) {
+  for (size_t i = 0; i < NUM_BACKGROUNDS; i++) {
     background_info_t info = background_templates[i];
     asset_t *background = create_background_from_info(state, info);
     list_add(state->backgrounds, background);
@@ -157,11 +157,19 @@ bool emscripten_main(state_t *state) {
   sdl_clear();
   state->time += time_since_last_tick();
 
-
+  // // render the backgrounds
+  // for (size_t i = 0; i < NUM_BACKGROUNDS; i++){
+  //   list_t *background = list_get(state->backgrounds, i);
+  //   size_t size = list_size(background);
+  //   for (size_t j = 0; j < size; j++) {
+  //     asset_render(list_get(background, j));
+  //   }
+  // }
 
   // render the "play" button
   list_t *buttons = state->manual_buttons;
-  for (size_t i = 0; i < list_size(buttons); i++) {
+  size_t size = list_size(buttons);
+  for (size_t i = 0; i < size; i++) {
     asset_render(list_get(buttons, i));
   }
 
