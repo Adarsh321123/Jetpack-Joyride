@@ -160,7 +160,7 @@ bool emscripten_main(state_t *state) {
   // render the backgrounds
   list_t *backgrounds = state->backgrounds;
   for (size_t i = 0; i < NUM_BACKGROUNDS; i++){
-    asset_render(list_get(background, i));
+    asset_render(list_get(backgrounds, i));
   }
 
   // render the "play" button
