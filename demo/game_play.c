@@ -21,5 +21,5 @@ bool game_play_main(game_play_state_t *game_play_state) {
 }
 
 void game_play_free(game_play_state_t *game_play_state) {
-  free(state);
+  
 }

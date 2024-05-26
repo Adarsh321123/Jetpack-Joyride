@@ -17,5 +17,5 @@ bool home_main(home_state_t *home_state) {
 }
 
 void home_free(home_state_t *home_state) {
-  free(state);
+  
 }
