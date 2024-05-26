@@ -83,7 +83,7 @@ static void play(home_state_t *home_state){
  *
  * @param info the background info struct used to initialize the background
  */
-static asset_t *create_background_from_info(home_state_t *home_state, background_info_t info) {
+static asset_t *create_background_from_info(background_info_t info) {
   asset_t *background_asset = asset_make_image(info.bg_path, info.bg_box);
   return background_asset;
 }
@@ -94,7 +94,7 @@ static asset_t *create_background_from_info(home_state_t *home_state, background
 static void create_backgrounds(home_state_t *home_state) {
   for (size_t i = 0; i < NUM_BACKGROUNDS; i++) {
     background_info_t info = background_templates[i];
-    asset_t *background = create_background_from_info(home_state, info);
+    asset_t *background = create_background_from_info(info);
     list_add(home_state->backgrounds, background);
   }
 }
@@ -104,7 +104,7 @@ static void create_backgrounds(home_state_t *home_state) {
  *
  * @param info the text info struct used to initialize the text
  */
-static asset_t *create_text_from_info(home_state_t *home_state, text_info_t info) {
+static asset_t *create_text_from_info(text_info_t info) {
   asset_t *text_asset = NULL;
   if (info.font_path != NULL) {
     text_asset = asset_make_text(info.font_path, info.text_box, info.text,
@@ -119,7 +119,7 @@ static asset_t *create_text_from_info(home_state_t *home_state, text_info_t info
 static void create_text(home_state_t *home_state) {
   for (size_t i = 0; i < NUM_TEXT; i++) {
     text_info_t info = text_templates[i];
-    asset_t *text = create_text_from_info(home_state, info);
+    asset_t *text = create_text_from_info(info);
     list_add(home_state->text, text);
   }
 }
@@ -129,7 +129,7 @@ static void create_text(home_state_t *home_state) {
  *
  * @param info the button info struct used to initialize the button
  */
-static asset_t *create_button_from_info(home_state_t *home_state, button_info_t info) {
+static asset_t *create_button_from_info(button_info_t info) {
   asset_t *image_asset = NULL;
   if (info.image_path != NULL) {
     image_asset = asset_make_image(info.image_path, info.image_box);
@@ -151,7 +151,7 @@ static asset_t *create_button_from_info(home_state_t *home_state, button_info_t 
 static void create_buttons(home_state_t *home_state) {
   for (size_t i = 0; i < NUM_BUTTONS_HOME; i++) {
     button_info_t info = button_templates[i];
-    asset_t *button = create_button_from_info(home_state, info);
+    asset_t *button = create_button_from_info(info);
     list_add(home_state->manual_buttons, button);
   }
 }
