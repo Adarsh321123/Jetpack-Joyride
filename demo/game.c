@@ -51,7 +51,7 @@ typedef struct button_info {
 void play(state_t *state);
 
 background_info_t background_templates[] = {
-     {.bg_path = "assets/jetpack-joyride_wallpaper.png",
+     {.bg_path = "assets/jetpack_joyride_wallpaper.png",
      .bg_loc = (vector_t){170, 0},
      .bg_size = (vector_t){660, 440}}
      };
@@ -89,6 +89,7 @@ asset_t *create_background_from_info(state_t *state, background_info_t info) {
 void create_backgrounds(state_t *state) {
   for (size_t i = 0; i < NUM_BACKGROUNDS; i++) {
     background_info_t info = background_templates[i];
+    fprintf(stdout, "calm");
     asset_t *background = create_background_from_info(state, info);
     list_add(state->backgrounds, background);
   }
