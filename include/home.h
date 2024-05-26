@@ -10,6 +10,7 @@
  */
 typedef struct home_state {
   double time;
+  list_t *text;
   list_t *backgrounds;
   list_t *manual_buttons;
   list_t *button_assets;
