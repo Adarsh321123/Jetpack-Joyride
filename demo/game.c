@@ -54,10 +54,10 @@ button_info_t button_templates[] = {
      .handler = (void *)play},
     {.image_path = "assets/home_button.png",
      .font_path = "assets/New Athletic M54.ttf",
-     .image_box = (SDL_Rect){900, 400, 100, 100},
-     .text_box = (SDL_Rect){925, 425, 50, 50},
+     .image_box = (SDL_Rect){800, 300, 100, 100},
+     .text_box = (SDL_Rect){825, 325, 50, 50},
      .text_color = (rgb_color_t){255, 255, 255},
-     .text = "Next",
+     .text = "Play",
      .handler = (void *)play}};
 
 
