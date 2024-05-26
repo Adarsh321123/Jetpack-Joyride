@@ -15,7 +15,7 @@ typedef struct background_info {
   vector_t bg_size;
 } background_info_t;
 
-typedef struct background_info {
+typedef struct text_info {
   const char *font_path;
   SDL_Rect text_box;
   rgb_color_t text_color;
