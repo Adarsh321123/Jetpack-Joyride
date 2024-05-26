@@ -5,31 +5,32 @@
 
 #include "home.h"
 #include "asset.h"
+#include "asset_helper.h"
 #include "constants.h"
 #include "asset_cache.h"
 #include "sdl_wrapper.h"
 
-typedef struct background_info {
-  const char *bg_path;
-  SDL_Rect bg_box;
-} background_info_t;
+// typedef struct background_info {
+//   const char *bg_path;
+//   SDL_Rect bg_box;
+// } background_info_t;
 
-typedef struct text_info {
-  const char *font_path;
-  SDL_Rect text_box;
-  rgb_color_t text_color;
-  const char *text;
-} text_info_t;
+// typedef struct text_info {
+//   const char *font_path;
+//   SDL_Rect text_box;
+//   rgb_color_t text_color;
+//   const char *text;
+// } text_info_t;
 
-typedef struct button_info {
-  const char *image_path;
-  const char *font_path;
-  SDL_Rect image_box;
-  SDL_Rect text_box;
-  rgb_color_t text_color;
-  const char *text;
-  button_handler_t handler;
-} button_info_t;
+// typedef struct button_info {
+//   const char *image_path;
+//   const char *font_path;
+//   SDL_Rect image_box;
+//   SDL_Rect text_box;
+//   rgb_color_t text_color;
+//   const char *text;
+//   button_handler_t handler;
+// } button_info_t;
 
 /**
  * Handler for entering game play
@@ -62,15 +63,15 @@ static void play(home_state_t *home_state){
   home_state->curr_state = GAME_OVER;
 }
 
-/**
- * Using `info`, initializes a background in the scene.
- *
- * @param info the background info struct used to initialize the background
- */
-static asset_t *create_background_from_info(background_info_t info) {
-  asset_t *background_asset = asset_make_image(info.bg_path, info.bg_box);
-  return background_asset;
-}
+// /**
+//  * Using `info`, initializes a background in the scene.
+//  *
+//  * @param info the background info struct used to initialize the background
+//  */
+// static asset_t *create_background_from_info(background_info_t info) {
+//   asset_t *background_asset = asset_make_image(info.bg_path, info.bg_box);
+//   return background_asset;
+// }
 
 /**
  * Initializes and stores the background assets in the home_state.
@@ -83,19 +84,19 @@ static void create_backgrounds(home_state_t *home_state) {
   }
 }
 
-/**
- * Using `info`, initializes text in the scene.
- *
- * @param info the text info struct used to initialize the text
- */
-static asset_t *create_text_from_info(text_info_t info) {
-  asset_t *text_asset = NULL;
-  if (info.font_path != NULL) {
-    text_asset = asset_make_text(info.font_path, info.text_box, info.text,
-                                 info.text_color);
-  }
-  return text_asset;
-}
+// /**
+//  * Using `info`, initializes text in the scene.
+//  *
+//  * @param info the text info struct used to initialize the text
+//  */
+// static asset_t *create_text_from_info(text_info_t info) {
+//   asset_t *text_asset = NULL;
+//   if (info.font_path != NULL) {
+//     text_asset = asset_make_text(info.font_path, info.text_box, info.text,
+//                                  info.text_color);
+//   }
+//   return text_asset;
+// }
 
 /**
  * Initializes and stores the text assets in the home_state.
@@ -108,26 +109,26 @@ static void create_text(home_state_t *home_state) {
   }
 }
 
-/**
- * Using `info`, initializes a button in the scene.
- *
- * @param info the button info struct used to initialize the button
- */
-static asset_t *create_button_from_info(button_info_t info) {
-  asset_t *image_asset = NULL;
-  if (info.image_path != NULL) {
-    image_asset = asset_make_image(info.image_path, info.image_box);
-  }
-  asset_t *text_asset = NULL;
-  if (info.font_path != NULL) {
-    text_asset = asset_make_text(info.font_path, info.text_box, info.text,
-                                 info.text_color);
-  }
-  asset_t *button_asset =
-      asset_make_button(info.image_box, image_asset, text_asset, info.handler);
-  asset_cache_register_button(button_asset);
-  return button_asset;
-}
+// /**
+//  * Using `info`, initializes a button in the scene.
+//  *
+//  * @param info the button info struct used to initialize the button
+//  */
+// static asset_t *create_button_from_info(button_info_t info) {
+//   asset_t *image_asset = NULL;
+//   if (info.image_path != NULL) {
+//     image_asset = asset_make_image(info.image_path, info.image_box);
+//   }
+//   asset_t *text_asset = NULL;
+//   if (info.font_path != NULL) {
+//     text_asset = asset_make_text(info.font_path, info.text_box, info.text,
+//                                  info.text_color);
+//   }
+//   asset_t *button_asset =
+//       asset_make_button(info.image_box, image_asset, text_asset, info.handler);
+//   asset_cache_register_button(button_asset);
+//   return button_asset;
+// }
 
 /**
  * Initializes and stores the button assets in the home_state.
