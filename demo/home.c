@@ -75,7 +75,7 @@ static button_info_t button_templates[] = {
      };
 
 static void play(home_state_t *home_state){
-  home_state->curr_state = GAME_PLAY;
+  home_state->curr_state = GAME_OVER;
 }
 
 /**
