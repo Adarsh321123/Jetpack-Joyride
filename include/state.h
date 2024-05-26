@@ -10,12 +10,6 @@
  */
 typedef struct state state_t;
 
-typedef enum {
-    HOME,
-    GAME_PLAY,
-    GAME_OVER
-} state_type_t;
-
 /**
  * Initializes sdl as well as the variables needed
  * Creates and stores all necessary variables for the demo in a created state
