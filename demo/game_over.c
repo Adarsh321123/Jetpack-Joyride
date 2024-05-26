@@ -15,6 +15,13 @@ typedef struct background_info {
   vector_t bg_size;
 } background_info_t;
 
+typedef struct background_info {
+  const char *font_path;
+  SDL_Rect text_box;
+  rgb_color_t text_color;
+  const char *text;
+} text_info_t;
+
 typedef struct button_info {
   const char *image_path;
   const char *font_path;
@@ -53,6 +60,13 @@ static button_info_t button_templates[] = {
      .font_path = "assets/New Athletic M54.ttf",
      .image_box = (SDL_Rect){500, 300, 300, 100},
      .text_box = (SDL_Rect){525, 325, 150, 50},
+     .text_color = (rgb_color_t){255, 255, 255},
+     .text = "Play Again",
+     .handler = (void *)home},
+     {.image_path = "assets/button.png",
+     .font_path = "assets/New Athletic M54.ttf",
+     .image_box = (SDL_Rect){200, 300, 300, 100},
+     .text_box = (SDL_Rect){225, 325, 150, 50},
      .text_color = (rgb_color_t){255, 255, 255},
      .text = "Play Again",
      .handler = (void *)home}
