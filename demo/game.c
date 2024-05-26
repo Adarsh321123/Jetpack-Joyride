@@ -45,19 +45,11 @@ void play(state_t *state);
 button_info_t button_templates[] = {
     {.image_path = "assets/home_button.png",
      .font_path = "assets/New Athletic M54.ttf",
-     .image_box = (SDL_Rect){0, 400, 100, 100},
-     .text_box = (SDL_Rect){25, 425, 50, 50},
-     .text_color = (rgb_color_t){255, 255, 255},
-     .text = "Play",
-     .handler = (void *)play},
-    {.image_path = "assets/home_button.png",
-     .font_path = "assets/New Athletic M54.ttf",
-     .image_box = (SDL_Rect){400, 300, 300, 100},
-     .text_box = (SDL_Rect){500, 325, 150, 50},
+     .image_box = (SDL_Rect){350, 300, 300, 100},
+     .text_box = (SDL_Rect){450, 325, 150, 50},
      .text_color = (rgb_color_t){255, 255, 255},
      .text = "Play",
      .handler = (void *)play}};
-
 
 void play(state_t *state){
   return;
