@@ -5,6 +5,7 @@
 
 #include "game_play.h"
 #include "asset.h"
+#include "asset_helper.h"
 #include "constants.h"
 #include "asset_cache.h"
 #include "sdl_wrapper.h"
