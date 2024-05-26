@@ -193,16 +193,16 @@ state_type_t game_over_main(game_over_state_t *game_over_state) {
   sdl_clear();
   game_over_state->time += time_since_last_tick();
 
-  // render the text
-  list_t *text = game_over_state->text;
-  for (size_t i = 0; i < NUM_TEXT; i++){
-    asset_render(list_get(text, i));
-  }
-
   // render the backgrounds
   list_t *backgrounds = game_over_state->backgrounds;
   for (size_t i = 0; i < NUM_BACKGROUNDS; i++){
     asset_render(list_get(backgrounds, i));
+  }
+
+  // render the text
+  list_t *text = game_over_state->text;
+  for (size_t i = 0; i < NUM_TEXT; i++){
+    asset_render(list_get(text, i));
   }
 
   // render the "play" button
