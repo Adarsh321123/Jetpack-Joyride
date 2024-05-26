@@ -47,7 +47,7 @@ typedef struct button_info {
 static void play(home_state_t *home_state);
 
 static background_info_t background_templates[] = {
-     {.bg_path = "assets/jetpack_joyride_wallpaper.jpg",
+     {.bg_path = "assets/jetpack_joyride_home.jpg",
      .bg_loc = (vector_t){0, 0},
      .bg_size = (vector_t){1000, 500}}
      };

@@ -47,7 +47,7 @@ typedef struct button_info {
 static void home(game_over_state_t *game_over_state);
 
 static background_info_t background_templates[] = {
-     {.bg_path = "assets/jetpack_joyride_wallpaper.jpg",
+     {.bg_path = "assets/jetpack_joyride_game_over.jpg",
      .bg_loc = (vector_t){0, 0},
      .bg_size = (vector_t){1000, 500}}
      };
@@ -58,7 +58,7 @@ static button_info_t button_templates[] = {
      .image_box = (SDL_Rect){350, 300, 300, 100},
      .text_box = (SDL_Rect){450, 325, 150, 50},
      .text_color = (rgb_color_t){255, 255, 255},
-     .text = "Calm",
+     .text = "Play Again",
      .handler = (void *)home}
      };
 
