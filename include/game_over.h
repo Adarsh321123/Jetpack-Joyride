@@ -32,7 +32,7 @@ game_over_state_t *game_over_init();
  * @param game_over_state pointer to a state object
  * @return a boolean representing whether the game is over
  */
-bool game_over_main(game_over_state_t *game_over_state);
+state_type_t game_over_main(game_over_state_t *game_over_state);
 
 /**
  * Frees anything allocated in the game
