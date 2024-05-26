@@ -46,14 +46,14 @@ void play(state_t *state);
 
 button_info_t button_templates[] = {
     {.image_path = "assets/black_circle.png",
-     .font_path = "assets/Roboto-Regular.ttf",
+     .font_path = "assets/New Athletic M54.ttf",
      .image_box = (SDL_Rect){0, 400, 100, 100},
      .text_box = (SDL_Rect){25, 425, 50, 50},
      .text_color = (rgb_color_t){255, 255, 255},
      .text = "Back",
      .handler = (void *)play},
     {.image_path = "assets/black_circle.png",
-     .font_path = "assets/Roboto-Regular.ttf",
+     .font_path = "assets/New Athletic M54.ttf",
      .image_box = (SDL_Rect){900, 400, 100, 100},
      .text_box = (SDL_Rect){925, 425, 50, 50},
      .text_color = (rgb_color_t){255, 255, 255},
