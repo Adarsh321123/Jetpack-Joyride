@@ -9,7 +9,7 @@
 
 static list_t *ASSET_CACHE;
 
-const size_t FONT_SIZE = 18;
+const size_t FONT_SIZE = 50;
 const size_t INITIAL_CAPACITY = 5;
 
 typedef struct {
