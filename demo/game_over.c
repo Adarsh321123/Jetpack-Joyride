@@ -62,7 +62,7 @@ button_info_t button_templates[] = {
      .handler = (void *)play}
      };
 
-void play(game_over_state_t *game_over_state){
+static void play(game_over_state_t *game_over_state){
   game_over_state->curr_state = GAME_OVER;
 }
 
@@ -71,7 +71,7 @@ void play(game_over_state_t *game_over_state){
  *
  * @param info the background info struct used to initialize the background
  */
-asset_t *create_background_from_info(game_over_state_t *game_over_state, background_info_t info) {
+static asset_t *create_background_from_info(game_over_state_t *game_over_state, background_info_t info) {
   SDL_Rect bounding_box =
         make_texr(info.bg_loc.x, info.bg_loc.y,
                   info.bg_size.x, info.bg_size.y);
@@ -82,7 +82,7 @@ asset_t *create_background_from_info(game_over_state_t *game_over_state, backgro
 /**
  * Initializes and stores the background assets in the game_over_state.
  */
-void create_backgrounds(game_over_state_t *game_over_state) {
+static void create_backgrounds(game_over_state_t *game_over_state) {
   for (size_t i = 0; i < NUM_BACKGROUNDS; i++) {
     background_info_t info = background_templates[i];
     asset_t *background = create_background_from_info(game_over_state, info);
@@ -95,7 +95,7 @@ void create_backgrounds(game_over_state_t *game_over_state) {
  *
  * @param info the button info struct used to initialize the button
  */
-asset_t *create_button_from_info(game_over_state_t *game_over_state, button_info_t info) {
+static asset_t *create_button_from_info(game_over_state_t *game_over_state, button_info_t info) {
   asset_t *image_asset = NULL;
   if (info.image_path != NULL) {
     image_asset = asset_make_image(info.image_path, info.image_box);
@@ -114,7 +114,7 @@ asset_t *create_button_from_info(game_over_state_t *game_over_state, button_info
 /**
  * Initializes and stores the button assets in the game_over_state.
  */
-void create_buttons(game_over_state_t *game_over_state) {
+static void create_buttons(game_over_state_t *game_over_state) {
   for (size_t i = 0; i < NUM_BUTTONS; i++) {
     button_info_t info = button_templates[i];
     asset_t *button = create_button_from_info(game_over_state, info);
