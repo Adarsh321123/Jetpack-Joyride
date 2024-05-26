@@ -31,7 +31,7 @@ home_state_t *home_init();
  * @param home_state pointer to a state object
  * @return a boolean representing whether the game is over
  */
-bool home_main(home_state_t *home_state);
+state_type_t home_main(home_state_t *home_state);
 
 /**
  * Frees anything allocated in the game
