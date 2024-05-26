@@ -44,7 +44,7 @@ typedef struct button_info {
 /**
  * Handler for entering game play
  */
-void play(home_state_t *home_state);
+static void play(home_state_t *home_state);
 
 background_info_t background_templates[] = {
      {.bg_path = "assets/jetpack_joyride_wallpaper.jpg",
