@@ -17,7 +17,7 @@ const size_t NUM_MEMES = 3;
 const size_t INITIAL_MEME_CAPACITY = 10;
 const size_t INITIAL_ASSET_CAPACITY = 10;
 
-const size_t TEXT_SIZE = 18;
+const size_t TEXT_SIZE = 50;
 const size_t TEXT_HEIGHT_SCALE = 2;
 const size_t NUM_BUTTONS = 2;
 
@@ -54,8 +54,8 @@ button_info_t button_templates[] = {
      .handler = (void *)play},
     {.image_path = "assets/home_button.png",
      .font_path = "assets/New Athletic M54.ttf",
-     .image_box = (SDL_Rect){700, 300, 300, 100},
-     .text_box = (SDL_Rect){725, 325, 150, 50},
+     .image_box = (SDL_Rect){400, 300, 300, 100},
+     .text_box = (SDL_Rect){550, 325, 150, 50},
      .text_color = (rgb_color_t){255, 255, 255},
      .text = "Play",
      .handler = (void *)play}};
