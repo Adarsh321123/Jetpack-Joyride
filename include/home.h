@@ -4,11 +4,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-typedef enum {
-    HOME,
-    GAME_PLAY,
-} home_next_state_t;
-
 /**
  * Stores the game home state
  * Use this to store any variable needed every 'tick' of your game
@@ -18,7 +13,6 @@ typedef struct home_state {
   list_t *backgrounds;
   list_t *manual_buttons;
   list_t *button_assets;
-  home_next_state_t next_state;
 } home_state_t;
 
 /**
