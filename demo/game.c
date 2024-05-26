@@ -3,9 +3,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#include "home.h"
-#include "game_play.h"
-#include "game_over.h"
 #include "asset.h"
 #include "asset_cache.h"
 #include "sdl_wrapper.h"

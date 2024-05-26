@@ -1,6 +1,6 @@
 # List of C files in "libraries" and "demo" that you have written. Any additional files
 # should be added here.
-GAMES = game home
+GAMES = game home game_play game_over
 STUDENT_LIBS = asset_cache asset body collision color emscripten forces list polygon scene sdl_wrapper vector
 
 # find <dir> is the command to find files in a directory
