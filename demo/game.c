@@ -144,7 +144,7 @@ state_t *emscripten_init() {
   // Note that `free_func` is NULL because `asset_cache` is reponsible for
   // freeing the button assets.
   state->backgrounds = list_init(NUM_BACKGROUNDS, NULL);
-  create_backgrounds(state);
+  // create_backgrounds(state);
 
   state->manual_buttons = list_init(NUM_BUTTONS, NULL);
   // We store the assets used for buttons to be freed at the end.
@@ -157,7 +157,9 @@ bool emscripten_main(state_t *state) {
   sdl_clear();
   state->time += time_since_last_tick();
 
-  // render the "next" and "back" buttons
+
+
+  // render the "play" button
   list_t *buttons = state->manual_buttons;
   for (size_t i = 0; i < list_size(buttons); i++) {
     asset_render(list_get(buttons, i));
