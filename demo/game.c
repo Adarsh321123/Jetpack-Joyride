@@ -17,6 +17,7 @@ const size_t INITIAL_ASSET_CAPACITY = 10;
 
 const size_t TEXT_SIZE = 50;
 const size_t TEXT_HEIGHT_SCALE = 2;
+const size_t NUM_BACKGROUNDS = 1;
 const size_t NUM_BUTTONS = 1;
 
 const size_t DEFAULT_WIDTH = 0;
@@ -26,9 +27,16 @@ const double INTERVAL = 1;
 
 struct state {
   double time;
+  list_t *backgrounds;
   list_t *manual_buttons;
   list_t *button_assets;
 };
+
+typedef struct background_info {
+  const char *bg_path;
+  vector_t bg_loc;
+  vector_t bg_size;
+} background_info_t;
 
 typedef struct button_info {
   const char *image_path;
@@ -42,6 +50,12 @@ typedef struct button_info {
 
 void play(state_t *state);
 
+background_t background_templates[] = {
+     {.bg_path = "assets/jetpack_joyride_wallpaper.png",
+     .bg_loc = (vector_t){170, 0},
+     .bg_size = (vector_t){660, 440}}
+     };
+
 button_info_t button_templates[] = {
     {.image_path = "assets/home_button.png",
      .font_path = "assets/New Athletic M54.ttf",
@@ -49,10 +63,36 @@ button_info_t button_templates[] = {
      .text_box = (SDL_Rect){450, 325, 150, 50},
      .text_color = (rgb_color_t){255, 255, 255},
      .text = "Play",
-     .handler = (void *)play}};
+     .handler = (void *)play}
+     };
 
 void play(state_t *state){
   return;
+}
+
+/**
+ * Using `info`, initializes a background in the scene.
+ *
+ * @param info the background info struct used to initialize the background
+ */
+asset_t *create_background_from_info(state_t *state, background_info_t info) {
+  SDL_Rect bounding_box =
+        make_texr(info.bg_loc.x, info.bg_loc.y,
+                  info.bg_size.x, info.bg_size.y);
+  asset_t *background_asset = asset_make_image(info.bg_path, bounding_box);
+  asset_cache_register_button(background_asset);
+  return background_asset;
+}
+
+/**
+ * Initializes and stores the background assets in the state.
+ */
+void create_backgrounds(state_t *state) {
+  for (size_t i = 0; i < NUM_BUTTONS; i++) {
+    background_info_t info = background_templates[i];
+    asset_t *background = create_background_from_info(state, info);
+    list_add(state->backgrounds, background);
+  }
 }
 
 /**
@@ -103,6 +143,9 @@ state_t *emscripten_init() {
   state->time = 0;
   // Note that `free_func` is NULL because `asset_cache` is reponsible for
   // freeing the button assets.
+  state->backgrounds = list_init(NUM_BACKGROUNDS, NULL);
+  create_backgrounds(state);
+
   state->manual_buttons = list_init(NUM_BUTTONS, NULL);
   // We store the assets used for buttons to be freed at the end.
   state->button_assets = list_init(NUM_BUTTONS, (free_func_t)asset_destroy);
