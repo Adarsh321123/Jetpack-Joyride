@@ -8,7 +8,13 @@
  * Stores the game_over state
  * Use this to store any variable needed every 'tick' of your game
  */
-typedef struct game_over_state game_over_state_t;
+typedef struct game_over_state {
+  double time;
+  list_t *backgrounds;
+  list_t *manual_buttons;
+  list_t *button_assets;
+  state_type_t curr_state;
+} game_over_state_t;
 
 /**
  * Initializes sdl as well as the variables needed
