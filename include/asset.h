@@ -28,6 +28,8 @@ asset_type_t asset_get_type(asset_t *asset);
  */
 asset_t *asset_make_image(const char *filepath, SDL_Rect bounding_box);
 
+asset_t *asset_update_bounding_box(asset_t *image, double dt);
+
 /**
  * Allocates memory for an image asset with an attached body. When the asset
  * is rendered, the image will be rendered on top of the body.
