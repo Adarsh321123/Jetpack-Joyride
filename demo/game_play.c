@@ -150,13 +150,14 @@ bool game_play_main(game_play_state_t *game_play_state) {
   double dt = time_since_last_tick();
   state_temp_t *state = game_play_state->state;
   sdl_clear();
-  for (size_t i = 0; i < list_size(state->body_assets); i++) {
-    asset_render(list_get(state->body_assets, i));
-  }
 
   background_update(state->background_state, dt);
   asset_render(state->background_state->bg1);
   asset_render(state->background_state->bg2);
+
+  for (size_t i = 0; i < list_size(state->body_assets); i++) {
+    asset_render(list_get(state->body_assets, i));
+  }
 
   // for (size_t i = 0; i < list_size(state->background); i++) {
   //   asset_update_bounding_box(list_get(state->background, i), 1000*dt);
