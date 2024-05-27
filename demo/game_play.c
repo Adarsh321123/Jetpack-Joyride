@@ -93,16 +93,14 @@ static background_state_t *background_init(const char *bg_path) {
 }
 
 static void background_update(background_state_t *state, double dt) {
-  state->bg1->bounding_box.x -= state->scroll_speed * dt;
-  state->bg2->bounding_box.x -= state->scroll_speed * dt;
+    state->bg1->bounding_box.x -= state->scroll_speed * dt;
+    state->bg2->bounding_box.x -= state->scroll_speed * dt;
 
-  if (state->bg1->bounding_box.x + state->bg1->bounding_box.w <= 0) {
-    state->bg1->bounding_box.x = MAX.x;
-  }
-
-  if (state->bg2->bounding_box.x + state->bg2->bounding_box.w <= 0) {
-    state->bg2->bounding_box.x = MAX.x;
-  }
+    if (state->bg1->bounding_box.x + state->bg1->bounding_box.w <= 0) {
+        state->bg1->bounding_box.x = MAX.x;
+    } else if (state->bg2->bounding_box.x + state->bg2->bounding_box.w <= 0) {
+        state->bg2->bounding_box.x = MAX.x;
+    }
 }
 
 game_play_state_t *game_play_init() {
