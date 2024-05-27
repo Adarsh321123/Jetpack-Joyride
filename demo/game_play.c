@@ -130,6 +130,7 @@ game_play_state_t *game_play_init() {
   state_temp_t *state = malloc(sizeof(state_temp_t));
 
   state->scene = scene_init();
+  state->body_assets = list_init(1, (free_func_t)asset_destroy);
   // TODO: add body assets for the zappers and stuff
   body_t *user = make_user(OUTER_RADIUS, INNER_RADIUS, VEC_ZERO);
   body_set_centroid(user, RESET_POS);
