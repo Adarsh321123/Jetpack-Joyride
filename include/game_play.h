@@ -4,6 +4,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+typedef struct background_state background_state_t;
+
 typedef struct state_temp state_temp_t;
 
 typedef struct game_play_state game_play_state_t;

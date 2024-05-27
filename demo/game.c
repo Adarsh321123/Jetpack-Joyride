@@ -41,11 +41,8 @@ void run_game_play(state_t *state) {
   if (!game_play_state) {
     game_play_state = game_play_init();
     state->game_play_state = game_play_state;
-  } else {
   }
-  
   bool game_over = game_play_main(game_play_state);
-  
   if (sdl_is_done((void *)game_play_state)) {
     game_play_free(game_play_state);
     state->game_play_state = NULL;

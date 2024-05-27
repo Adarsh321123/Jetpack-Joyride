@@ -3,14 +3,10 @@
 #include <assert.h>
 
 #include "asset.h"
+#include "constants.h"
 #include "asset_cache.h"
 #include "color.h"
 #include "sdl_wrapper.h"
-
-typedef struct asset {
-  asset_type_t type;
-  SDL_Rect bounding_box;
-} asset_t;
 
 typedef struct text_asset {
   asset_t base;
@@ -92,6 +88,15 @@ asset_t *asset_make_image(const char *filepath, SDL_Rect bounding_box) {
   image_asset_t *image_asset =
       asset_encapsulate_image(filepath, bounding_box, NULL);
   return (asset_t *)image_asset;
+}
+
+asset_t *asset_update_bounding_box(asset_t *image, double dt) {
+  image->bounding_box.x -= dt;
+
+  if (image->bounding_box.x + image->bounding_box.w <= MAX.x) {
+    image->bounding_box.x = 0;
+  }
+  return image;
 }
 
 asset_t *asset_make_image_with_body(const char *filepath, body_t *body) {
