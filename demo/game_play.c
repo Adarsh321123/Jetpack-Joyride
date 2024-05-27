@@ -59,10 +59,10 @@ const char *FROGGER_PATH = "assets/frogger.png";
 const char *LOG_PATH = "assets/log.png";
 const char *BACKGROUND_PATH = "assets/frogger-background.png";
 
-typedef struct {
-    asset_t *bg1;
-    asset_t *bg2;
-    double scroll_speed;
+typedef struct background_state {
+  asset_t *bg1;
+  asset_t *bg2;
+  double scroll_speed;
 } background_state_t;
 
 typedef struct state_temp {
@@ -79,7 +79,7 @@ typedef struct game_play_state {
 } game_play_state_t;
 
 
-background_state_t *background_init(const char *bg_path) {
+static background_state_t *background_init(const char *bg_path) {
     background_state_t *state = malloc(sizeof(background_state_t));
     state->scroll_speed = 100.0; 
     SDL_Rect bg_bounds1 = make_texr(MIN.x, MIN.y, MAX.x, MAX.y);
@@ -91,7 +91,7 @@ background_state_t *background_init(const char *bg_path) {
     return state;
 }
 
-void background_update(background_state_t *state, double dt) {
+static void background_update(background_state_t *state, double dt) {
     state->bg1->bounding_box.x -= state->scroll_speed * dt;
     state->bg2->bounding_box.x -= state->scroll_speed * dt;
 
