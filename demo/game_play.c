@@ -176,7 +176,7 @@ game_play_state_t *game_play_init() {
 
   asset_cache_init();
   sdl_init(MIN, MAX);
- state_temp_t *state = malloc(sizeof(state_temp_t));
+  state_temp_t *state = malloc(sizeof(state_temp_t));
   state->points = 0;
   srand(time(NULL));
   state->scene = scene_init();
@@ -246,7 +246,7 @@ bool game_play_main(game_play_state_t *game_play_state) {
 }
 
 void game_play_free(game_play_state_t *game_play_state) {
-  state_temp_t*state = game_play_state->state;
+  state_temp_t *state = game_play_state->state;
   list_free(state->body_assets);
   scene_free(state->scene);
   asset_cache_destroy();
