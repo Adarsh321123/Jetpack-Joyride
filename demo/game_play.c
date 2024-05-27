@@ -108,6 +108,7 @@ body_t *make_user(double outer_radius, double inner_radius, vector_t center) {
 void on_key(char key, key_event_type_t type, double held_time, state_temp_t *state) {
   // TODO: no change if add top or bottom of screen
   fprintf(stderr, "before getting user\n");
+  fprintf(stderr, "scene_bodies inside: %zu\n", scene_bodies(state->scene));
   body_t *user = scene_get_body(state->scene, 0);
   fprintf(stderr, "after getting user\n");
   if (type == KEY_PRESSED) {
