@@ -95,6 +95,8 @@ body_t *make_user(double outer_radius, double inner_radius, vector_t center) {
   return user;
 }
 
+// TODO: add space bar stuff
+
 static background_state_t *background_init(const char *bg_path) {
   background_state_t *state = malloc(sizeof(background_state_t));
   assert(state != NULL);
@@ -128,8 +130,12 @@ game_play_state_t *game_play_init() {
   state_temp_t *state = malloc(sizeof(state_temp_t));
 
   state->scene = scene_init();
+  // TODO: add body assets for the zappers and stuff
+  body_t *user = make_user(OUTER_RADIUS, INNER_RADIUS, VEC_ZERO);
+  body_set_centroid(user, RESET_POS);
+  scene_add_body(state->scene, user);
+  
   state->background_state = background_init(BACKGROUND_PATH);
-
 
   game_play_state->state = state;
   game_play_state->time = 0;
