@@ -237,7 +237,7 @@ bool game_play_main(game_play_state_t *game_play_state) {
   // }
   sdl_clear();
   for (size_t i = 0; i < list_size(state->body_assets); i++) {
-    asset_update_bounding_box(list_get(state->body_assets, i), dt);
+    asset_update_bounding_box(list_get(state->body_assets, i), 1000*dt);
     asset_render(list_get(state->body_assets, i));
   }
   sdl_show();
