@@ -19,9 +19,6 @@ const double INCREMENT_ANGLE = 0.1;
 const double RADIUS = 40;
 const double BULLET_RADIUS = 10;
 
-const vector_t MIN = {0, 0};
-const vector_t MAX = {1000, 500};
-
 const vector_t START_POS = {500, 30};
 const vector_t RESET_POS = {500, 45};
 const vector_t INVADER_BULLET_VEL = {0, -200};
