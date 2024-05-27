@@ -9,7 +9,6 @@
 #include "collision.h"
 #include "forces.h"
 #include "game_play.h"
-#include "asset.h"
 #include "constants.h"
 #include "asset_cache.h"
 #include "sdl_wrapper.h"
