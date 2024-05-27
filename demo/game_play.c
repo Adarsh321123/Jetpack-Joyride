@@ -105,14 +105,15 @@ body_t *make_user(double outer_radius, double inner_radius, vector_t center) {
  * down
  * @param state the current state of game
  */
-void on_key(char key, key_event_type_t type, double held_time, state_temp_t *state) {
+void on_key(char key, key_event_type_t type, double held_time, state *state) {
   // TODO: no change if add top or bottom of screen
+  body_t *user = scene_get_body(state->scene, 0);
   if (type == KEY_PRESSED) {
     if (key == SPACE_BAR) {
-      body_set_velocity(state->user, USER_VEL);
+      body_set_velocity(user, USER_VEL);
     }
   } else {
-    body_set_velocity(state->user, vec_negate(USER_VEL));
+    body_set_velocity(user, vec_negate(USER_VEL));
   }
 }
 
