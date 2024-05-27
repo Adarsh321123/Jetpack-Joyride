@@ -57,7 +57,6 @@ const size_t BODY_ASSETS = 2;
 
 const char *FROGGER_PATH = "assets/frogger.png";
 const char *LOG_PATH = "assets/log.png";
-// TODO: cite
 const char *BACKGROUND_PATH = "assets/BackdropMain.png";
 
 struct background_state {
