@@ -4,13 +4,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-/**
- * Stores the game_play state
- * Use this to store any variable needed every 'tick' of your game
- */
-typedef struct game_play_state {
-  double time;
-} game_play_state_t;
+typedef struct state_temp state_temp_t;
+
+typedef struct game_play_state game_play_state_t;
 
 /**
  * Initializes sdl as well as the variables needed
