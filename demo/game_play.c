@@ -386,7 +386,7 @@ bool game_play_main(game_play_state_t *game_play_state) {
   bool is_over = game_over(state);
   game_play_state->time += dt;
   sdl_show();
-  return !is_over;
+  return is_over;
 }
 
 void game_play_free(game_play_state_t *game_play_state) {
