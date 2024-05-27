@@ -63,6 +63,7 @@ struct background_state {
   asset_t *bg1;
   asset_t *bg2;
   double scroll_speed;
+  double bg_offset;
 };
 
 struct state_temp {
@@ -81,26 +82,25 @@ struct game_play_state {
 
 static background_state_t *background_init(const char *bg_path) {
   background_state_t *state = malloc(sizeof(background_state_t));
-  state->scroll_speed = 100.0; 
-  SDL_Rect bg_bounds = make_texr(MIN.x, MIN.y, 1.25 * MAX.x, MAX.y);
+  assert(state != NULL);
+
+  state->scroll_speed = 100.0;
+  state->bg_offset = 0;
+  SDL_Rect bg_bounds = make_texr(MIN.x, MIN.y, MAX.x, MAX.y);
   state->bg1 = asset_make_image(bg_path, bg_bounds);
   state->bg2 = asset_make_image(bg_path, bg_bounds);
-
-  state->bg1->bounding_box.x = 0;
-  state->bg2->bounding_box.x = MAX.x;
 
   return state;
 }
 
 static void background_update(background_state_t *state, double dt) {
-  state->bg1->bounding_box.x -= state->scroll_speed * dt;
-  state->bg2->bounding_box.x -= state->scroll_speed * dt;
-
-  if (state->bg1->bounding_box.x + state->bg1->bounding_box.w <= 0) {
-      state->bg1->bounding_box.x = MAX.x;
-  } else if (state->bg2->bounding_box.x + state->bg2->bounding_box.w <= 0) {
-      state->bg2->bounding_box.x = MAX.x;
+  state->bg_offset -= state->scroll_speed * dt;
+  double WINDOW_WIDTH = MAX.x - MIN.x;
+  if (state->bg_offset <= - WINDOW_WIDTH) {
+    state->bg_offset += WINDOW_WIDTH;
   }
+  state->bg1->bounding_box.x = state->bg_offset;
+  state->bg2->bounding_box.x = state->bg_offset + WINDOW_WIDTH;
 }
 
 game_play_state_t *game_play_init() {
@@ -112,8 +112,7 @@ game_play_state_t *game_play_init() {
   state_temp_t *state = malloc(sizeof(state_temp_t));
 
   state->scene = scene_init();
-  state->body_assets = list_init(2, (free_func_t)asset_destroy);
-  state->background_state = background_init(BACKGROUND_PATH); 
+  state->background_state = background_init(BACKGROUND_PATH);
 
 
   game_play_state->state = state;
