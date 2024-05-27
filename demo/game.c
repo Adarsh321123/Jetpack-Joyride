@@ -351,7 +351,7 @@ game_play_state_t *emscripten_init() {
   game_play_state_t *game_play_state = malloc(sizeof(game_play_state_t));
   assert(game_play_state);
 
-  state_t *state = malloc(sizeof(state_t));
+  state_t *state = malloc(sizeof(state_temp_t));
   assert(state != NULL);
   init_invaders(state);
   init_ship(state);
