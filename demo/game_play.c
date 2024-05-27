@@ -158,7 +158,7 @@ game_play_state_t *game_play_init() {
   asset_t *img = asset_make_image_with_body(USER_IMG_PATH, user);
   list_add(state->body_assets, img);
   sdl_on_key((key_handler_t)on_key);
-  fprintf(stderr, "scene_bodies: %d\n", scene_bodies(state->scene));
+  fprintf(stderr, "scene_bodies: %zu\n", scene_bodies(state->scene));
   state->background_state = background_init(BACKGROUND_PATH);
 
   game_play_state->state = state;
