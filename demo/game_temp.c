@@ -41,7 +41,9 @@ void run_game_play(state_t *state) {
   if (!game_play_state) {
     game_play_state = game_play_init();
     state->game_play_state = game_play_state;
+    printf("Initialized game play state\n");
   } else {
+    printf("Using existing game play state\n");
   }
   
   bool game_over = game_play_main(game_play_state);
