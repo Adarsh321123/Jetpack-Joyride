@@ -99,7 +99,7 @@ asset_t *asset_update_bounding_box(asset_t *image, double dt) {
   image->bounding_box.x -= dt;
 
   if (image->bounding_box.x + image->bounding_box.w <= MAX.x) {
-    image->bounding_box.x = 0
+    image->bounding_box.x = 0;
   }
   return image;
 }
