@@ -9,7 +9,10 @@
 
 typedef enum { ASSET_IMAGE, ASSET_FONT, ASSET_BUTTON } asset_type_t;
 
-typedef struct asset asset_t;
+typedef struct asset {
+  asset_type_t type;
+  SDL_Rect bounding_box;
+} asset_t;
 
 /**
  * Gets the `asset_type_t` of the asset.
