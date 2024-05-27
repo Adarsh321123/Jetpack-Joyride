@@ -54,6 +54,8 @@ const size_t ROWS = 8;
 const size_t OFFSET = 3;
 const size_t CIRC_NPOINTS = 4;
 const size_t BODY_ASSETS = 2;
+const size_t USER_NUM_POINTS = 20;
+const rgb_color_t user_color = (rgb_color_t){0.1, 0.9, 0.2};
 
 const char *FROGGER_PATH = "assets/frogger.png";
 const char *LOG_PATH = "assets/log.png";
@@ -69,7 +71,7 @@ struct background_state {
 struct state_temp {
   background_state_t *background_state;
   list_t *body_assets;
-  asset_t *frog;
+  asset_t *user;
   scene_t *scene;
   int16_t points;
 };
@@ -79,6 +81,19 @@ struct game_play_state {
   state_temp_t *state;
 };
 
+body_t *make_user(double outer_radius, double inner_radius, vector_t center) {
+  center.y += inner_radius;
+  list_t *c = list_init(USER_NUM_POINTS, free);
+  for (size_t i = 0; i < USER_NUM_POINTS; i++) {
+    double angle = 2 * M_PI * i / USER_NUM_POINTS;
+    vector_t *v = malloc(sizeof(*v));
+    *v = (vector_t){center.x + inner_radius * cos(angle),
+                    center.y + outer_radius * sin(angle)};
+    list_add(c, v);
+  }
+  body_t *user = body_init(c, 1, user_color);
+  return user;
+}
 
 static background_state_t *background_init(const char *bg_path) {
   background_state_t *state = malloc(sizeof(background_state_t));
