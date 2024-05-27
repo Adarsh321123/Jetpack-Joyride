@@ -8,11 +8,6 @@
 #include "color.h"
 #include "sdl_wrapper.h"
 
-typedef struct asset {
-  asset_type_t type;
-  SDL_Rect bounding_box;
-} asset_t;
-
 typedef struct text_asset {
   asset_t base;
   TTF_Font *font;
