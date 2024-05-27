@@ -3,6 +3,7 @@
 #include <assert.h>
 
 #include "asset.h"
+#include "constants.h"
 #include "asset_cache.h"
 #include "color.h"
 #include "sdl_wrapper.h"
@@ -96,6 +97,10 @@ asset_t *asset_make_image(const char *filepath, SDL_Rect bounding_box) {
 
 asset_t *asset_update_bounding_box(asset_t *image, double dt) {
   image->bounding_box.x -= dt;
+
+  if (image->bounding_box.x + image->bounding_box.w <= MAX.x) {
+    image->bounding_box.x = 0
+  }
   return image;
 }
 
