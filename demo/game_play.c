@@ -139,7 +139,7 @@ void player_wrap_edges(state_temp_t *state) {
   }
 }
 
-void on_key(char key, key_event_type_t type, double held_time,state_temp_t*state) {
+void on_key(char key, key_event_type_t type, double held_time, state_temp_t *state) {
   body_t *froggy = scene_get_body(state->scene, 0);
   vector_t translation = (vector_t){0, 0};
   if (type == KEY_PRESSED && type != KEY_RELEASED) {
