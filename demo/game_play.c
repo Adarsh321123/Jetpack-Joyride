@@ -59,11 +59,11 @@ const char *FROGGER_PATH = "assets/frogger.png";
 const char *LOG_PATH = "assets/log.png";
 const char *BACKGROUND_PATH = "assets/frogger-background.png";
 
-typedef struct background_state {
+typedef struct {
     asset_t *bg1;
     asset_t *bg2;
     double scroll_speed;
-};
+} background_state_t;
 
 typedef struct state_temp {
   background_state_t *background_state;
