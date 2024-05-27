@@ -187,7 +187,7 @@ game_play_state_t *game_play_init() {
 
   // scene_add_body(state->scene, froggy);
 
-  SDL_Rect bounding_background = make_texr(MIN.x, MIN.y, MAX.x, MAX.y);
+  SDL_Rect bounding_background = make_texr(MIN.x, MIN.y, 3 * MAX.x, MAX.y);
   asset_t *background = asset_make_image(BACKGROUND_PATH, bounding_background);
   list_add(state->body_assets, background);
   // asset_t *img = asset_make_image_with_body(FROGGER_PATH, froggy);
