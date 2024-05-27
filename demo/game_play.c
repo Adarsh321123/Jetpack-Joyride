@@ -96,6 +96,7 @@ static background_state_t *background_init(const char *bg_path) {
 static void background_update(background_state_t *state, double dt) {
   state->bg_offset -= state->scroll_speed * dt;
   double WINDOW_WIDTH = MAX.x - MIN.x;
+  // TODO: maybe make cleaner
   if (state->bg_offset <= - WINDOW_WIDTH) {
     state->bg_offset += WINDOW_WIDTH;
   }
