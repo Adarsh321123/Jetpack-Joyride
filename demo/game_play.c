@@ -22,6 +22,7 @@ const double BULLET_RADIUS = 10;
 const vector_t START_POS = {500, 30};
 const vector_t RESET_POS = {500, 45};
 const vector_t INVADER_BULLET_VEL = {0, -200};
+const vector_t USER_VEL = {0, 200};
 const vector_t BASE_OBJ_VEL = {30, 0};
 const double EXTRA_VEL_MULT = 10;
 const double VEL_MULT_PROB = 0.2;
@@ -95,7 +96,25 @@ body_t *make_user(double outer_radius, double inner_radius, vector_t center) {
   return user;
 }
 
-// TODO: add space bar stuff
+/**
+ * Move user up if space bar is pressed and back down otherwise
+ *
+ * @param key the character of the key pressed
+ * @param type event type connected to key
+ * @param held_time double value representing the amount of time the key is held
+ * down
+ * @param state the current state of game
+ */
+void on_key(char key, key_event_type_t type, double held_time, state_t *state) {
+  // TODO: no change if add top or bottom of screen
+  if (type == KEY_PRESSED) {
+    if (key == SPACE_BAR) {
+      body_set_velocity(state->user, USER_VEL);
+    }
+  } else {
+    body_set_velocity(state->user, vec_negate(USER_VEL));
+  }
+}
 
 static background_state_t *background_init(const char *bg_path) {
   background_state_t *state = malloc(sizeof(background_state_t));
@@ -132,6 +151,7 @@ game_play_state_t *game_play_init() {
   state->scene = scene_init();
   state->body_assets = list_init(1, (free_func_t)asset_destroy);
   // TODO: add body assets for the zappers and stuff
+  sdl_on_key((key_handler_t)on_key);
   body_t *user = make_user(OUTER_RADIUS, INNER_RADIUS, VEC_ZERO);
   body_set_centroid(user, RESET_POS);
   scene_add_body(state->scene, user);
