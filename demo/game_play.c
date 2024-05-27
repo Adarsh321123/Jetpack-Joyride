@@ -129,8 +129,8 @@ bool game_play_main(game_play_state_t *game_play_state) {
   sdl_clear();
 
   background_update(state->background_state, dt);
-  asset_render(state->bg1);
-  asset_render(state->bg2);
+  asset_render(state->background_state->bg1);
+  asset_render(state->background_state->bg2);
 
   // for (size_t i = 0; i < list_size(state->background); i++) {
   //   asset_update_bounding_box(list_get(state->background, i), 1000*dt);
