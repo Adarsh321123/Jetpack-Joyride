@@ -57,7 +57,7 @@ const size_t BODY_ASSETS = 2;
 const size_t USER_NUM_POINTS = 20;
 const rgb_color_t user_color = (rgb_color_t){0.1, 0.9, 0.2};
 
-const char *FROGGER_PATH = "assets/frogger.png";
+const char *USER_IMG_PATH = "assets/Barry.webp";
 const char *LOG_PATH = "assets/log.png";
 const char *BACKGROUND_PATH = "assets/BackdropMain.png";
 
@@ -135,7 +135,7 @@ game_play_state_t *game_play_init() {
   body_t *user = make_user(OUTER_RADIUS, INNER_RADIUS, VEC_ZERO);
   body_set_centroid(user, RESET_POS);
   scene_add_body(state->scene, user);
-  asset_t *img = asset_make_image_with_body(FROGGER_PATH, user);
+  asset_t *img = asset_make_image_with_body(USER_IMG_PATH, user);
   list_add(state->body_assets, img);
   
   state->background_state = background_init(BACKGROUND_PATH);
