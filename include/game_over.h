@@ -5,8 +5,7 @@
 #include <stdlib.h>
 
 /**
- * Stores the game_over state
- * Use this to store any variable needed every 'tick' of your game
+ * Stores any variable needed at every 'tick' of the game
  */
 typedef struct game_over_state {
   double time;

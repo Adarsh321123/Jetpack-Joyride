@@ -1,5 +1,6 @@
 #include "constants.h"
 
+// TODO: add more here
 const vector_t MIN = {0, 0};
 const vector_t MAX = {1000, 500};
 const vector_t CENTER = {500, 250};
