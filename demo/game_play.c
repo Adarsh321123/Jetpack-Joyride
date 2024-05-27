@@ -220,7 +220,7 @@ game_play_state_t *game_play_init() {
   //     list_add(state->body_assets, log);
   //   }
   // }
-  sdl_on_key((key_handler_t)on_key);
+  //sdl_on_key((key_handler_t)on_key);
   game_play_state->state = state;
   game_play_state->time = 0;
   return game_play_state;
