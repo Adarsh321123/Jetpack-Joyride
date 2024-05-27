@@ -59,24 +59,24 @@ const char *FROGGER_PATH = "assets/frogger.png";
 const char *LOG_PATH = "assets/log.png";
 const char *BACKGROUND_PATH = "assets/frogger-background.png";
 
-typedef struct background_state {
+struct background_state {
   asset_t *bg1;
   asset_t *bg2;
   double scroll_speed;
-} background_state_t;
+};
 
-typedef struct state_temp {
+struct state_temp {
   background_state_t *background_state;
   list_t *body_assets;
   asset_t *frog;
   scene_t *scene;
   int16_t points;
-} state_temp_t;
+};
 
-typedef struct game_play_state {
+struct game_play_state {
   double time;
   state_temp_t *state;
-} game_play_state_t;
+};
 
 
 static background_state_t *background_init(const char *bg_path) {
@@ -144,9 +144,9 @@ bool game_play_main(game_play_state_t *game_play_state) {
 
 void game_play_free(game_play_state_t *game_play_state) {
   state_temp_t *state = game_play_state->state;
-  asset_destroy(state->bg1);
-  asset_destroy(state->bg2);
-  free(state);
+  asset_destroy(state->background_state->bg1);
+  asset_destroy(state->background_state->bg1);
+  free(state->background_state);
   list_free(state->body_assets);
   scene_free(state->scene);
   asset_cache_destroy();
