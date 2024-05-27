@@ -132,7 +132,7 @@ void reset_user_handler(body_t *body1, body_t *body2, vector_t axis, void *aux,
   reset_user(body1);
 }
 
-void player_wrap_edges(state_t *state) {
+void player_wrap_edges(state_temp_t *state) {
   body_t *player = scene_get_body(state->scene, 0);
   vector_t centroid = body_get_centroid(player);
   if (centroid.y > MAX.y - V_STEP) {
@@ -142,7 +142,7 @@ void player_wrap_edges(state_t *state) {
   }
 }
 
-void on_key(char key, key_event_type_t type, double held_time, state_t *state) {
+void on_key(char key, key_event_type_t type, double held_time,state_temp_t*state) {
   body_t *froggy = scene_get_body(state->scene, 0);
   vector_t translation = (vector_t){0, 0};
   if (type == KEY_PRESSED && type != KEY_RELEASED) {
@@ -179,7 +179,7 @@ game_play_state_t *game_play_init() {
 
   asset_cache_init();
   sdl_init(MIN, MAX);
-  state_t *state = malloc(sizeof(state_t));
+ state_temp_t *state = malloc(sizeof(state_temp_t));
   state->points = 0;
   srand(time(NULL));
   state->scene = scene_init();
@@ -233,7 +233,7 @@ bool game_play_main(game_play_state_t *game_play_state) {
   sdl_clear();
 
   double dt = time_since_last_tick();
-  state_t *state = game_play_state->state;
+  state_temp_t *state = game_play_state->state;
   player_wrap_edges(state);
   for (int i = 1; i < scene_bodies(state->scene); i++) {
     wrap_edges(scene_get_body(state->scene, i));
@@ -249,7 +249,7 @@ bool game_play_main(game_play_state_t *game_play_state) {
 }
 
 void game_play_free(game_play_state_t *game_play_state) {
-  state_t *state = game_play_state->state;
+  state_temp_t*state = game_play_state->state;
   list_free(state->body_assets);
   scene_free(state->scene);
   asset_cache_destroy();
