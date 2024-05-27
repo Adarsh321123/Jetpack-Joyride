@@ -66,7 +66,7 @@ typedef struct state_temp {
 
 typedef struct game_play_state {
   double time;
-  state_temp_t *state;
+  state_t *state;
 } game_play_state_t;
 
 
@@ -178,7 +178,7 @@ void user_wrap_edges(body_t *body) {
 }
 
 // Calculate new locations after wrap-around for invaders
-void wrap_invaders(state_temp_t *state) {
+void wrap_invaders(state_t *state) {
   for (size_t i = 0; i < state->invader_count; i++) {
     body_t *invader = scene_get_body(state->scene, i);
     wrap_edges(invader, (RADIUS + 10) * OFFSET);
@@ -192,7 +192,7 @@ void wrap_invaders(state_temp_t *state) {
  *
  * @param state a pointer to a state object representing the current demo state
  */
-bool game_over(state_temp_t *state) {
+bool game_over(state_t *state) {
   if (state->invader_count == 0) {
     return true;
   }
@@ -215,7 +215,7 @@ bool game_over(state_temp_t *state) {
  *
  * @param state a pointer to a state object representing the current demo state
  */
-void user_shoot_bullet(state_temp_t *state) {
+void user_shoot_bullet(state_t *state) {
   body_t *bullet = make_bullet(body_get_centroid(state->ship), BULLET_RADIUS,
                                BULLET_MASS, user_color, "user_bullet");
   body_set_velocity(bullet, USER_BULLET_VEL);
@@ -235,7 +235,7 @@ void user_shoot_bullet(state_temp_t *state) {
  * down
  * @param state the current state of game
  */
-void on_key(char key, key_event_type_t type, double held_time, state_temp_t *state) {
+void on_key(char key, key_event_type_t type, double held_time, state_t *state) {
   if (type == KEY_PRESSED) {
     switch (key) {
     case LEFT_ARROW: {
@@ -263,7 +263,7 @@ void on_key(char key, key_event_type_t type, double held_time, state_temp_t *sta
 }
 
 // initialize the invaders at start of game
-void invader_init(state_temp_t *state) {
+void invader_init(state_t *state) {
   for (int i = 0; i < NUM_ROWS; i++) {
     double y = Y_START + i * (RADIUS + Y_SPACE);
     for (int j = 0; j < INVADERS_PER_ROW; j++) {
@@ -285,7 +285,7 @@ void invader_init(state_temp_t *state) {
  *
  * @param state a pointer to a state object representing the current demo state
  */
-void invader_shoot_bullet(state_temp_t *state) {
+void invader_shoot_bullet(state_t *state) {
   if (state->invader_count == 0) {
     return;
   }
@@ -303,7 +303,7 @@ void invader_shoot_bullet(state_temp_t *state) {
  * Initialize the window and invaders
  * Add invaders to the scene.
  */
-void init_invaders(state_temp_t *state) {
+void init_invaders(state_t *state) {
   sdl_init(MIN, MAX);
   sdl_on_key((key_handler_t)on_key);
   state->scene = scene_init();
@@ -316,7 +316,7 @@ void init_invaders(state_temp_t *state) {
 /**
  * Initialize the ship
  */
-void init_ship(state_temp_t *state) {
+void init_ship(state_t *state) {
   list_t *ship_points = make_ship(OUTER_RADIUS, INNER_RADIUS);
   state->ship = body_init(ship_points, SHIP_MASS, user_color);
   body_set_centroid(state->ship, USER_CENTER);
@@ -325,7 +325,7 @@ void init_ship(state_temp_t *state) {
 /**
  * Updates the invader count after scene/body ticks
  */
-void update_invader_count(state_temp_t *state) {
+void update_invader_count(state_t *state) {
   state->invader_count = 0;
   size_t num_bodies = scene_bodies(state->scene);
   for (size_t i = 0; i < num_bodies; i++) {
@@ -351,7 +351,7 @@ game_play_state_t *emscripten_init() {
   game_play_state_t *game_play_state = malloc(sizeof(game_play_state_t));
   assert(game_play_state);
 
-  state_temp_t *state = malloc(sizeof(state_temp_t));
+  state_t *state = malloc(sizeof(state_temp_t));
   assert(state != NULL);
   init_invaders(state);
   init_ship(state);
@@ -369,7 +369,7 @@ bool emscripten_main(game_play_state_t *game_play_state) {
   sdl_clear();
 
   double dt = time_since_last_tick();
-  state_temp_t *state = game_play_state->state;
+  state_t *state = game_play_state->state;
   state->time_since_invader_bullet += dt;
   state->time_since_user_bullet += dt;
   if (state->time_since_invader_bullet > TIME_BETWEEN_INVADER_BULLETS) {
@@ -390,7 +390,7 @@ bool emscripten_main(game_play_state_t *game_play_state) {
 }
 
 void emscripten_free(game_play_state_t *game_play_state) {
-  state_temp_t *state = game_play_state->state;
+  state_t *state = game_play_state->state;
   scene_free(state->scene);
   body_free(state->ship);
   free(state);
