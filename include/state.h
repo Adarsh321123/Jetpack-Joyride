@@ -4,7 +4,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-typedef struct state_temp state_temp_t;
+typedef struct state state_t;
 
 typedef struct game_play_state game_play_state_t;
 
@@ -14,7 +14,7 @@ typedef struct game_play_state game_play_state_t;
  * variable 
  * Returns the pointer to this state
  */
-game_play_state_t *game_play_init();
+game_play_state_t *emscripten_init();
 
 /**
  * Called on each tick of the program
@@ -24,7 +24,7 @@ game_play_state_t *game_play_init();
  * @param game_play_state pointer to a state object
  * @return a boolean representing whether the game is play
  */
-bool game_play_main(game_play_state_t *game_play_state);
+bool emscripten_main(game_play_state_t *game_play_state);
 
 /**
  * Frees anything allocated in the game
@@ -32,4 +32,4 @@ bool game_play_main(game_play_state_t *game_play_state);
  *
  * @param game_play_state pointer to a game_play state object
  */
-void game_play_free(game_play_state_t *game_play_state);
+void emscripten_free(game_play_state_t *game_play_state);
