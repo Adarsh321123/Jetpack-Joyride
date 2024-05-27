@@ -236,7 +236,6 @@ bool game_play_main(game_play_state_t *game_play_state) {
   //   wrap_edges(scene_get_body(state->scene, i));
   // }
   sdl_clear();
-  state->body_assets
   for (size_t i = 0; i < list_size(state->body_assets); i++) {
     asset_update_bounding_box(list_get(state->body_assets, i), dt);
     asset_render(list_get(state->body_assets, i));
