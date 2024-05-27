@@ -4,32 +4,48 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-typedef struct state_temp state_temp_t;
+#ifndef STATE_H
+#define STATE_H
 
-typedef struct game_play_state game_play_state_t;
+/**
+ * Stores the demo state
+ * Use this to store any variable needed every 'tick' of your demo
+ */
+typedef struct state state_t;
+
+typedef enum {
+    HOME,
+    GAME_PLAY,
+    GAME_OVER,
+    EXIT
+} state_type_t;
 
 /**
  * Initializes sdl as well as the variables needed
- * Creates and stores all necessary variables for the game in a created state
+ * Creates and stores all necessary variables for the demo in a created state
  * variable 
- * Returns the pointer to this state
+ * Returns the pointer to this state (This is the state emscripten_main
+ * and emscripten_free work with)
  */
-game_play_state_t *game_play_init();
+state_t *emscripten_init();
 
 /**
  * Called on each tick of the program
  * Updates the state variables and display as necessary, depending on the time
  * that has passed.
  *
- * @param game_play_state pointer to a state object
- * @return a boolean representing whether the game is play
+ * @param state pointer to a state object with info about demo
+ * @return a boolean representing whether the game/demo is over
  */
-bool game_play_main(game_play_state_t *game_play_state);
+bool emscripten_main(state_t *state);
 
 /**
- * Frees anything allocated in the game
+ * Frees anything allocated in the demo
  * Should free everything in state as well as state itself.
  *
- * @param game_play_state pointer to a game_play state object
+ * @param state pointer to a state object with info about demo
  */
-void game_play_free(game_play_state_t *game_play_state);
+void emscripten_free(state_t *state);
+
+
+#endif // STATE_H
