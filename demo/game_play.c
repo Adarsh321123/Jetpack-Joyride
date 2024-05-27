@@ -60,36 +60,36 @@ const char *LOG_PATH = "assets/log.png";
 const char *BACKGROUND_PATH = "assets/frogger-background.png";
 
 struct background_state {
-  asset_t *bg1;
-  asset_t *bg2;
-  double scroll_speed;
+    asset_t *bg1;
+    asset_t *bg2;
+    double scroll_speed;
 };
 
 struct state_temp {
-  background_state_t *background_state;
-  list_t *body_assets;
-  asset_t *frog;
-  scene_t *scene;
-  int16_t points;
+    background_state_t *background_state;
+    list_t *body_assets;
+    asset_t *frog;
+    scene_t *scene;
+    int16_t points;
 };
 
 struct game_play_state {
-  double time;
-  state_temp_t *state;
+    double time;
+    state_temp_t *state;
 };
 
-
 static background_state_t *background_init(const char *bg_path) {
-  background_state_t *state = malloc(sizeof(background_state_t));
-  state->scroll_speed = 100.0; 
-  SDL_Rect bg_bounds = make_texr(MIN.x, MIN.y, MAX.x, MAX.y);
-  state->bg1 = asset_make_image(bg_path, bg_bounds);
-  state->bg2 = asset_make_image(bg_path, bg_bounds);
+    background_state_t *state = malloc(sizeof(background_state_t));
+    state->scroll_speed = 100.0; 
+    SDL_Rect bg_bounds = make_texr(MIN.x, MIN.y, MAX.x - MIN.x, MAX.y - MIN.y);
 
-  state->bg1->bounding_box.x = 0;
-  state->bg2->bounding_box.x = MAX.x;
+    state->bg1 = asset_make_image(bg_path, bg_bounds);
+    state->bg2 = asset_make_image(bg_path, bg_bounds);
 
-  return state;
+    state->bg1->bounding_box.x = 0;
+    state->bg2->bounding_box.x = bg_bounds.w;
+
+    return state;
 }
 
 static void background_update(background_state_t *state, double dt) {
@@ -97,60 +97,53 @@ static void background_update(background_state_t *state, double dt) {
     state->bg2->bounding_box.x -= state->scroll_speed * dt;
 
     if (state->bg1->bounding_box.x + state->bg1->bounding_box.w <= 0) {
-        state->bg1->bounding_box.x = MAX.x;
-    } else if (state->bg2->bounding_box.x + state->bg2->bounding_box.w <= 0) {
-        state->bg2->bounding_box.x = MAX.x;
+        state->bg1->bounding_box.x = state->bg2->bounding_box.x + state->bg2->bounding_box.w;
+    }
+
+    if (state->bg2->bounding_box.x + state->bg2->bounding_box.w <= 0) {
+        state->bg2->bounding_box.x = state->bg1->bounding_box.x + state->bg1->bounding_box.w;
     }
 }
 
 game_play_state_t *game_play_init() {
-  game_play_state_t *game_play_state = malloc(sizeof(game_play_state_t));
-  assert(game_play_state);
+    game_play_state_t *game_play_state = malloc(sizeof(game_play_state_t));
+    assert(game_play_state);
 
-  asset_cache_init();
-  sdl_init(MIN, MAX);
-  state_temp_t *state = malloc(sizeof(state_temp_t));
+    asset_cache_init();
+    sdl_init(MIN, MAX);
+    state_temp_t *state = malloc(sizeof(state_temp_t));
 
-  state->scene = scene_init();
-  state->body_assets = list_init(2, (free_func_t)asset_destroy);
-  state->background_state = background_init(BACKGROUND_PATH); 
+    state->scene = scene_init();
+    state->body_assets = list_init(2, (free_func_t)asset_destroy);
+    state->background_state = background_init(BACKGROUND_PATH); 
 
-
-  game_play_state->state = state;
-  game_play_state->time = 0;
-  return game_play_state;
+    game_play_state->state = state;
+    game_play_state->time = 0;
+    return game_play_state;
 }
 
 bool game_play_main(game_play_state_t *game_play_state) {
+    double dt = time_since_last_tick();
+    state_temp_t *state = game_play_state->state;
+    sdl_clear();
 
-  double dt = time_since_last_tick();
-  state_temp_t *state = game_play_state->state;
-  sdl_clear();
+    background_update(state->background_state, dt);
+    asset_render(state->background_state->bg1);
+    asset_render(state->background_state->bg2);
 
-  background_update(state->background_state, dt);
-  asset_render(state->background_state->bg1);
-  asset_render(state->background_state->bg2);
-
-  // for (size_t i = 0; i < list_size(state->background); i++) {
-  //   asset_update_bounding_box(list_get(state->background, i), 1000*dt);
-  //   asset_render(list_get(state->background, i));
-  // }
-  sdl_show();
-
-  scene_tick(state->scene, dt);
-  return false;
+    sdl_show();
+    scene_tick(state->scene, dt);
+    return false;
 }
 
 void game_play_free(game_play_state_t *game_play_state) {
-  state_temp_t *state = game_play_state->state;
-  asset_destroy(state->background_state->bg1);
-  asset_destroy(state->background_state->bg1);
-  free(state->background_state);
-  list_free(state->body_assets);
-  scene_free(state->scene);
-  asset_cache_destroy();
-  free(state);
-  //TTF_Quit();
-  //asset_cache_destroy();
-  free(game_play_state);
+    state_temp_t *state = game_play_state->state;
+    asset_destroy(state->background_state->bg1);
+    asset_destroy(state->background_state->bg2);
+    free(state->background_state);
+    list_free(state->body_assets);
+    scene_free(state->scene);
+    asset_cache_destroy();
+    free(state);
+    free(game_play_state);
 }
