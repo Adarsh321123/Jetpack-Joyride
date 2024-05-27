@@ -105,7 +105,7 @@ body_t *make_user(double outer_radius, double inner_radius, vector_t center) {
  * down
  * @param state the current state of game
  */
-void on_key(char key, key_event_type_t type, double held_time, state_t *state) {
+void on_key(char key, key_event_type_t type, double held_time, state_temp_t *state) {
   // TODO: no change if add top or bottom of screen
   if (type == KEY_PRESSED) {
     if (key == SPACE_BAR) {
