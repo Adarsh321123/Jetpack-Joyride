@@ -86,9 +86,17 @@ game_play_state_t *game_play_init() {
   state->body_assets = list_init(2, (free_func_t)asset_destroy);
   state->background = list_init(2, (free_func_t)asset_destroy);
 
-  SDL_Rect bounding_background = make_texr(MIN.x, MIN.y, 3 * MAX.x, MAX.y);
-  asset_t *background = asset_make_image(BACKGROUND_PATH, bounding_background);
-  list_add(state->background, background);
+  // SDL_Rect bounding_background = make_texr(MIN.x, MIN.y, 3 * MAX.x, MAX.y);
+  // asset_t *background = asset_make_image(BACKGROUND_PATH, bounding_background);
+  // list_add(state->background, background);
+
+  SDL_Rect bounding_background1 = make_texr(0, MIN.y, MAX.x, MAX.y);
+  SDL_Rect bounding_background2 = make_texr(MAX.x, MIN.y, MAX.x, MAX.y);
+  asset_t *background1 = asset_make_image(BACKGROUND_PATH, bounding_background1);
+  asset_t *background2 = asset_make_image(BACKGROUND_PATH, bounding_background2);
+
+  list_add(state->body_assets, background1);
+  list_add(state->body_assets, background2);  
 
   game_play_state->state = state;
   game_play_state->time = 0;
