@@ -134,6 +134,8 @@ game_play_state_t *game_play_init() {
   body_t *user = make_user(OUTER_RADIUS, INNER_RADIUS, VEC_ZERO);
   body_set_centroid(user, RESET_POS);
   scene_add_body(state->scene, user);
+  asset_t *img = asset_make_image_with_body(FROGGER_PATH, user);
+  list_add(state->body_assets, img);
   
   state->background_state = background_init(BACKGROUND_PATH);
 
