@@ -57,7 +57,7 @@ const size_t BODY_ASSETS = 2;
 
 const char *FROGGER_PATH = "assets/frogger.png";
 const char *LOG_PATH = "assets/log.png";
-const char *BACKGROUND_PATH = "assets/frogger-background.png";
+const char *BACKGROUND_PATH = "assets/jetpack_joyride_home.jpg";
 
 struct background_state {
   asset_t *bg1;
