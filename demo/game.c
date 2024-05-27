@@ -56,13 +56,13 @@ const size_t X_SPACE = 15;
 const size_t OFFSET = 3;
 const size_t CIRC_NPOINTS = 4;
 
-typedef struct state_temp {
+typedef struct state {
   scene_t *scene;
   body_t *ship;
   size_t invader_count;
   double time_since_invader_bullet;
   double time_since_user_bullet;
-} state_temp_t;
+} state_t;
 
 typedef struct game_play_state {
   double time;
