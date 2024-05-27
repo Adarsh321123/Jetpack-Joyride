@@ -227,7 +227,7 @@ game_play_state_t *game_play_init() {
 }
 
 bool game_play_main(game_play_state_t *game_play_state) {
-  sdl_clear();
+  //sdl_clear();
 
   double dt = time_since_last_tick();
   state_temp_t *state = game_play_state->state;
