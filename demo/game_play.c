@@ -80,28 +80,29 @@ struct game_play_state {
 
 
 static background_state_t *background_init(const char *bg_path) {
-    background_state_t *state = malloc(sizeof(background_state_t));
-    state->scroll_speed = 100.0; 
-    SDL_Rect bg_bounds1 = make_texr(MIN.x, MIN.y, MAX.x, MAX.y);
-    SDL_Rect bg_bounds2 = make_texr(MAX.x, MIN.y, MAX.x, MAX.y);
+  background_state_t *state = malloc(sizeof(background_state_t));
+  state->scroll_speed = 100.0; 
+  SDL_Rect bg_bounds = make_texr(MIN.x, MIN.y, MAX.x, MAX.y);
+  state->bg1 = asset_make_image(bg_path, bg_bounds);
+  state->bg2 = asset_make_image(bg_path, bg_bounds);
 
-    state->bg1 = asset_make_image(bg_path, bg_bounds1);
-    state->bg2 = asset_make_image(bg_path, bg_bounds2);
+  state->bg1->bounding_box.x = 0;
+  state->bg2->bounding_box.x = MAX.x;
 
-    return state;
+  return state;
 }
 
 static void background_update(background_state_t *state, double dt) {
-    state->bg1->bounding_box.x -= state->scroll_speed * dt;
-    state->bg2->bounding_box.x -= state->scroll_speed * dt;
+  state->bg1->bounding_box.x -= state->scroll_speed * dt;
+  state->bg2->bounding_box.x -= state->scroll_speed * dt;
 
-    if (state->bg1->bounding_box.x + state->bg1->bounding_box.w <= 0) {
-        state->bg1->bounding_box.x = MAX.x;
-    }
+  if (state->bg1->bounding_box.x + state->bg1->bounding_box.w <= 0) {
+    state->bg1->bounding_box.x = MAX.x;
+  }
 
-    if (state->bg2->bounding_box.x + state->bg2->bounding_box.w <= 0) {
-        state->bg2->bounding_box.x = MAX.x;
-    }
+  if (state->bg2->bounding_box.x + state->bg2->bounding_box.w <= 0) {
+    state->bg2->bounding_box.x = MAX.x;
+  }
 }
 
 game_play_state_t *game_play_init() {
