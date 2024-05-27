@@ -60,6 +60,7 @@ const char *LOG_PATH = "assets/log.png";
 const char *BACKGROUND_PATH = "assets/frogger-background.png";
 
 typedef struct state_temp {
+  list_t *background;
   list_t *body_assets;
   asset_t *frog;
   scene_t *scene;
@@ -83,10 +84,11 @@ game_play_state_t *game_play_init() {
 
   state->scene = scene_init();
   state->body_assets = list_init(2, (free_func_t)asset_destroy);
+  state->background = list_init(2, (free_func_t)asset_destroy);
 
   SDL_Rect bounding_background = make_texr(MIN.x, MIN.y, 3 * MAX.x, MAX.y);
   asset_t *background = asset_make_image(BACKGROUND_PATH, bounding_background);
-  list_add(state->body_assets, background);
+  list_add(state->background, background);
 
   game_play_state->state = state;
   game_play_state->time = 0;
@@ -98,9 +100,9 @@ bool game_play_main(game_play_state_t *game_play_state) {
   double dt = time_since_last_tick();
   state_temp_t *state = game_play_state->state;
   sdl_clear();
-  for (size_t i = 0; i < list_size(state->body_assets); i++) {
-    asset_update_bounding_box(list_get(state->body_assets, i), 1000*dt);
-    asset_render(list_get(state->body_assets, i));
+  for (size_t i = 0; i < list_size(state->background); i++) {
+    asset_update_bounding_box(list_get(state->background, i), 1000*dt);
+    asset_render(list_get(state->background, i));
   }
   sdl_show();
 
@@ -110,6 +112,7 @@ bool game_play_main(game_play_state_t *game_play_state) {
 
 void game_play_free(game_play_state_t *game_play_state) {
   state_temp_t *state = game_play_state->state;
+  list_free(state->background);
   list_free(state->body_assets);
   scene_free(state->scene);
   asset_cache_destroy();
