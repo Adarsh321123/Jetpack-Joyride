@@ -108,12 +108,15 @@ body_t *make_user(double outer_radius, double inner_radius, vector_t center) {
 void on_key(char key, key_event_type_t type, double held_time, state_temp_t *state) {
   // TODO: no change if add top or bottom of screen
   body_t *user = scene_get_body(state->scene, 0);
+  fprintf(stderr, "after getting user\n");
   if (type == KEY_PRESSED) {
     if (key == SPACE_BAR) {
       body_set_velocity(user, USER_VEL);
+      fprintf(stderr, "space bar hit\n");
     }
   } else {
     body_set_velocity(user, vec_negate(USER_VEL));
+    fprintf(stderr, "no space bar hit\n");
   }
 }
 
