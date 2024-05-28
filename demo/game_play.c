@@ -277,7 +277,7 @@ bool game_play_main(game_play_state_t *game_play_state) {
 
   scene_tick(state->scene, dt);
   body_t *user = scene_get_body(game_play_state->state->scene, 0);
-  fprintf(stderr, "y of the user %d\n", body_get_centroid(user).y);
+  fprintf(stderr, "y of the user %f\n", body_get_centroid(user).y);
   return false;
 }
 
