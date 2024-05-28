@@ -229,11 +229,12 @@ static void background_update(background_state_t *state, double dt) {
 
 game_play_state_t *game_play_init() {
   game_play_state_t *game_play_state = malloc(sizeof(game_play_state_t));
-  assert(game_play_state);
+  assert(game_play_state != NULL);
 
   asset_cache_init();
   sdl_init(MIN, MAX);
   state_temp_t *state = malloc(sizeof(state_temp_t));
+  assert(state != NULL);
 
   state->scene = scene_init();
   state->body_assets = list_init(1, (free_func_t)asset_destroy);
@@ -275,6 +276,7 @@ bool game_play_main(game_play_state_t *game_play_state) {
   sdl_show();
 
   scene_tick(state->scene, dt);
+  sdl_render_scene(state->scene, NULL);
   return false;
 }
 
