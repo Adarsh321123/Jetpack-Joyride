@@ -105,11 +105,11 @@ body_t *make_user(double outer_radius, double inner_radius, vector_t center) {
  * down
  * @param state the current state of game
  */
-void on_key(char key, key_event_type_t type, double held_time, game_play_state_t *state) {
+void on_key(char key, key_event_type_t type, double held_time, game_play_state_t *game_play_state) {
   // TODO: no change if add top or bottom of screen
   fprintf(stderr, "before getting user\n");
-  fprintf(stderr, "scene_bodies inside: %zu\n", scene_bodies(state->scene));
-  body_t *user = scene_get_body(state->scene, 0);
+  fprintf(stderr, "scene_bodies inside: %zu\n", scene_bodies(game_play_state->state->scene));
+  body_t *user = scene_get_body(game_play_state->state->scene, 0);
   fprintf(stderr, "after getting user\n");
   if (type == KEY_PRESSED) {
     if (key == SPACE_BAR) {
