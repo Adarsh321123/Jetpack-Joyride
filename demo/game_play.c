@@ -18,7 +18,6 @@ const double WEDGE_ANGLE = 3.6 * M_PI / 3;
 const double INCREMENT_ANGLE = 0.1;
 const double RADIUS = 40;
 const double BULLET_RADIUS = 10;
-const double ELASTICITY = 1;
 
 const vector_t START_POS = {500, 30};
 const vector_t RESET_POS = {500, 45};
@@ -58,6 +57,8 @@ const size_t CIRC_NPOINTS = 4;
 const size_t BODY_ASSETS = 2;
 const size_t USER_NUM_POINTS = 20;
 const rgb_color_t user_color = (rgb_color_t){0.1, 0.9, 0.2};
+const double WALL_DIM = 1;
+rgb_color_t white = (rgb_color_t){1, 1, 1};
 
 const char *USER_IMG_PATH = "assets/Barry.png";
 const char *LOG_PATH = "assets/log.png";
@@ -83,12 +84,6 @@ struct game_play_state {
   state_temp_t *state;
 };
 
-typedef enum { BALL, WALL, BRICK, GROUND } body_type_t;
-
-body_type_t get_type(body_t *body) {
-  return *(body_type_t *)body_get_info(body);
-}
-
 body_t *make_user(double outer_radius, double inner_radius, vector_t center) {
   center.y += inner_radius;
   list_t *c = list_init(USER_NUM_POINTS, free);
@@ -101,6 +96,43 @@ body_t *make_user(double outer_radius, double inner_radius, vector_t center) {
   }
   body_t *user = body_init(c, 1, user_color);
   return user;
+}
+
+typedef enum { WALL, GROUND } body_type_t;
+
+body_type_t *make_type_info(body_type_t type) {
+  body_type_t *info = malloc(sizeof(body_type_t));
+  assert(info != NULL);
+  *info = type;
+  return info;
+}
+
+/**
+ * Adds walls as bodies to the scene.
+ *
+ * @param state the current state of the demo
+ */
+void add_walls(state_temp_t *state) {
+  list_t *wall1_shape =
+      make_rectangle((vector_t){MAX.x, MAX.y / 2}, WALL_DIM, MAX.y);
+  body_t *wall1 = body_init_with_info(wall1_shape, INFINITY, white,
+                                      make_type_info(WALL), free);
+  list_t *wall2_shape =
+      make_rectangle((vector_t){0, MAX.y / 2}, WALL_DIM, MAX.y);
+  body_t *wall2 = body_init_with_info(wall2_shape, INFINITY, white,
+                                      make_type_info(WALL), free);
+  list_t *ceiling_shape =
+      make_rectangle((vector_t){MAX.x / 2, MAX.y}, MAX.x, WALL_DIM);
+  body_t *ceiling = body_init_with_info(ceiling_shape, INFINITY, white,
+                                        make_type_info(WALL), free);
+  list_t *ground_shape =
+      make_rectangle((vector_t){MAX.x / 2, 0}, MAX.x, WALL_DIM);
+  body_t *ground = body_init_with_info(ground_shape, INFINITY, white,
+                                       make_type_info(GROUND), free);
+  scene_add_body(state->scene, wall1);
+  scene_add_body(state->scene, wall2);
+  scene_add_body(state->scene, ceiling);
+  scene_add_body(state->scene, ground);
 }
 
 /**
@@ -153,32 +185,6 @@ static void background_update(background_state_t *state, double dt) {
   state->bg2->bounding_box.x = state->bg_offset + WINDOW_WIDTH;
 }
 
-/**
- * Adds collision handler force creators between appropriate bodies.
- *
- * @param state the current state of the demo
- */
-void add_force_creators(game_play_state_t *game_play_state) {
-  fprintf(stderr, "scene_bodies inside: %zu\n", scene_bodies(game_play_state->state->scene));
-  body_t *user = scene_get_body(game_play_state->state->scene, 0);
-  fprintf(stderr, "after getting force\n");
-  size_t num_bodies = scene_bodies(game_play_state->state->scene);
-  for (size_t i = 0; i < num_bodies; i++) {
-    body_t *body = scene_get_body(game_play_state->state->scene, i);
-    switch (get_type(body)) {
-    case WALL:
-      create_physics_collision(game_play_state->state->scene, user, body, ELASTICITY);
-      break;
-    case GROUND:
-      create_collision(game_play_state->state->scene, user, body, NULL, game_play_state->state,
-                       ELASTICITY);
-      break;
-    default:
-      break;
-    }
-  }
-}
-
 game_play_state_t *game_play_init() {
   game_play_state_t *game_play_state = malloc(sizeof(game_play_state_t));
   assert(game_play_state);
@@ -198,7 +204,7 @@ game_play_state_t *game_play_init() {
   fprintf(stderr, "scene_bodies: %zu\n", scene_bodies(state->scene));
   sdl_on_key((key_handler_t)on_key);
   state->background_state = background_init(BACKGROUND_PATH);
-  add_force_creators(game_play_state);
+  add_walls(game_play_state->state);
 
   game_play_state->state = state;
   game_play_state->time = 0;
