@@ -276,6 +276,7 @@ bool game_play_main(game_play_state_t *game_play_state) {
   sdl_show();
 
   scene_tick(state->scene, dt);
+  fprintf(stderr, "y of the user %d\n", game_play_state->state->user->bounding_box.y);
   return false;
 }
 
