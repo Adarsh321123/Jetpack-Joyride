@@ -276,7 +276,6 @@ bool game_play_main(game_play_state_t *game_play_state) {
   sdl_show();
 
   scene_tick(state->scene, dt);
-  sdl_render_scene(state->scene, NULL);
   return false;
 }
 
