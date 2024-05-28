@@ -9,7 +9,10 @@
 
 typedef enum { ASSET_IMAGE, ASSET_FONT, ASSET_BUTTON } asset_type_t;
 
-typedef struct asset asset_t;
+typedef struct asset {
+  asset_type_t type;
+  SDL_Rect bounding_box;
+} asset_t;
 
 /**
  * Gets the `asset_type_t` of the asset.
@@ -27,6 +30,8 @@ asset_type_t asset_get_type(asset_t *asset);
  * @return a pointer to the newly allocated image asset
  */
 asset_t *asset_make_image(const char *filepath, SDL_Rect bounding_box);
+
+asset_t *asset_update_bounding_box(asset_t *image, double dt);
 
 /**
  * Allocates memory for an image asset with an attached body. When the asset
