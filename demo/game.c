@@ -18,8 +18,6 @@ struct state {
   game_over_state_t *game_over_state;
 };
 
-void emscripten_free(state_t *state);
-
 void run_home(state_t *state) {
   home_state_t *home_state = state->home_state;
   if (!home_state) {
@@ -29,7 +27,6 @@ void run_home(state_t *state) {
   state_type_t next_state = home_main(home_state);
   if (sdl_is_done((void *)home_state)) {
     home_free(home_state);
-    emscripten_free(state);
     state->home_state = NULL;
   }
   else if (next_state != HOME) {
@@ -48,7 +45,6 @@ void run_game_play(state_t *state) {
   bool game_over = game_play_main(game_play_state);
   if (sdl_is_done((void *)game_play_state)) {
     game_play_free(game_play_state);
-    emscripten_free(state);
     state->game_play_state = NULL;
   }
   else if (game_over) {
@@ -67,7 +63,6 @@ void run_game_over(state_t *state) {
   state_type_t next_state = game_over_main(game_over_state);
   if (sdl_is_done((void *)game_over_state)) {
     game_over_free(game_over_state);
-    emscripten_free(state);
     state->game_over_state = NULL;
   }
   else if (next_state != GAME_OVER) {
