@@ -154,7 +154,6 @@ void add_walls(state_temp_t *state) {
       make_rectangle((vector_t){0, MAX.y / 2}, WALL_DIM, MAX.y);
   body_t *wall2 = body_init_with_info(wall2_shape, INFINITY, white,
                                       make_type_info(WALL), free);
-  fprintf(stderr, "wall %s\n", wall2);
   list_t *ceiling_shape =
       make_rectangle((vector_t){MAX.x / 2, MAX.y}, MAX.x, WALL_DIM);
   body_t *ceiling = body_init_with_info(ceiling_shape, INFINITY, white,
