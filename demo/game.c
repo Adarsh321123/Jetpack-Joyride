@@ -43,15 +43,15 @@ void run_game_play(state_t *state) {
     state->game_play_state = game_play_state;
   }
   bool game_over = game_play_main(game_play_state);
-  // if (sdl_is_done((void *)game_play_state)) {
-  //   game_play_free(game_play_state);
-  //   state->game_play_state = NULL;
-  // }
-  // else if (game_over) {
-  //   game_play_free(game_play_state);
-  //   state->game_play_state = NULL;
-  //   state->curr_state = GAME_OVER;
-  // }
+  if (sdl_is_done((void *)game_play_state)) {
+    game_play_free(game_play_state);
+    state->game_play_state = NULL;
+  }
+  else if (game_over) {
+    game_play_free(game_play_state);
+    state->game_play_state = NULL;
+    state->curr_state = GAME_OVER;
+  }
 }
 
 void run_game_over(state_t *state) {
