@@ -146,22 +146,31 @@ list_t *make_rectangle(vector_t center, double width, double height) {
  * @param state the current state of the demo
  */
 void add_walls(state_temp_t *state) {
+  // TODO: remove asserts
   list_t *wall1_shape =
       make_rectangle((vector_t){MAX.x, MAX.y / 2}, WALL_DIM, MAX.y);
+  assert(wall1_shape != NULL);
   body_t *wall1 = body_init_with_info(wall1_shape, INFINITY, white,
                                       make_type_info(WALL), free);
+  assert(wall1 != NULL);                                   
   list_t *wall2_shape =
       make_rectangle((vector_t){0, MAX.y / 2}, WALL_DIM, MAX.y);
+  assert(wall2_shape != NULL);
   body_t *wall2 = body_init_with_info(wall2_shape, INFINITY, white,
                                       make_type_info(WALL), free);
+  assert(wall2 != NULL);
   list_t *ceiling_shape =
       make_rectangle((vector_t){MAX.x / 2, MAX.y}, MAX.x, WALL_DIM);
+  assert(ceiling_shape != NULL);
   body_t *ceiling = body_init_with_info(ceiling_shape, INFINITY, white,
                                         make_type_info(WALL), free);
+  assert(ceiling != NULL);
   list_t *ground_shape =
       make_rectangle((vector_t){MAX.x / 2, 0}, MAX.x, WALL_DIM);
+  assert(ground_shape != NULL);
   body_t *ground = body_init_with_info(ground_shape, INFINITY, white,
                                        make_type_info(GROUND), free);
+  assert(ground != NULL);
   scene_add_body(state->scene, wall1);
   scene_add_body(state->scene, wall2);
   scene_add_body(state->scene, ceiling);
