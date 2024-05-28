@@ -246,6 +246,7 @@ game_play_state_t *game_play_init() {
   fprintf(stderr, "scene_bodies: %zu\n", scene_bodies(state->scene));
   sdl_on_key((key_handler_t)on_key);
   state->background_state = background_init(BACKGROUND_PATH);
+  game_play_state->state = state;
   add_walls(game_play_state->state);
 
   game_play_state->state = state;
