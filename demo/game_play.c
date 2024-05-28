@@ -107,6 +107,39 @@ body_type_t *make_type_info(body_type_t type) {
   return info;
 }
 
+/** Make a rectangle-shaped body object.
+ *
+ * @param center a vector representing the center of the body.
+ * @param width the width of the rectangle
+ * @param height the height of the rectangle
+ * @return pointer to the rectangle-shaped body
+ */
+list_t *make_rectangle(vector_t center, double width, double height) {
+  list_t *points = list_init(4, free);
+  vector_t *p1 = malloc(sizeof(vector_t));
+  assert(p1 != NULL);
+  *p1 = (vector_t){center.x - width / 2, center.y - height / 2};
+
+  vector_t *p2 = malloc(sizeof(vector_t));
+  assert(p2 != NULL);
+  *p2 = (vector_t){center.x + width / 2, center.y - height / 2};
+
+  vector_t *p3 = malloc(sizeof(vector_t));
+  assert(p3 != NULL);
+  *p3 = (vector_t){center.x + width / 2, center.y + height / 2};
+
+  vector_t *p4 = malloc(sizeof(vector_t));
+  assert(p4 != NULL);
+  *p4 = (vector_t){center.x - width / 2, center.y + height / 2};
+
+  list_add(points, p1);
+  list_add(points, p2);
+  list_add(points, p3);
+  list_add(points, p4);
+
+  return points;
+}
+
 /**
  * Adds walls as bodies to the scene.
  *
