@@ -180,7 +180,6 @@ void add_force_creators(game_play_state_t *game_play_state) {
 game_play_state_t *game_play_init() {
   game_play_state_t *game_play_state = malloc(sizeof(game_play_state_t));
   assert(game_play_state);
-  add_force_creators(game_play_state);
 
   asset_cache_init();
   sdl_init(MIN, MAX);
@@ -197,6 +196,7 @@ game_play_state_t *game_play_init() {
   fprintf(stderr, "scene_bodies: %zu\n", scene_bodies(state->scene));
   sdl_on_key((key_handler_t)on_key);
   state->background_state = background_init(BACKGROUND_PATH);
+  add_force_creators(game_play_state);
 
   game_play_state->state = state;
   game_play_state->time = 0;
