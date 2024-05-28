@@ -159,15 +159,16 @@ static void background_update(background_state_t *state, double dt) {
  * @param state the current state of the demo
  */
 void add_force_creators(game_play_state_t *game_play_state) {
+  body_t *user = scene_get_body(game_play_state->state->scene, 0);
   size_t num_bodies = scene_bodies(game_play_state->state->scene);
   for (size_t i = 0; i < num_bodies; i++) {
     body_t *body = scene_get_body(game_play_state->state->scene, i);
     switch (get_type(body)) {
     case WALL:
-      create_physics_collision(game_play_state->state->scene, game_play_state->state->user, body, ELASTICITY);
+      create_physics_collision(game_play_state->state->scene, user, body, ELASTICITY);
       break;
     case GROUND:
-      create_collision(game_play_state->state->scene, game_play_state->state->user, body, NULL, game_play_state->state,
+      create_collision(game_play_state->state->scene, user, body, NULL, game_play_state->state,
                        ELASTICITY);
       break;
     default:
