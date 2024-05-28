@@ -18,6 +18,8 @@ struct state {
   game_over_state_t *game_over_state;
 };
 
+void emscripten_free(state_t *state);
+
 void run_home(state_t *state) {
   home_state_t *home_state = state->home_state;
   if (!home_state) {
