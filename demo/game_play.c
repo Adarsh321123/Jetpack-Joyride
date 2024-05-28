@@ -159,7 +159,9 @@ static void background_update(background_state_t *state, double dt) {
  * @param state the current state of the demo
  */
 void add_force_creators(game_play_state_t *game_play_state) {
+  fprintf(stderr, "scene_bodies inside: %zu\n", scene_bodies(game_play_state->state->scene));
   body_t *user = scene_get_body(game_play_state->state->scene, 0);
+  fprintf(stderr, "after getting force\n");
   size_t num_bodies = scene_bodies(game_play_state->state->scene);
   for (size_t i = 0; i < num_bodies; i++) {
     body_t *body = scene_get_body(game_play_state->state->scene, i);
