@@ -89,7 +89,6 @@ struct state_temp {
 
 struct game_play_state {
   double time;
-  state_type_t curr_state;
   state_temp_t *state;
 };
 
@@ -169,18 +168,18 @@ body_t *make_zapper(vector_t center, double width, double height) {
  */
 void add_walls(state_temp_t *state) {
   // TODO: remove asserts
-  // list_t *wall1_shape =
-  //     make_rectangle((vector_t){MAX.x, MAX.y / 2}, WALL_DIM, MAX.y);
-  // assert(wall1_shape != NULL);
-  // body_t *wall1 = body_init_with_info(wall1_shape, INFINITY, white,
-  //                                     make_type_info(WALL), free);
-  // assert(wall1 != NULL);                                   
-  // list_t *wall2_shape =
-  //     make_rectangle((vector_t){0, MAX.y / 2}, WALL_DIM, MAX.y);
-  // assert(wall2_shape != NULL);
-  // body_t *wall2 = body_init_with_info(wall2_shape, INFINITY, white,
-  //                                     make_type_info(WALL), free);
-  // assert(wall2 != NULL);
+  list_t *wall1_shape =
+      make_rectangle((vector_t){MAX.x, MAX.y / 2}, WALL_DIM, MAX.y);
+  assert(wall1_shape != NULL);
+  body_t *wall1 = body_init_with_info(wall1_shape, INFINITY, white,
+                                      make_type_info(WALL), free);
+  assert(wall1 != NULL);                                   
+  list_t *wall2_shape =
+      make_rectangle((vector_t){0, MAX.y / 2}, WALL_DIM, MAX.y);
+  assert(wall2_shape != NULL);
+  body_t *wall2 = body_init_with_info(wall2_shape, INFINITY, white,
+                                      make_type_info(WALL), free);
+  assert(wall2 != NULL);
   list_t *ceiling_shape =
       make_rectangle((vector_t){MAX.x / 2, MAX.y - 100}, MAX.x, WALL_DIM);
   assert(ceiling_shape != NULL);
@@ -193,8 +192,8 @@ void add_walls(state_temp_t *state) {
   body_t *ground = body_init_with_info(ground_shape, INFINITY, white,
                                        make_type_info(GROUND), free);
   assert(ground != NULL);
-  // scene_add_body(state->scene, wall1);
-  // scene_add_body(state->scene, wall2);
+  scene_add_body(state->scene, wall1);
+  scene_add_body(state->scene, wall2);
   scene_add_body(state->scene, ceiling);
   scene_add_body(state->scene, ground);
 }
@@ -301,8 +300,8 @@ game_play_state_t *game_play_init() {
 void game_over(body_t *body1, body_t *body2, vector_t axis, void *aux,
                         double force_const) {
   fprintf(stderr, "game over!\n");
-  game_play_state_t *game_play_state = (game_play_state_t *) aux;
-  game_play_state->curr_state = GAME_OVER;
+  // game_play_state_t *game_play_state = (game_play_state_t *) aux;
+  // game_play_state->curr_state = GAME_OVER;
 }
 
 void add_zapper(game_play_state_t *game_play_state, double dt) {
@@ -327,7 +326,7 @@ void add_zapper(game_play_state_t *game_play_state, double dt) {
   }
 }
 
-state_type_t game_play_main(game_play_state_t *game_play_state) {
+bool game_play_main(game_play_state_t *game_play_state) {
 
   double dt = time_since_last_tick();
   state_temp_t *state = game_play_state->state;
@@ -351,7 +350,7 @@ state_type_t game_play_main(game_play_state_t *game_play_state) {
   scene_tick(state->scene, dt);
   // body_t *user = scene_get_body(game_play_state->state->scene, 0);
   // fprintf(stderr, "y of the user %f\n", body_get_centroid(user).y);
-  return game_play_state->curr_state;
+  return false;
 }
 
 void game_play_free(game_play_state_t *game_play_state) {
