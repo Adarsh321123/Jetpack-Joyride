@@ -89,6 +89,7 @@ struct state_temp {
 
 struct game_play_state {
   double time;
+  state_type_t curr_state;
   state_temp_t *state;
 };
 
@@ -291,6 +292,7 @@ game_play_state_t *game_play_init() {
   game_play_state->state = state;
   add_walls(game_play_state->state);
   add_force_creators(game_play_state);
+  game_play_state->curr_state = GAME_PLAY;
 
   game_play_state->state = state;
   game_play_state->time = 0;
@@ -300,8 +302,8 @@ game_play_state_t *game_play_init() {
 void game_over(body_t *body1, body_t *body2, vector_t axis, void *aux,
                         double force_const) {
   fprintf(stderr, "game over!\n");
-  // game_play_state_t *game_play_state = (game_play_state_t *) aux;
-  // game_play_state->curr_state = GAME_OVER;
+  game_play_state_t *game_play_state = (game_play_state_t *) aux;
+  game_play_state->curr_state = GAME_OVER;
 }
 
 void add_zapper(game_play_state_t *game_play_state, double dt) {
@@ -326,7 +328,7 @@ void add_zapper(game_play_state_t *game_play_state, double dt) {
   }
 }
 
-bool game_play_main(game_play_state_t *game_play_state) {
+state_type_t game_play_main(game_play_state_t *game_play_state) {
 
   double dt = time_since_last_tick();
   state_temp_t *state = game_play_state->state;
@@ -350,19 +352,19 @@ bool game_play_main(game_play_state_t *game_play_state) {
   scene_tick(state->scene, dt);
   // body_t *user = scene_get_body(game_play_state->state->scene, 0);
   // fprintf(stderr, "y of the user %f\n", body_get_centroid(user).y);
-  return false;
+  return game_play_state->curr_state;
 }
 
 void game_play_free(game_play_state_t *game_play_state) {
-  state_temp_t *state = game_play_state->state;
-  asset_destroy(state->background_state->bg1);
-  asset_destroy(state->background_state->bg1);
-  free(state->background_state);
-  list_free(state->body_assets);
-  scene_free(state->scene);
-  asset_cache_destroy();
-  free(state);
-  //TTF_Quit();
-  //asset_cache_destroy();
-  free(game_play_state);
+  // state_temp_t *state = game_play_state->state;
+  // asset_destroy(state->background_state->bg1);
+  // asset_destroy(state->background_state->bg1);
+  // free(state->background_state);
+  // list_free(state->body_assets);
+  // scene_free(state->scene);
+  // asset_cache_destroy();
+  // free(state);
+  // //TTF_Quit();
+  // //asset_cache_destroy();
+  // free(game_play_state);
 }

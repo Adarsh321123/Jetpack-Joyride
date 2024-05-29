@@ -42,15 +42,15 @@ void run_game_play(state_t *state) {
     game_play_state = game_play_init();
     state->game_play_state = game_play_state;
   }
-  bool game_over = game_play_main(game_play_state);
+  state_type_t next_state = game_play_main(game_play_state);
   if (sdl_is_done((void *)game_play_state)) {
     game_play_free(game_play_state);
     state->game_play_state = NULL;
   }
-  else if (game_over) {
+  else if (next_state != GAME_PLAY) {
     game_play_free(game_play_state);
     state->game_play_state = NULL;
-    state->curr_state = GAME_OVER;
+    state->curr_state = next_state;
   }
 }
 
