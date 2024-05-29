@@ -18,6 +18,7 @@ const double WEDGE_ANGLE = 3.6 * M_PI / 3;
 const double INCREMENT_ANGLE = 0.1;
 const double RADIUS = 40;
 const double BULLET_RADIUS = 10;
+const double ELASTICITY = 0;
 
 const vector_t START_POS = {500, 30};
 const vector_t RESET_POS = {500, 45};
@@ -57,6 +58,8 @@ const size_t CIRC_NPOINTS = 4;
 const size_t BODY_ASSETS = 2;
 const size_t USER_NUM_POINTS = 20;
 const rgb_color_t user_color = (rgb_color_t){0.1, 0.9, 0.2};
+const double WALL_DIM = 1;
+rgb_color_t white = (rgb_color_t){1, 1, 1};
 
 const char *USER_IMG_PATH = "assets/Barry.png";
 const char *LOG_PATH = "assets/log.png";
@@ -96,6 +99,89 @@ body_t *make_user(double outer_radius, double inner_radius, vector_t center) {
   return user;
 }
 
+typedef enum { WALL, GROUND } body_type_t;
+
+body_type_t *make_type_info(body_type_t type) {
+  body_type_t *info = malloc(sizeof(body_type_t));
+  assert(info != NULL);
+  *info = type;
+  return info;
+}
+
+body_type_t get_type(body_t *body) {
+  return *(body_type_t *)body_get_info(body);
+}
+
+/** Make a rectangle-shaped body object.
+ *
+ * @param center a vector representing the center of the body.
+ * @param width the width of the rectangle
+ * @param height the height of the rectangle
+ * @return pointer to the rectangle-shaped body
+ */
+list_t *make_rectangle(vector_t center, double width, double height) {
+  list_t *points = list_init(4, free);
+  vector_t *p1 = malloc(sizeof(vector_t));
+  assert(p1 != NULL);
+  *p1 = (vector_t){center.x - width / 2, center.y - height / 2};
+
+  vector_t *p2 = malloc(sizeof(vector_t));
+  assert(p2 != NULL);
+  *p2 = (vector_t){center.x + width / 2, center.y - height / 2};
+
+  vector_t *p3 = malloc(sizeof(vector_t));
+  assert(p3 != NULL);
+  *p3 = (vector_t){center.x + width / 2, center.y + height / 2};
+
+  vector_t *p4 = malloc(sizeof(vector_t));
+  assert(p4 != NULL);
+  *p4 = (vector_t){center.x - width / 2, center.y + height / 2};
+
+  list_add(points, p1);
+  list_add(points, p2);
+  list_add(points, p3);
+  list_add(points, p4);
+
+  return points;
+}
+
+/**
+ * Adds walls as bodies to the scene.
+ *
+ * @param state the current state of the demo
+ */
+void add_walls(state_temp_t *state) {
+  // TODO: remove asserts
+  list_t *wall1_shape =
+      make_rectangle((vector_t){MAX.x, MAX.y / 2}, WALL_DIM, MAX.y);
+  assert(wall1_shape != NULL);
+  body_t *wall1 = body_init_with_info(wall1_shape, INFINITY, white,
+                                      make_type_info(WALL), free);
+  assert(wall1 != NULL);                                   
+  list_t *wall2_shape =
+      make_rectangle((vector_t){0, MAX.y / 2}, WALL_DIM, MAX.y);
+  assert(wall2_shape != NULL);
+  body_t *wall2 = body_init_with_info(wall2_shape, INFINITY, white,
+                                      make_type_info(WALL), free);
+  assert(wall2 != NULL);
+  list_t *ceiling_shape =
+      make_rectangle((vector_t){MAX.x / 2, MAX.y - 100}, MAX.x, WALL_DIM);
+  assert(ceiling_shape != NULL);
+  body_t *ceiling = body_init_with_info(ceiling_shape, INFINITY, white,
+                                        make_type_info(WALL), free);
+  assert(ceiling != NULL);
+  list_t *ground_shape =
+      make_rectangle((vector_t){MAX.x / 2, MIN.y + 100}, MAX.x, WALL_DIM);
+  assert(ground_shape != NULL);
+  body_t *ground = body_init_with_info(ground_shape, INFINITY, white,
+                                       make_type_info(GROUND), free);
+  assert(ground != NULL);
+  scene_add_body(state->scene, wall1);
+  scene_add_body(state->scene, wall2);
+  scene_add_body(state->scene, ceiling);
+  scene_add_body(state->scene, ground);
+}
+
 /**
  * Move user up if space bar is pressed and back down otherwise
  *
@@ -105,11 +191,11 @@ body_t *make_user(double outer_radius, double inner_radius, vector_t center) {
  * down
  * @param state the current state of game
  */
-void on_key(char key, key_event_type_t type, double held_time, state_temp_t *state) {
+void on_key(char key, key_event_type_t type, double held_time, game_play_state_t *game_play_state) {
   // TODO: no change if add top or bottom of screen
   fprintf(stderr, "before getting user\n");
-  fprintf(stderr, "scene_bodies inside: %zu\n", scene_bodies(state->scene));
-  body_t *user = scene_get_body(state->scene, 0);
+  fprintf(stderr, "scene_bodies inside: %zu\n", scene_bodies(game_play_state->state->scene));
+  body_t *user = scene_get_body(game_play_state->state->scene, 0);
   fprintf(stderr, "after getting user\n");
   if (type == KEY_PRESSED) {
     if (key == SPACE_BAR) {
@@ -146,13 +232,32 @@ static void background_update(background_state_t *state, double dt) {
   state->bg2->bounding_box.x = state->bg_offset + WINDOW_WIDTH;
 }
 
+/**
+ * Adds collision handler force creators between appropriate bodies.
+ *
+ * @param state the current state of the demo
+ */
+void add_force_creators(game_play_state_t *game_play_state) {
+  size_t num_bodies = scene_bodies(game_play_state->state->scene);
+  fprintf(stderr, "num bodies fcs: %zu\n", num_bodies);
+  body_t *user = scene_get_body(game_play_state->state->scene, 0);
+  for (size_t i = 0; i < num_bodies; i++) {
+    body_t *body = scene_get_body(game_play_state->state->scene, i);
+    // if (get_type(body) == WALL || get_type(body) == GROUND) {
+    //   create_physics_collision(game_play_state->state->scene, useçr, body, ELASTICITY);
+    // }
+    create_physics_collision(game_play_state->state->scene, user, body, ELASTICITY);
+  }
+}
+
 game_play_state_t *game_play_init() {
   game_play_state_t *game_play_state = malloc(sizeof(game_play_state_t));
-  assert(game_play_state);
+  assert(game_play_state != NULL);
 
   asset_cache_init();
   sdl_init(MIN, MAX);
   state_temp_t *state = malloc(sizeof(state_temp_t));
+  assert(state != NULL);
 
   state->scene = scene_init();
   state->body_assets = list_init(1, (free_func_t)asset_destroy);
@@ -165,6 +270,9 @@ game_play_state_t *game_play_init() {
   fprintf(stderr, "scene_bodies: %zu\n", scene_bodies(state->scene));
   sdl_on_key((key_handler_t)on_key);
   state->background_state = background_init(BACKGROUND_PATH);
+  game_play_state->state = state;
+  add_walls(game_play_state->state);
+  add_force_creators(game_play_state);
 
   game_play_state->state = state;
   game_play_state->time = 0;
@@ -192,6 +300,8 @@ bool game_play_main(game_play_state_t *game_play_state) {
   sdl_show();
 
   scene_tick(state->scene, dt);
+  body_t *user = scene_get_body(game_play_state->state->scene, 0);
+  fprintf(stderr, "y of the user %f\n", body_get_centroid(user).y);
   return false;
 }
 
