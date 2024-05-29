@@ -239,6 +239,7 @@ static void background_update(background_state_t *state, double dt) {
  */
 void add_force_creators(game_play_state_t *game_play_state) {
   size_t num_bodies = scene_bodies(game_play_state->state->scene);
+  fprintf(stderr, "num bodies: %d\n", num_bodies);
   body_t *user = scene_get_body(game_play_state->state->scene, 0);
   for (size_t i = 0; i < num_bodies; i++) {
     body_t *body = scene_get_body(game_play_state->state->scene, i);
