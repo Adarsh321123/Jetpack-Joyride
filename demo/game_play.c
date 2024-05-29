@@ -89,6 +89,7 @@ struct state_temp {
 
 struct game_play_state {
   double time;
+  state_type_t curr_state;
   state_temp_t *state;
 };
 
@@ -168,18 +169,18 @@ body_t *make_zapper(vector_t center, double width, double height) {
  */
 void add_walls(state_temp_t *state) {
   // TODO: remove asserts
-  list_t *wall1_shape =
-      make_rectangle((vector_t){MAX.x, MAX.y / 2}, WALL_DIM, MAX.y);
-  assert(wall1_shape != NULL);
-  body_t *wall1 = body_init_with_info(wall1_shape, INFINITY, white,
-                                      make_type_info(WALL), free);
-  assert(wall1 != NULL);                                   
-  list_t *wall2_shape =
-      make_rectangle((vector_t){0, MAX.y / 2}, WALL_DIM, MAX.y);
-  assert(wall2_shape != NULL);
-  body_t *wall2 = body_init_with_info(wall2_shape, INFINITY, white,
-                                      make_type_info(WALL), free);
-  assert(wall2 != NULL);
+  // list_t *wall1_shape =
+  //     make_rectangle((vector_t){MAX.x, MAX.y / 2}, WALL_DIM, MAX.y);
+  // assert(wall1_shape != NULL);
+  // body_t *wall1 = body_init_with_info(wall1_shape, INFINITY, white,
+  //                                     make_type_info(WALL), free);
+  // assert(wall1 != NULL);                                   
+  // list_t *wall2_shape =
+  //     make_rectangle((vector_t){0, MAX.y / 2}, WALL_DIM, MAX.y);
+  // assert(wall2_shape != NULL);
+  // body_t *wall2 = body_init_with_info(wall2_shape, INFINITY, white,
+  //                                     make_type_info(WALL), free);
+  // assert(wall2 != NULL);
   list_t *ceiling_shape =
       make_rectangle((vector_t){MAX.x / 2, MAX.y - 100}, MAX.x, WALL_DIM);
   assert(ceiling_shape != NULL);
@@ -192,8 +193,8 @@ void add_walls(state_temp_t *state) {
   body_t *ground = body_init_with_info(ground_shape, INFINITY, white,
                                        make_type_info(GROUND), free);
   assert(ground != NULL);
-  scene_add_body(state->scene, wall1);
-  scene_add_body(state->scene, wall2);
+  // scene_add_body(state->scene, wall1);
+  // scene_add_body(state->scene, wall2);
   scene_add_body(state->scene, ceiling);
   scene_add_body(state->scene, ground);
 }
@@ -209,18 +210,18 @@ void add_walls(state_temp_t *state) {
  */
 void on_key(char key, key_event_type_t type, double held_time, game_play_state_t *game_play_state) {
   // TODO: no change if add top or bottom of screen
-  fprintf(stderr, "before getting user\n");
-  fprintf(stderr, "scene_bodies inside: %zu\n", scene_bodies(game_play_state->state->scene));
+  // fprintf(stderr, "before getting user\n");
+  // fprintf(stderr, "scene_bodies inside: %zu\n", scene_bodies(game_play_state->state->scene));
   body_t *user = scene_get_body(game_play_state->state->scene, 0);
-  fprintf(stderr, "after getting user\n");
+  // fprintf(stderr, "after getting user\n");
   if (type == KEY_PRESSED) {
     if (key == SPACE_BAR) {
       body_set_velocity(user, USER_VEL);
-      fprintf(stderr, "space bar hit\n");
+      // fprintf(stderr, "space bar hit\n");
     }
   } else {
     body_set_velocity(user, vec_negate(USER_VEL));
-    fprintf(stderr, "no space bar hit\n");
+    // fprintf(stderr, "no space bar hit\n");
   }
 }
 
@@ -255,10 +256,11 @@ static void background_update(background_state_t *state, double dt) {
  */
 void add_force_creators(game_play_state_t *game_play_state) {
   size_t num_bodies = scene_bodies(game_play_state->state->scene);
-  fprintf(stderr, "num bodies fcs: %zu\n", num_bodies);
+  // fprintf(stderr, "num bodies fcs: %zu\n", num_bodies);
   body_t *user = scene_get_body(game_play_state->state->scene, 0);
   for (size_t i = 0; i < num_bodies; i++) {
     body_t *body = scene_get_body(game_play_state->state->scene, i);
+    // TODO: come back to this
     // if (get_type(body) == WALL || get_type(body) == GROUND) {
     //   create_physics_collision(game_play_state->state->scene, useçr, body, ELASTICITY);
     // }
@@ -272,6 +274,7 @@ game_play_state_t *game_play_init() {
 
   asset_cache_init();
   sdl_init(MIN, MAX);
+  srand(time(NULL));
   state_temp_t *state = malloc(sizeof(state_temp_t));
   assert(state != NULL);
 
@@ -283,7 +286,7 @@ game_play_state_t *game_play_init() {
   scene_add_body(state->scene, user);
   asset_t *img = asset_make_image_with_body(USER_IMG_PATH, user);
   list_add(state->body_assets, img);
-  fprintf(stderr, "scene_bodies: %zu\n", scene_bodies(state->scene));
+  // fprintf(stderr, "scene_bodies: %zu\n", scene_bodies(state->scene));
   sdl_on_key((key_handler_t)on_key);
   state->background_state = background_init(BACKGROUND_PATH);
   game_play_state->state = state;
@@ -295,22 +298,36 @@ game_play_state_t *game_play_init() {
   return game_play_state;
 }
 
+void game_over(body_t *body1, body_t *body2, vector_t axis, void *aux,
+                        double force_const) {
+  fprintf(stderr, "game over!\n");
+  game_play_state_t *game_play_state = (game_play_state_t *) aux;
+  game_play_state->curr_state = GAME_OVER;
+}
+
 void add_zapper(game_play_state_t *game_play_state, double dt) {
   game_play_state->time += dt;
   if (game_play_state->time >= ZAPPER_GENERATION_TIME) {
     fprintf(stderr, "added zapper!\n");
     game_play_state->time = 0;
-    double y_pos = fmod(rand(), MAX.y - MIN.y);
-    double x_pos = MAX.x + 50;
+    // TODO: ensure that positions are reasonable
+    double y_pos = fmod(rand(), MAX.y - MIN.y) + 50;
+    double x_pos = MAX.x + 15;
     vector_t center = {.x = x_pos, .y = y_pos};
     body_t *zapper = make_zapper(center, ZAPPER_WIDTH, ZAPPER_HEIGHT);
     scene_add_body(game_play_state->state->scene, zapper);
     asset_t *img = asset_make_image_with_body(ZAPPER_PATH, zapper);
     list_add(game_play_state->state->body_assets, img);
+    body_t *user = scene_get_body(game_play_state->state->scene, 0);
+    assert(user);
+    // fprintf(stderr, "before collision\n");
+    create_collision(game_play_state->state->scene, zapper, user, game_over, game_play_state,
+                       0);
+    // fprintf(stderr, "after collision\n");
   }
 }
 
-bool game_play_main(game_play_state_t *game_play_state) {
+state_type_t game_play_main(game_play_state_t *game_play_state) {
 
   double dt = time_since_last_tick();
   state_temp_t *state = game_play_state->state;
@@ -332,9 +349,9 @@ bool game_play_main(game_play_state_t *game_play_state) {
   sdl_show();
 
   scene_tick(state->scene, dt);
-  body_t *user = scene_get_body(game_play_state->state->scene, 0);
-  fprintf(stderr, "y of the user %f\n", body_get_centroid(user).y);
-  return false;
+  // body_t *user = scene_get_body(game_play_state->state->scene, 0);
+  // fprintf(stderr, "y of the user %f\n", body_get_centroid(user).y);
+  return game_play_state->curr_state;
 }
 
 void game_play_free(game_play_state_t *game_play_state) {
