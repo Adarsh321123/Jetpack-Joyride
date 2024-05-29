@@ -26,7 +26,7 @@ game_play_state_t *game_play_init();
  * @param game_play_state pointer to a state object
  * @return the current state that the game is in
  */
-state_type_t game_play_main(game_play_state_t *game_play_state);
+bool game_play_main(game_play_state_t *game_play_state);
 
 /**
  * Frees anything allocated in the game
