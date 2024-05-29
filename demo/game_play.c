@@ -18,6 +18,7 @@ const double WEDGE_ANGLE = 3.6 * M_PI / 3;
 const double INCREMENT_ANGLE = 0.1;
 const double RADIUS = 40;
 const double BULLET_RADIUS = 10;
+const double ELASTICITY = 0;
 
 const vector_t START_POS = {500, 30};
 const vector_t RESET_POS = {500, 45};
@@ -227,6 +228,30 @@ static void background_update(background_state_t *state, double dt) {
   state->bg2->bounding_box.x = state->bg_offset + WINDOW_WIDTH;
 }
 
+/**
+ * Adds collision handler force creators between appropriate bodies.
+ *
+ * @param state the current state of the demo
+ */
+void add_force_creators(game_play_state_t *game_play_state) {
+  size_t num_bodies = scene_bodies(game_play_state->state->scene);
+  body_t *user = scene_get_body(game_play_state->state->scene, 0);
+  for (size_t i = 0; i < num_bodies; i++) {
+    body_t *body = scene_get_body(game_play_state->state->scene, i);
+    switch (get_type(body)) {
+    case WALL:
+      create_physics_collision(game_play_state->state->scene, user, body, ELASTICITY);
+      break;
+    case GROUND:
+      create_collision(game_play_state->state->scene, user, body, NULL, game_play_state->state,
+                       ELASTICITY);
+      break;
+    default:
+      break;
+    }
+  }
+}
+
 game_play_state_t *game_play_init() {
   game_play_state_t *game_play_state = malloc(sizeof(game_play_state_t));
   assert(game_play_state != NULL);
@@ -249,6 +274,7 @@ game_play_state_t *game_play_init() {
   state->background_state = background_init(BACKGROUND_PATH);
   game_play_state->state = state;
   add_walls(game_play_state->state);
+  add_force_creators(game_play_state);
 
   game_play_state->state = state;
   game_play_state->time = 0;
