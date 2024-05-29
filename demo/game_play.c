@@ -243,15 +243,8 @@ void add_force_creators(game_play_state_t *game_play_state) {
   body_t *user = scene_get_body(game_play_state->state->scene, 0);
   for (size_t i = 0; i < num_bodies; i++) {
     body_t *body = scene_get_body(game_play_state->state->scene, i);
-    switch (get_type(body)) {
-    case WALL:
+    if (get_type(body) == WALL || get_type(body) == GROUND) {
       create_physics_collision(game_play_state->state->scene, user, body, ELASTICITY);
-      break;
-    case GROUND:
-      create_physics_collision(game_play_state->state->scene, user, body, ELASTICITY);
-      break;
-    default:
-      break;
     }
   }
 }
