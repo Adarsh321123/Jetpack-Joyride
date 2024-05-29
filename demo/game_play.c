@@ -248,8 +248,7 @@ void add_force_creators(game_play_state_t *game_play_state) {
       create_physics_collision(game_play_state->state->scene, user, body, ELASTICITY);
       break;
     case GROUND:
-      create_collision(game_play_state->state->scene, user, body, NULL, game_play_state->state,
-                       ELASTICITY);
+      create_physics_collision(game_play_state->state->scene, user, body, ELASTICITY);
       break;
     default:
       break;
