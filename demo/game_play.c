@@ -25,6 +25,7 @@ const vector_t RESET_POS = {500, 45};
 const vector_t INVADER_BULLET_VEL = {0, -200};
 const vector_t USER_VEL = {0, 200};
 const vector_t BASE_OBJ_VEL = {30, 0};
+const vector_t ZAPPER_VEL = {-100, 0};
 const double EXTRA_VEL_MULT = 10;
 const double VEL_MULT_PROB = 0.2;
 
@@ -38,6 +39,8 @@ const double ACCEL = 100;
 
 const double OUTER_RADIUS = 15;
 const double INNER_RADIUS = 15;
+const double ZAPPER_WIDTH = 50;
+const double ZAPPER_HEIGHT = 100;
 const size_t OBSTACLE_HEIGHT = 30;
 const vector_t OBS_WIDTHS = {30, 70};
 const vector_t OBS_SPACING = {120, 350};
@@ -61,9 +64,13 @@ const rgb_color_t user_color = (rgb_color_t){0.1, 0.9, 0.2};
 const double WALL_DIM = 1;
 rgb_color_t white = (rgb_color_t){1, 1, 1};
 
+// TODO: change based on difficulty
+const double ZAPPER_GENERATION_TIME = 5;
+
 const char *USER_IMG_PATH = "assets/Barry.png";
 const char *LOG_PATH = "assets/log.png";
 const char *BACKGROUND_PATH = "assets/BackdropMain.png";
+const char *ZAPPER_PATH = "assets/Zapper1.png";
 
 struct background_state {
   asset_t *bg1;
@@ -99,7 +106,7 @@ body_t *make_user(double outer_radius, double inner_radius, vector_t center) {
   return user;
 }
 
-typedef enum { WALL, GROUND } body_type_t;
+typedef enum { WALL, GROUND, ZAPPER } body_type_t;
 
 body_type_t *make_type_info(body_type_t type) {
   body_type_t *info = malloc(sizeof(body_type_t));
@@ -143,6 +150,15 @@ list_t *make_rectangle(vector_t center, double width, double height) {
   list_add(points, p4);
 
   return points;
+}
+
+body_t *make_zapper(vector_t center, double width, double height) {
+  list_t *zapper_shape = make_rectangle(center, width, height);
+  body_t *zapper = body_init_with_info(zapper_shape, INFINITY, white,
+                                      make_type_info(ZAPPER), free);
+  body_set_velocity(zapper, ZAPPER_VEL);
+  body_set_centroid(zapper, center);
+  return zapper;
 }
 
 /**
@@ -279,10 +295,26 @@ game_play_state_t *game_play_init() {
   return game_play_state;
 }
 
+void add_zapper(game_play_state_t *game_play_state, double dt) {
+  game_play_state->time += dt;
+  if (game_play_state->time >= ZAPPER_GENERATION_TIME) {
+    fprintf(stderr, "added zapper!\n");
+    game_play_state->time = 0;
+    double y_pos = fmod(rand(), MAX.y - MIN.y);
+    double x_pos = MAX.x + 50;
+    vector_t center = {.x = x_pos, .y = y_pos};
+    body_t *zapper = make_zapper(center, ZAPPER_WIDTH, ZAPPER_HEIGHT);
+    scene_add_body(game_play_state->state->scene, zapper);
+    asset_t *img = asset_make_image_with_body(ZAPPER_PATH, zapper);
+    list_add(game_play_state->state->body_assets, img);
+  }
+}
+
 bool game_play_main(game_play_state_t *game_play_state) {
 
   double dt = time_since_last_tick();
   state_temp_t *state = game_play_state->state;
+  add_zapper(game_play_state, dt);
   sdl_clear();
 
   background_update(state->background_state, dt);
