@@ -165,13 +165,13 @@ void add_walls(state_temp_t *state) {
                                       make_type_info(WALL), free);
   assert(wall2 != NULL);
   list_t *ceiling_shape =
-      make_rectangle((vector_t){MAX.x / 2, MAX.y}, MAX.x, WALL_DIM);
+      make_rectangle((vector_t){MAX.x / 2, MAX.y - 100}, MAX.x, WALL_DIM);
   assert(ceiling_shape != NULL);
   body_t *ceiling = body_init_with_info(ceiling_shape, INFINITY, white,
                                         make_type_info(WALL), free);
   assert(ceiling != NULL);
   list_t *ground_shape =
-      make_rectangle((vector_t){MAX.x / 2, 0}, MAX.x, WALL_DIM);
+      make_rectangle((vector_t){MAX.x / 2, MIN.y + 100}, MAX.x, WALL_DIM);
   assert(ground_shape != NULL);
   body_t *ground = body_init_with_info(ground_shape, INFINITY, white,
                                        make_type_info(GROUND), free);
@@ -243,9 +243,10 @@ void add_force_creators(game_play_state_t *game_play_state) {
   body_t *user = scene_get_body(game_play_state->state->scene, 0);
   for (size_t i = 0; i < num_bodies; i++) {
     body_t *body = scene_get_body(game_play_state->state->scene, i);
-    if (get_type(body) == WALL || get_type(body) == GROUND) {
-      create_physics_collision(game_play_state->state->scene, user, body, ELASTICITY);
-    }
+    // if (get_type(body) == WALL || get_type(body) == GROUND) {
+    //   create_physics_collision(game_play_state->state->scene, useçr, body, ELASTICITY);
+    // }
+    create_physics_collision(game_play_state->state->scene, user, body, ELASTICITY);
   }
 }
 
