@@ -99,10 +99,6 @@ body_t *make_user(double outer_radius, double inner_radius, vector_t center) {
   return user;
 }
 
-body_type_t get_type(body_t *body) {
-  return *(body_type_t *)body_get_info(body);
-}
-
 typedef enum { WALL, GROUND } body_type_t;
 
 body_type_t *make_type_info(body_type_t type) {
@@ -110,6 +106,10 @@ body_type_t *make_type_info(body_type_t type) {
   assert(info != NULL);
   *info = type;
   return info;
+}
+
+body_type_t get_type(body_t *body) {
+  return *(body_type_t *)body_get_info(body);
 }
 
 /** Make a rectangle-shaped body object.
