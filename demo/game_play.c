@@ -94,6 +94,15 @@ struct game_play_state {
   state_temp_t *state;
 };
 
+typedef enum { USER, CEILING, GROUND, ZAPPER } body_type_t;
+
+body_type_t *make_type_info(body_type_t type) {
+  body_type_t *info = malloc(sizeof(body_type_t));
+  assert(info != NULL);
+  *info = type;
+  return info;
+}
+
 body_t *make_user(double outer_radius, double inner_radius, vector_t center) {
   center.y += inner_radius;
   list_t *c = list_init(USER_NUM_POINTS, free);
@@ -104,21 +113,16 @@ body_t *make_user(double outer_radius, double inner_radius, vector_t center) {
                     center.y + outer_radius * sin(angle)};
     list_add(c, v);
   }
-  body_t *user = body_init(c, 1, user_color);
+  body_type_t *user_type = make_type_info(USER);
+  body_t *user =
+      body_init_with_info(c, 1, user_color, user_type, free);
   return user;
 }
 
-typedef enum { CEILING, GROUND, ZAPPER } body_type_t;
-
-body_type_t *make_type_info(body_type_t type) {
-  body_type_t *info = malloc(sizeof(body_type_t));
-  assert(info != NULL);
-  *info = type;
-  return info;
-}
-
 body_type_t get_type(body_t *body) {
-  return *(body_type_t *)body_get_info(body);
+  void *body_info = body_get_info(body);
+  assert(body_info != NULL);
+  return *(body_type_t *)body_info;
 }
 
 /** Make a rectangle-shaped body object.
@@ -269,6 +273,7 @@ void add_force_creators(game_play_state_t *game_play_state) {
     // TODO: zappers need to be freed
     // TODO: move the ceiling and ground
     // TODO: start the player above ground
+    // TODO: run sdl_render_scene
   }
 }
 
@@ -332,6 +337,22 @@ void add_zapper(game_play_state_t *game_play_state, double dt) {
   }
 }
 
+void remove_zappers(game_play_state_t *game_play_state) {
+  size_t num_bodies = scene_bodies(game_play_state->state->scene);
+  for (size_t i = 0; i < num_bodies; i++) {
+    body_t *body = scene_get_body(game_play_state->state->scene, i);
+    // TODO: riigh thalf still stays
+    // TODO: remove image
+    if (get_type(body) == ZAPPER && body_get_centroid(body).x < MIN.x) {
+      scene_remove_body(game_play_state->state->scene, i);
+      size_t num_assets = list_size(game_play_state->state->body_assets);
+      // TODO: maybe find way to not pass in the num assets? can use encapsulation
+      asset_remove_image(body, game_play_state->state->body_assets, num_assets);
+      fprintf(stderr, "removed zapper!\n");
+    }
+  }
+}
+
 state_type_t game_play_main(game_play_state_t *game_play_state) {
 
   double dt = time_since_last_tick();
@@ -344,7 +365,8 @@ state_type_t game_play_main(game_play_state_t *game_play_state) {
   // asset_render(state->background_state->bg1);
   // asset_render(state->background_state->bg2);
 
-  for (size_t i = 0; i < list_size(state->body_assets); i++) {
+  size_t num_assets = list_size(state->body_assets);
+  for (size_t i = 0; i < num_assets; i++) {
     asset_render(list_get(state->body_assets, i));
   }
 
@@ -368,6 +390,8 @@ state_type_t game_play_main(game_play_state_t *game_play_state) {
       }
     }
   }
+
+  remove_zappers(game_play_state);
 
   // for (size_t i = 0; i < list_size(state->background); i++) {
   //   asset_update_bounding_box(list_get(state->background, i), 1000*dt);

@@ -8,26 +8,26 @@
 #include "color.h"
 #include "sdl_wrapper.h"
 
-typedef struct text_asset {
+struct text_asset {
   asset_t base;
   TTF_Font *font;
   const char *text;
   rgb_color_t color;
-} text_asset_t;
+};
 
-typedef struct image_asset {
+struct image_asset {
   asset_t base;
   SDL_Texture *texture;
   body_t *body;
-} image_asset_t;
+};
 
-typedef struct button_asset {
+struct button_asset {
   asset_t base;
   image_asset_t *image_asset;
   text_asset_t *text_asset;
   button_handler_t handler;
   bool is_rendered;
-} button_asset_t;
+};
 
 /**
  * Allocates memory for an asset with the given parameters.
@@ -63,6 +63,8 @@ static asset_t *asset_init(asset_type_t ty, SDL_Rect bounding_box) {
 }
 
 asset_type_t asset_get_type(asset_t *asset) { return asset->type; }
+
+body_t *image_asset_get_body(image_asset_t *image_asset) { return image_asset->body; }
 
 /**
  * Encapsulates the duplicate code used by both the functions
@@ -179,6 +181,25 @@ void asset_render(asset_t *asset) {
     assert(false && "Asset type not image nor font");
     break;
   }
+  }
+}
+
+void asset_remove_image(body_t *body, list_t *body_assets, size_t num_assets) {
+  for (size_t i = 0; i < num_assets; i++) {
+    image_asset_t *cur_img = (image_asset_t *)list_get(body_assets, i);
+    if ((image_asset_get_body(cur_img)) == body) {
+      list_t *asset_cache = get_asset_cache();
+      size_t asset_cache_size = list_size(asset_cache);
+      for (size_t j = 0; j < asset_cache_size; j++) {
+        entry_t *cur_entry = get_entry(j);
+        void *obj = get_entry_obj(cur_entry);
+        if (cur_img == obj) {
+          list_remove(asset_cache, i);
+          asset_destroy((asset_t *)cur_img);
+          return;
+        }
+      }
+    }
   }
 }
 

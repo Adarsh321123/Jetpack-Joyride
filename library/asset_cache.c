@@ -12,11 +12,17 @@ static list_t *ASSET_CACHE;
 const size_t FONT_SIZE = 50;
 const size_t INITIAL_CAPACITY = 5;
 
-typedef struct {
+struct entry {
   asset_type_t type;
   const char *filepath;
   void *obj;
-} entry_t;
+};
+
+list_t *get_asset_cache() { return ASSET_CACHE; }
+
+entry_t *get_entry(size_t i) { return list_get(ASSET_CACHE, i); }
+
+void *get_entry_obj(entry_t *entry) { return entry->obj; }
 
 static void asset_cache_free_entry(entry_t *entry) {
   switch (entry->type) {
