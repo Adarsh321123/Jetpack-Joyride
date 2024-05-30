@@ -215,12 +215,14 @@ void on_key(char key, key_event_type_t type, double held_time, game_play_state_t
   // fprintf(stderr, "scene_bodies inside: %zu\n", scene_bodies(game_play_state->state->scene));
   body_t *user = scene_get_body(game_play_state->state->scene, 0);
   // fprintf(stderr, "after getting user\n");
-  if (type == KEY_PRESSED && key == SPACE_BAR) {
-    body_set_velocity(user, USER_VEL);
-    // fprintf(stderr, "space bar hit\n");
-  } else {
-    body_set_velocity(user, vec_negate(USER_VEL));
-    // fprintf(stderr, "no space bar hit\n");
+  if (key == SPACE_BAR) {
+    if (type == KEY_PRESSED) {
+      body_set_velocity(user, USER_VEL);
+      // fprintf(stderr, "space bar hit\n");
+    } else if (type == KEY_RELEASED) {
+      body_set_velocity(user, vec_negate(USER_VEL));
+      // fprintf(stderr, "no space bar hit\n");
+    }
   }
 }
 
@@ -263,8 +265,6 @@ void add_force_creators(game_play_state_t *game_play_state) {
     //   create_physics_collision(game_play_state->state->scene, user, body, ELASTICITY);
     // }
     create_physics_collision(game_play_state->state->scene, user, body, ELASTICITY);
-    // TODO: game over on ceiling
-    // TODO: clicking other key means go down, weird shifting bugs
     // TODO: zappers out og bounds of ceiiling adn such
     // TODO: zappers need to be freed
     // TODO: move the ceiling and ground
