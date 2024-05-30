@@ -90,15 +90,6 @@ asset_t *asset_make_image(const char *filepath, SDL_Rect bounding_box) {
   return (asset_t *)image_asset;
 }
 
-asset_t *asset_update_bounding_box(asset_t *image, double dt) {
-  image->bounding_box.x -= dt;
-
-  if (image->bounding_box.x + image->bounding_box.w <= MAX.x) {
-    image->bounding_box.x = 0;
-  }
-  return image;
-}
-
 asset_t *asset_make_image_with_body(const char *filepath, body_t *body) {
   SDL_Rect bounding_box = make_texr(0, 0, 0, 0);
   image_asset_t *image_asset =

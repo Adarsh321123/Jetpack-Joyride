@@ -39,8 +39,8 @@ const double ACCEL = 100;
 
 const double OUTER_RADIUS = 15;
 const double INNER_RADIUS = 15;
-const double ZAPPER_WIDTH = 50;
-const double ZAPPER_HEIGHT = 100;
+const double ZAPPER_WIDTH = 46;
+const double ZAPPER_HEIGHT = 109;
 const size_t OBSTACLE_HEIGHT = 30;
 const vector_t OBS_WIDTHS = {30, 70};
 const vector_t OBS_SPACING = {120, 350};
@@ -62,7 +62,8 @@ const size_t BODY_ASSETS = 2;
 const size_t USER_NUM_POINTS = 20;
 const rgb_color_t user_color = (rgb_color_t){0.1, 0.9, 0.2};
 const double WALL_DIM = 1;
-rgb_color_t white = (rgb_color_t){1, 1, 1};
+// TODO: call black
+rgb_color_t white = (rgb_color_t){0, 0, 0};
 
 // TODO: change based on difficulty
 const double ZAPPER_GENERATION_TIME = 5;
@@ -336,8 +337,9 @@ state_type_t game_play_main(game_play_state_t *game_play_state) {
   sdl_clear();
 
   background_update(state->background_state, dt);
-  asset_render(state->background_state->bg1);
-  asset_render(state->background_state->bg2);
+  sdl_render_scene(state->scene, NULL);
+  // asset_render(state->background_state->bg1);
+  // asset_render(state->background_state->bg2);
 
   for (size_t i = 0; i < list_size(state->body_assets); i++) {
     asset_render(list_get(state->body_assets, i));
@@ -356,15 +358,15 @@ state_type_t game_play_main(game_play_state_t *game_play_state) {
 }
 
 void game_play_free(game_play_state_t *game_play_state) {
-  // state_temp_t *state = game_play_state->state;
-  // asset_destroy(state->background_state->bg1);
-  // asset_destroy(state->background_state->bg1);
-  // free(state->background_state);
+  state_temp_t *state = game_play_state->state;
+  asset_destroy(state->background_state->bg1);
+  asset_destroy(state->background_state->bg2);
+  free(state->background_state);
   // list_free(state->body_assets);
   // scene_free(state->scene);
-  // asset_cache_destroy();
-  // free(state);
-  // //TTF_Quit();
-  // //asset_cache_destroy();
-  // free(game_play_state);
+  asset_cache_destroy();
+  free(state);
+  //TTF_Quit();
+  //asset_cache_destroy();
+  free(game_play_state);
 }
