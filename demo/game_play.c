@@ -39,8 +39,8 @@ const double ACCEL = 100;
 
 const double OUTER_RADIUS = 15;
 const double INNER_RADIUS = 15;
-const double ZAPPER_WIDTH = 50;
-const double ZAPPER_HEIGHT = 100;
+const double ZAPPER_WIDTH = 46;
+const double ZAPPER_HEIGHT = 109;
 const size_t OBSTACLE_HEIGHT = 30;
 const vector_t OBS_WIDTHS = {30, 70};
 const vector_t OBS_SPACING = {120, 350};
@@ -62,7 +62,8 @@ const size_t BODY_ASSETS = 2;
 const size_t USER_NUM_POINTS = 20;
 const rgb_color_t user_color = (rgb_color_t){0.1, 0.9, 0.2};
 const double WALL_DIM = 1;
-rgb_color_t white = (rgb_color_t){1, 1, 1};
+// TODO: call black
+rgb_color_t white = (rgb_color_t){0, 0, 0};
 
 // TODO: change based on difficulty
 const double ZAPPER_GENERATION_TIME = 5;
@@ -89,6 +90,7 @@ struct state_temp {
 
 struct game_play_state {
   double time;
+  state_type_t curr_state;
   state_temp_t *state;
 };
 
@@ -106,7 +108,7 @@ body_t *make_user(double outer_radius, double inner_radius, vector_t center) {
   return user;
 }
 
-typedef enum { WALL, GROUND, ZAPPER } body_type_t;
+typedef enum { CEILING, GROUND, ZAPPER } body_type_t;
 
 body_type_t *make_type_info(body_type_t type) {
   body_type_t *info = malloc(sizeof(body_type_t));
@@ -168,23 +170,23 @@ body_t *make_zapper(vector_t center, double width, double height) {
  */
 void add_walls(state_temp_t *state) {
   // TODO: remove asserts
-  list_t *wall1_shape =
-      make_rectangle((vector_t){MAX.x, MAX.y / 2}, WALL_DIM, MAX.y);
-  assert(wall1_shape != NULL);
-  body_t *wall1 = body_init_with_info(wall1_shape, INFINITY, white,
-                                      make_type_info(WALL), free);
-  assert(wall1 != NULL);                                   
-  list_t *wall2_shape =
-      make_rectangle((vector_t){0, MAX.y / 2}, WALL_DIM, MAX.y);
-  assert(wall2_shape != NULL);
-  body_t *wall2 = body_init_with_info(wall2_shape, INFINITY, white,
-                                      make_type_info(WALL), free);
-  assert(wall2 != NULL);
+  // list_t *wall1_shape =
+  //     make_rectangle((vector_t){MAX.x, MAX.y / 2}, WALL_DIM, MAX.y);
+  // assert(wall1_shape != NULL);
+  // body_t *wall1 = body_init_with_info(wall1_shape, INFINITY, white,
+  //                                     make_type_info(WALL), free);
+  // assert(wall1 != NULL);                                   
+  // list_t *wall2_shape =
+  //     make_rectangle((vector_t){0, MAX.y / 2}, WALL_DIM, MAX.y);
+  // assert(wall2_shape != NULL);
+  // body_t *wall2 = body_init_with_info(wall2_shape, INFINITY, white,
+  //                                     make_type_info(WALL), free);
+  // assert(wall2 != NULL);
   list_t *ceiling_shape =
       make_rectangle((vector_t){MAX.x / 2, MAX.y - 100}, MAX.x, WALL_DIM);
   assert(ceiling_shape != NULL);
   body_t *ceiling = body_init_with_info(ceiling_shape, INFINITY, white,
-                                        make_type_info(WALL), free);
+                                        make_type_info(CEILING), free);
   assert(ceiling != NULL);
   list_t *ground_shape =
       make_rectangle((vector_t){MAX.x / 2, MIN.y + 100}, MAX.x, WALL_DIM);
@@ -192,8 +194,8 @@ void add_walls(state_temp_t *state) {
   body_t *ground = body_init_with_info(ground_shape, INFINITY, white,
                                        make_type_info(GROUND), free);
   assert(ground != NULL);
-  scene_add_body(state->scene, wall1);
-  scene_add_body(state->scene, wall2);
+  // scene_add_body(state->scene, wall1);
+  // scene_add_body(state->scene, wall2);
   scene_add_body(state->scene, ceiling);
   scene_add_body(state->scene, ground);
 }
@@ -213,14 +215,14 @@ void on_key(char key, key_event_type_t type, double held_time, game_play_state_t
   // fprintf(stderr, "scene_bodies inside: %zu\n", scene_bodies(game_play_state->state->scene));
   body_t *user = scene_get_body(game_play_state->state->scene, 0);
   // fprintf(stderr, "after getting user\n");
-  if (type == KEY_PRESSED) {
-    if (key == SPACE_BAR) {
+  if (key == SPACE_BAR) {
+    if (type == KEY_PRESSED) {
       body_set_velocity(user, USER_VEL);
       // fprintf(stderr, "space bar hit\n");
+    } else if (type == KEY_RELEASED) {
+      body_set_velocity(user, vec_negate(USER_VEL));
+      // fprintf(stderr, "no space bar hit\n");
     }
-  } else {
-    body_set_velocity(user, vec_negate(USER_VEL));
-    // fprintf(stderr, "no space bar hit\n");
   }
 }
 
@@ -259,11 +261,14 @@ void add_force_creators(game_play_state_t *game_play_state) {
   body_t *user = scene_get_body(game_play_state->state->scene, 0);
   for (size_t i = 0; i < num_bodies; i++) {
     body_t *body = scene_get_body(game_play_state->state->scene, i);
-    // TODO: come back to this
-    // if (get_type(body) == WALL || get_type(body) == GROUND) {
-    //   create_physics_collision(game_play_state->state->scene, useçr, body, ELASTICITY);
+    // if (get_type(body) == CEILING || get_type(body) == GROUND) {
+    //   create_physics_collision(game_play_state->state->scene, user, body, ELASTICITY);
     // }
     create_physics_collision(game_play_state->state->scene, user, body, ELASTICITY);
+    // TODO: zappers out og bounds of ceiiling adn such
+    // TODO: zappers need to be freed
+    // TODO: move the ceiling and ground
+    // TODO: start the player above ground
   }
 }
 
@@ -291,6 +296,7 @@ game_play_state_t *game_play_init() {
   game_play_state->state = state;
   add_walls(game_play_state->state);
   add_force_creators(game_play_state);
+  game_play_state->curr_state = GAME_PLAY;
 
   game_play_state->state = state;
   game_play_state->time = 0;
@@ -300,8 +306,8 @@ game_play_state_t *game_play_init() {
 void game_over(body_t *body1, body_t *body2, vector_t axis, void *aux,
                         double force_const) {
   fprintf(stderr, "game over!\n");
-  // game_play_state_t *game_play_state = (game_play_state_t *) aux;
-  // game_play_state->curr_state = GAME_OVER;
+  game_play_state_t *game_play_state = (game_play_state_t *) aux;
+  game_play_state->curr_state = GAME_OVER;
 }
 
 void add_zapper(game_play_state_t *game_play_state, double dt) {
@@ -326,7 +332,7 @@ void add_zapper(game_play_state_t *game_play_state, double dt) {
   }
 }
 
-bool game_play_main(game_play_state_t *game_play_state) {
+state_type_t game_play_main(game_play_state_t *game_play_state) {
 
   double dt = time_since_last_tick();
   state_temp_t *state = game_play_state->state;
@@ -334,11 +340,33 @@ bool game_play_main(game_play_state_t *game_play_state) {
   sdl_clear();
 
   background_update(state->background_state, dt);
-  asset_render(state->background_state->bg1);
-  asset_render(state->background_state->bg2);
+  sdl_render_scene(state->scene, NULL);
+  // asset_render(state->background_state->bg1);
+  // asset_render(state->background_state->bg2);
 
   for (size_t i = 0; i < list_size(state->body_assets); i++) {
     asset_render(list_get(state->body_assets, i));
+  }
+
+  size_t num_bodies = scene_bodies(game_play_state->state->scene);
+  body_t *user = scene_get_body(game_play_state->state->scene, 0);
+  for (size_t i = 0; i < num_bodies; i++) {
+    body_t *body = scene_get_body(game_play_state->state->scene, i);
+    vector_t user_centroid = body_get_centroid(user);
+    vector_t user_vel = body_get_velocity(user);
+    vector_t body_centroid = body_get_centroid(body);
+    double displacement = OUTER_RADIUS;
+    if (get_type(body) == GROUND) {
+      if (user_vel.y < 0 && user_centroid.y - body_centroid.y < displacement) {
+        vector_t new_centroid = {.x = body_centroid.x, .y = body_centroid.y + displacement};
+        body_set_centroid(user, new_centroid);
+      }
+    } else if (get_type(body) == CEILING) {
+      if (user_vel.y > 0 && body_centroid.y - user_centroid.y < displacement) {
+        vector_t new_centroid = {.x = body_centroid.x, .y = body_centroid.y - displacement};
+        body_set_centroid(user, new_centroid);
+      }
+    }
   }
 
   // for (size_t i = 0; i < list_size(state->background); i++) {
@@ -350,16 +378,18 @@ bool game_play_main(game_play_state_t *game_play_state) {
   scene_tick(state->scene, dt);
   // body_t *user = scene_get_body(game_play_state->state->scene, 0);
   // fprintf(stderr, "y of the user %f\n", body_get_centroid(user).y);
-  return false;
+  return game_play_state->curr_state;
 }
 
 void game_play_free(game_play_state_t *game_play_state) {
   state_temp_t *state = game_play_state->state;
   asset_destroy(state->background_state->bg1);
-  asset_destroy(state->background_state->bg1);
+  asset_destroy(state->background_state->bg2);
   free(state->background_state);
-  list_free(state->body_assets);
-  scene_free(state->scene);
+  // TODO: fix
+  // TODO: add int main and link and compile to find memory leaks
+  // list_free(state->body_assets);
+  // scene_free(state->scene);
   asset_cache_destroy();
   free(state);
   //TTF_Quit();

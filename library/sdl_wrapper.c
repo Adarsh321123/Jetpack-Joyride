@@ -218,7 +218,7 @@ TTF_Font *init_font(const char *FONT_PATH, size_t size) {
   return font;
 }
 
-SDL_Rect make_texr(size_t x, size_t y, size_t w, size_t h) {
+SDL_Rect make_texr(int x, int y, int w, int h) {
   SDL_Rect texr;
   texr.x = x;
   texr.y = y;
@@ -253,7 +253,7 @@ SDL_Rect find_bounding_box(body_t *body) {
       max_y = pixel.y;
     }
   }
-  return make_texr(min_x, max_y, (max_x - min_x), (max_y - min_y));
+  return make_texr(min_x, max_y - (max_y - min_y), (max_x - min_x), (max_y - min_y));
 }
 
 void render_text(const char *text, TTF_Font *fontin, rgb_color_t rgb_color,

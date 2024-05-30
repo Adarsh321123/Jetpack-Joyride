@@ -124,7 +124,7 @@ TTF_Font *init_font(const char *FONT_PATH, size_t size);
  * @param h height
  * @return a bounding box
  */
-SDL_Rect make_texr(size_t x, size_t y, size_t w, size_t h);
+SDL_Rect make_texr(int x, int y, int w, int h);
 
 /**
  * Find the bounding box of a body given as the input

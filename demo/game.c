@@ -26,13 +26,13 @@ void run_home(state_t *state) {
   }
   state_type_t next_state = home_main(home_state);
   if (sdl_is_done((void *)home_state)) {
-    home_free(home_state);
     state->home_state = NULL;
+    home_free(home_state);
   }
   else if (next_state != HOME) {
-    home_free(home_state);
     state->home_state = NULL;
     state->curr_state = next_state;
+    home_free(home_state);
   }
 }
 
@@ -42,15 +42,15 @@ void run_game_play(state_t *state) {
     game_play_state = game_play_init();
     state->game_play_state = game_play_state;
   }
-  bool game_over = game_play_main(game_play_state);
+  state_type_t next_state = game_play_main(game_play_state);
   if (sdl_is_done((void *)game_play_state)) {
-    game_play_free(game_play_state);
     state->game_play_state = NULL;
+    game_play_free(game_play_state);
   }
-  else if (game_over) {
-    game_play_free(game_play_state);
+  else if (next_state != GAME_PLAY) {
     state->game_play_state = NULL;
-    state->curr_state = GAME_OVER;
+    state->curr_state = next_state;
+    game_play_free(game_play_state);
   }
 }
 
@@ -62,13 +62,13 @@ void run_game_over(state_t *state) {
   }
   state_type_t next_state = game_over_main(game_over_state);
   if (sdl_is_done((void *)game_over_state)) {
-    game_over_free(game_over_state);
     state->game_over_state = NULL;
+    game_over_free(game_over_state);
   }
   else if (next_state != GAME_OVER) {
-    game_over_free(game_over_state);
     state->game_over_state = NULL;
     state->curr_state = next_state;
+    game_over_free(game_over_state);
   }
 }
 
