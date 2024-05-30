@@ -108,7 +108,7 @@ body_t *make_user(double outer_radius, double inner_radius, vector_t center) {
   return user;
 }
 
-typedef enum { WALL, GROUND, ZAPPER } body_type_t;
+typedef enum { CEILING, GROUND, ZAPPER } body_type_t;
 
 body_type_t *make_type_info(body_type_t type) {
   body_type_t *info = malloc(sizeof(body_type_t));
@@ -170,23 +170,23 @@ body_t *make_zapper(vector_t center, double width, double height) {
  */
 void add_walls(state_temp_t *state) {
   // TODO: remove asserts
-  list_t *wall1_shape =
-      make_rectangle((vector_t){MAX.x, MAX.y / 2}, WALL_DIM, MAX.y);
-  assert(wall1_shape != NULL);
-  body_t *wall1 = body_init_with_info(wall1_shape, INFINITY, white,
-                                      make_type_info(WALL), free);
-  assert(wall1 != NULL);                                   
-  list_t *wall2_shape =
-      make_rectangle((vector_t){0, MAX.y / 2}, WALL_DIM, MAX.y);
-  assert(wall2_shape != NULL);
-  body_t *wall2 = body_init_with_info(wall2_shape, INFINITY, white,
-                                      make_type_info(WALL), free);
-  assert(wall2 != NULL);
+  // list_t *wall1_shape =
+  //     make_rectangle((vector_t){MAX.x, MAX.y / 2}, WALL_DIM, MAX.y);
+  // assert(wall1_shape != NULL);
+  // body_t *wall1 = body_init_with_info(wall1_shape, INFINITY, white,
+  //                                     make_type_info(WALL), free);
+  // assert(wall1 != NULL);                                   
+  // list_t *wall2_shape =
+  //     make_rectangle((vector_t){0, MAX.y / 2}, WALL_DIM, MAX.y);
+  // assert(wall2_shape != NULL);
+  // body_t *wall2 = body_init_with_info(wall2_shape, INFINITY, white,
+  //                                     make_type_info(WALL), free);
+  // assert(wall2 != NULL);
   list_t *ceiling_shape =
       make_rectangle((vector_t){MAX.x / 2, MAX.y - 100}, MAX.x, WALL_DIM);
   assert(ceiling_shape != NULL);
   body_t *ceiling = body_init_with_info(ceiling_shape, INFINITY, white,
-                                        make_type_info(WALL), free);
+                                        make_type_info(CEILING), free);
   assert(ceiling != NULL);
   list_t *ground_shape =
       make_rectangle((vector_t){MAX.x / 2, MIN.y + 100}, MAX.x, WALL_DIM);
@@ -194,8 +194,8 @@ void add_walls(state_temp_t *state) {
   body_t *ground = body_init_with_info(ground_shape, INFINITY, white,
                                        make_type_info(GROUND), free);
   assert(ground != NULL);
-  scene_add_body(state->scene, wall1);
-  scene_add_body(state->scene, wall2);
+  // scene_add_body(state->scene, wall1);
+  // scene_add_body(state->scene, wall2);
   scene_add_body(state->scene, ceiling);
   scene_add_body(state->scene, ground);
 }
@@ -215,11 +215,9 @@ void on_key(char key, key_event_type_t type, double held_time, game_play_state_t
   // fprintf(stderr, "scene_bodies inside: %zu\n", scene_bodies(game_play_state->state->scene));
   body_t *user = scene_get_body(game_play_state->state->scene, 0);
   // fprintf(stderr, "after getting user\n");
-  if (type == KEY_PRESSED) {
-    if (key == SPACE_BAR) {
-      body_set_velocity(user, USER_VEL);
-      // fprintf(stderr, "space bar hit\n");
-    }
+  if (type == KEY_PRESSED && key == SPACE_BAR) {
+    body_set_velocity(user, USER_VEL);
+    // fprintf(stderr, "space bar hit\n");
   } else {
     body_set_velocity(user, vec_negate(USER_VEL));
     // fprintf(stderr, "no space bar hit\n");
@@ -261,11 +259,16 @@ void add_force_creators(game_play_state_t *game_play_state) {
   body_t *user = scene_get_body(game_play_state->state->scene, 0);
   for (size_t i = 0; i < num_bodies; i++) {
     body_t *body = scene_get_body(game_play_state->state->scene, i);
-    // TODO: come back to this
-    // if (get_type(body) == WALL || get_type(body) == GROUND) {
-    //   create_physics_collision(game_play_state->state->scene, useçr, body, ELASTICITY);
+    // if (get_type(body) == CEILING || get_type(body) == GROUND) {
+    //   create_physics_collision(game_play_state->state->scene, user, body, ELASTICITY);
     // }
     create_physics_collision(game_play_state->state->scene, user, body, ELASTICITY);
+    // TODO: game over on ceiling
+    // TODO: clicking other key means go down, weird shifting bugs
+    // TODO: zappers out og bounds of ceiiling adn such
+    // TODO: zappers need to be freed
+    // TODO: move the ceiling and ground
+    // TODO: start the player above ground
   }
 }
 
@@ -345,6 +348,24 @@ state_type_t game_play_main(game_play_state_t *game_play_state) {
     asset_render(list_get(state->body_assets, i));
   }
 
+  size_t num_bodies = scene_bodies(game_play_state->state->scene);
+  body_t *user = scene_get_body(game_play_state->state->scene, 0);
+  for (size_t i = 0; i < num_bodies; i++) {
+    body_t *body = scene_get_body(game_play_state->state->scene, i);
+    vector_t user_centroid = body_get_centroid(user);
+    vector_t user_vel = body_get_velocity(user);
+    vector_t body_centroid = body_get_centroid(body);
+    if (get_type(body) == GROUND) {
+      if (user_vel.y < 0 && user_centroid.y - body_centroid.y < 0.1) {
+        body_set_centroid(user, body_centroid);
+      }
+    } else if (get_type(body) == CEILING) {
+      if (user_vel.y > 0 && body_centroid.y - user_centroid.y < 0.1) {
+        body_set_centroid(user, body_centroid);
+      }
+    }
+  }
+
   // for (size_t i = 0; i < list_size(state->background); i++) {
   //   asset_update_bounding_box(list_get(state->background, i), 1000*dt);
   //   asset_render(list_get(state->background, i));
@@ -362,6 +383,7 @@ void game_play_free(game_play_state_t *game_play_state) {
   asset_destroy(state->background_state->bg1);
   asset_destroy(state->background_state->bg2);
   free(state->background_state);
+  // TODO: fix
   // list_free(state->body_assets);
   // scene_free(state->scene);
   asset_cache_destroy();
