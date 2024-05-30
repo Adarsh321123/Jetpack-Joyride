@@ -355,13 +355,16 @@ state_type_t game_play_main(game_play_state_t *game_play_state) {
     vector_t user_centroid = body_get_centroid(user);
     vector_t user_vel = body_get_velocity(user);
     vector_t body_centroid = body_get_centroid(body);
+    double displacement = OUTER_RADIUS;
     if (get_type(body) == GROUND) {
-      if (user_vel.y < 0 && user_centroid.y - body_centroid.y < 0.1) {
-        body_set_centroid(user, body_centroid);
+      if (user_vel.y < 0 && user_centroid.y - body_centroid.y < displacement) {
+        vector_t new_centroid = {.x = body_centroid.x, .y = body_centroid.y + displacement};
+        body_set_centroid(user, new_centroid);
       }
     } else if (get_type(body) == CEILING) {
-      if (user_vel.y > 0 && body_centroid.y - user_centroid.y < 0.1) {
-        body_set_centroid(user, body_centroid);
+      if (user_vel.y > 0 && body_centroid.y - user_centroid.y < displacement) {
+        vector_t new_centroid = {.x = body_centroid.x, .y = body_centroid.y - displacement};
+        body_set_centroid(user, new_centroid);
       }
     }
   }
@@ -384,6 +387,7 @@ void game_play_free(game_play_state_t *game_play_state) {
   asset_destroy(state->background_state->bg2);
   free(state->background_state);
   // TODO: fix
+  // TODO: add int main and link and compile to find memory leaks
   // list_free(state->body_assets);
   // scene_free(state->scene);
   asset_cache_destroy();
