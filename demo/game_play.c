@@ -64,8 +64,12 @@ const double WALL_DIM = 1;
 rgb_color_t black = (rgb_color_t){0, 0, 0};
 
 const double ZAPPER_GENERATION_TIME = 5;
-const double MIN_ZAPPER_GENERATION_TIME = 1;
-const double MAX_ZAPPER_GENERATION_TIME = 5;
+const double MIN_ZAPPER_GENERATION_TIME_EASY = 3;
+const double MAX_ZAPPER_GENERATION_TIME_EASY = 5;
+const double MIN_ZAPPER_GENERATION_TIME_MEDIUM = 2;
+const double MAX_ZAPPER_GENERATION_TIME_MEDIUM = 3;
+const double MIN_ZAPPER_GENERATION_TIME_HARD = 1;
+const double MAX_ZAPPER_GENERATION_TIME_HARD = 2;
 
 const char *USER_IMG_PATH = "assets/Barry.png";
 const char *LOG_PATH = "assets/log.png";
@@ -91,6 +95,8 @@ struct state_temp {
 struct game_play_state {
   double time;
   double time_until_zapper;
+  double min_zapper_generation_time;
+  double max_zapper_generation_time;
   state_type_t curr_state;
   state_temp_t *state;
 };
@@ -254,7 +260,7 @@ void add_force_creators(game_play_state_t *game_play_state) {
   }
 }
 
-game_play_state_t *game_play_init() {
+game_play_state_t *game_play_init(difficulty_type_t difficulty_level) {
   game_play_state_t *game_play_state = malloc(sizeof(game_play_state_t));
   assert(game_play_state != NULL);
 
@@ -283,6 +289,41 @@ game_play_state_t *game_play_init() {
   game_play_state->state = state;
   game_play_state->time = 0;
   game_play_state->time_until_zapper = 0;
+  if (difficulty_level == EASY){
+    fprintf(stdout, "easy\n");
+  }
+  if (difficulty_level == MEDIUM){
+    fprintf(stdout, "medium\n");
+  }
+  if (difficulty_level == HARD){
+    fprintf(stdout, "hard\n");
+  }
+  switch (difficulty_level) {
+      case EASY: {
+          game_play_state->min_zapper_generation_time = 
+                                              MIN_ZAPPER_GENERATION_TIME_EASY;
+          game_play_state->max_zapper_generation_time = 
+                                              MAX_ZAPPER_GENERATION_TIME_EASY;
+          break;
+      }
+      case MEDIUM: {
+          game_play_state->min_zapper_generation_time = 
+                                              MIN_ZAPPER_GENERATION_TIME_MEDIUM;
+          game_play_state->max_zapper_generation_time = 
+                                              MAX_ZAPPER_GENERATION_TIME_MEDIUM;
+          break;
+      }
+      case HARD: {
+          game_play_state->min_zapper_generation_time = 
+                                              MIN_ZAPPER_GENERATION_TIME_HARD;
+          game_play_state->max_zapper_generation_time = 
+                                              MAX_ZAPPER_GENERATION_TIME_HARD;
+          break;
+      }
+      default: {
+          break;
+      }
+  }
   return game_play_state;
 }
 
@@ -299,7 +340,9 @@ void add_zapper(game_play_state_t *game_play_state, double dt) {
     fprintf(stderr, "added zapper!\n");
     game_play_state->time = 0;
     game_play_state->time_until_zapper = fmod(rand(), 
-    MAX_ZAPPER_GENERATION_TIME - MIN_ZAPPER_GENERATION_TIME) + MIN_ZAPPER_GENERATION_TIME;
+    game_play_state->max_zapper_generation_time - 
+    game_play_state->min_zapper_generation_time) + 
+    game_play_state->min_zapper_generation_time;
     double y_pos = fmod(rand(), (MAX.y - 50) - (MIN.y + 50));
     double x_pos = MAX.x + 15;
     vector_t center = {.x = x_pos, .y = y_pos};

@@ -24,8 +24,9 @@ body_type_t get_type(body_t *body);
  * Creates and stores all necessary variables for the game in a created state
  * variable 
  * Returns the pointer to this state
+ * @param difficulty_level associated with the game
  */
-game_play_state_t *game_play_init();
+game_play_state_t *game_play_init(difficulty_type_t difficulty_level);
 
 /**
  * Called on each tick of the program

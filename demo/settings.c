@@ -46,6 +46,13 @@ static text_info_t text_templates[] = {
      .text = "Current Difficulty Level: "}
      };
 
+static text_info_t dynamic_text_templates[] = {
+     {.font_path = "assets/New Athletic M54.ttf",
+     .text_box = (SDL_Rect){300, 325, 150, 50},
+     .text_color = (rgb_color_t){255, 255, 255},
+     .text = "Current Difficulty Level: "}
+     };
+
 static button_info_t button_templates[] = {
     {.image_path = "assets/button.png",
      .font_path = "assets/New Athletic M54.ttf",
@@ -126,6 +133,32 @@ static void create_buttons(settings_state_t *settings_state) {
   }
 }
 
+static void display_difficulty_level(settings_state_t *settings_state){
+    char difficulty_text[10];
+
+    switch (settings_state->difficulty_level) {
+        case EASY: {
+            sprintf(difficulty_text, "Easy");
+            break;
+        }
+        case MEDIUM: {
+            sprintf(difficulty_text, "Medium");
+            break;
+        }
+        case HARD: {
+            sprintf(difficulty_text, "Hard");
+            break;
+        }
+        default: {
+            sprintf(difficulty_text, "Unknown");
+            break;
+        }
+    }
+
+    // dynamic_text
+    // create_text_from_info()
+}
+
 static void on_mouse(char key, void *settings_state, SDL_Event event) {
   if (key == MOUSE_RIGHT || key == MOUSE_LEFT) {
     asset_cache_handle_buttons(settings_state, event.button.x, event.button.y);
@@ -173,6 +206,8 @@ state_type_t settings_main(settings_state_t *settings_state) {
   for (size_t i = 0; i < NUM_TEXT_SETTINGS; i++){
     asset_render(list_get(text, i));
   }
+
+  display_difficulty_level(settings_state);
 
   // render the buttons
   list_t *buttons = settings_state->manual_buttons;

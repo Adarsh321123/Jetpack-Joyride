@@ -62,7 +62,7 @@ void run_settings(state_t *state) {
 void run_game_play(state_t *state) {
   game_play_state_t *game_play_state = state->game_play_state;
   if (!game_play_state) {
-    game_play_state = game_play_init();
+    game_play_state = game_play_init(state->difficulty_level);
     state->game_play_state = game_play_state;
   }
   state_type_t next_state = game_play_main(game_play_state);
