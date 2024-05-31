@@ -21,7 +21,6 @@ const double BULLET_RADIUS = 10;
 const double ELASTICITY = 0;
 
 const vector_t START_POS = {500, 30};
-const vector_t RESET_POS = {500, 45};
 const vector_t INVADER_BULLET_VEL = {0, -200};
 const vector_t USER_VEL = {0, 200};
 const vector_t BASE_OBJ_VEL = {30, 0};
@@ -62,10 +61,8 @@ const size_t BODY_ASSETS = 2;
 const size_t USER_NUM_POINTS = 20;
 const rgb_color_t user_color = (rgb_color_t){0.1, 0.9, 0.2};
 const double WALL_DIM = 1;
-// TODO: call black
-rgb_color_t white = (rgb_color_t){0, 0, 0};
+rgb_color_t black = (rgb_color_t){0, 0, 0};
 
-// TODO: change based on difficulty
 const double ZAPPER_GENERATION_TIME = 5;
 
 const char *USER_IMG_PATH = "assets/Barry.png";
@@ -80,6 +77,7 @@ struct background_state {
   double bg_offset;
 };
 
+// TODO: no need for asset, just use body_t instead
 struct state_temp {
   background_state_t *background_state;
   list_t *body_assets;
@@ -94,6 +92,13 @@ struct game_play_state {
   state_temp_t *state;
 };
 
+body_type_t *make_type_info(body_type_t type) {
+  body_type_t *info = malloc(sizeof(body_type_t));
+  assert(info != NULL);
+  *info = type;
+  return info;
+}
+
 body_t *make_user(double outer_radius, double inner_radius, vector_t center) {
   center.y += inner_radius;
   list_t *c = list_init(USER_NUM_POINTS, free);
@@ -104,21 +109,16 @@ body_t *make_user(double outer_radius, double inner_radius, vector_t center) {
                     center.y + outer_radius * sin(angle)};
     list_add(c, v);
   }
-  body_t *user = body_init(c, 1, user_color);
+  body_type_t *user_type = make_type_info(USER);
+  body_t *user =
+      body_init_with_info(c, 1, user_color, user_type, free);
   return user;
 }
 
-typedef enum { CEILING, GROUND, ZAPPER } body_type_t;
-
-body_type_t *make_type_info(body_type_t type) {
-  body_type_t *info = malloc(sizeof(body_type_t));
-  assert(info != NULL);
-  *info = type;
-  return info;
-}
-
 body_type_t get_type(body_t *body) {
-  return *(body_type_t *)body_get_info(body);
+  void *body_info = body_get_info(body);
+  assert(body_info != NULL);
+  return *(body_type_t *)body_info;
 }
 
 /** Make a rectangle-shaped body object.
@@ -156,7 +156,7 @@ list_t *make_rectangle(vector_t center, double width, double height) {
 
 body_t *make_zapper(vector_t center, double width, double height) {
   list_t *zapper_shape = make_rectangle(center, width, height);
-  body_t *zapper = body_init_with_info(zapper_shape, INFINITY, white,
+  body_t *zapper = body_init_with_info(zapper_shape, INFINITY, black,
                                       make_type_info(ZAPPER), free);
   body_set_velocity(zapper, ZAPPER_VEL);
   body_set_centroid(zapper, center);
@@ -169,33 +169,14 @@ body_t *make_zapper(vector_t center, double width, double height) {
  * @param state the current state of the demo
  */
 void add_walls(state_temp_t *state) {
-  // TODO: remove asserts
-  // list_t *wall1_shape =
-  //     make_rectangle((vector_t){MAX.x, MAX.y / 2}, WALL_DIM, MAX.y);
-  // assert(wall1_shape != NULL);
-  // body_t *wall1 = body_init_with_info(wall1_shape, INFINITY, white,
-  //                                     make_type_info(WALL), free);
-  // assert(wall1 != NULL);                                   
-  // list_t *wall2_shape =
-  //     make_rectangle((vector_t){0, MAX.y / 2}, WALL_DIM, MAX.y);
-  // assert(wall2_shape != NULL);
-  // body_t *wall2 = body_init_with_info(wall2_shape, INFINITY, white,
-  //                                     make_type_info(WALL), free);
-  // assert(wall2 != NULL);
   list_t *ceiling_shape =
-      make_rectangle((vector_t){MAX.x / 2, MAX.y - 100}, MAX.x, WALL_DIM);
-  assert(ceiling_shape != NULL);
-  body_t *ceiling = body_init_with_info(ceiling_shape, INFINITY, white,
+      make_rectangle((vector_t){MAX.x / 2, MAX.y - 50}, MAX.x, WALL_DIM);
+  body_t *ceiling = body_init_with_info(ceiling_shape, INFINITY, black,
                                         make_type_info(CEILING), free);
-  assert(ceiling != NULL);
   list_t *ground_shape =
-      make_rectangle((vector_t){MAX.x / 2, MIN.y + 100}, MAX.x, WALL_DIM);
-  assert(ground_shape != NULL);
-  body_t *ground = body_init_with_info(ground_shape, INFINITY, white,
+      make_rectangle((vector_t){MAX.x / 2, MIN.y + 50}, MAX.x, WALL_DIM);
+  body_t *ground = body_init_with_info(ground_shape, INFINITY, black,
                                        make_type_info(GROUND), free);
-  assert(ground != NULL);
-  // scene_add_body(state->scene, wall1);
-  // scene_add_body(state->scene, wall2);
   scene_add_body(state->scene, ceiling);
   scene_add_body(state->scene, ground);
 }
@@ -210,7 +191,6 @@ void add_walls(state_temp_t *state) {
  * @param state the current state of game
  */
 void on_key(char key, key_event_type_t type, double held_time, game_play_state_t *game_play_state) {
-  // TODO: no change if add top or bottom of screen
   // fprintf(stderr, "before getting user\n");
   // fprintf(stderr, "scene_bodies inside: %zu\n", scene_bodies(game_play_state->state->scene));
   body_t *user = scene_get_body(game_play_state->state->scene, 0);
@@ -242,7 +222,6 @@ static background_state_t *background_init(const char *bg_path) {
 static void background_update(background_state_t *state, double dt) {
   state->bg_offset -= state->scroll_speed * dt;
   double WINDOW_WIDTH = MAX.x - MIN.x;
-  // TODO: maybe make cleaner
   if (state->bg_offset <= - WINDOW_WIDTH) {
     state->bg_offset += WINDOW_WIDTH;
   }
@@ -261,14 +240,14 @@ void add_force_creators(game_play_state_t *game_play_state) {
   body_t *user = scene_get_body(game_play_state->state->scene, 0);
   for (size_t i = 0; i < num_bodies; i++) {
     body_t *body = scene_get_body(game_play_state->state->scene, i);
-    // if (get_type(body) == CEILING || get_type(body) == GROUND) {
-    //   create_physics_collision(game_play_state->state->scene, user, body, ELASTICITY);
-    // }
-    create_physics_collision(game_play_state->state->scene, user, body, ELASTICITY);
-    // TODO: zappers out og bounds of ceiiling adn such
+    // TODO: either this or the centorid check but not both
+    if (get_type(body) == CEILING || get_type(body) == GROUND) {
+      create_physics_collision(game_play_state->state->scene, user, body, ELASTICITY);
+    }
+    // create_physics_collision(game_play_state->state->scene, user, body, ELASTICITY);
     // TODO: zappers need to be freed
-    // TODO: move the ceiling and ground
-    // TODO: start the player above ground
+    // TODO: make sure that random time stuff form gitlab and anything else is there 
+    // TODO: lag if stuck on ceiling nad then let go
   }
 }
 
@@ -284,9 +263,9 @@ game_play_state_t *game_play_init() {
 
   state->scene = scene_init();
   state->body_assets = list_init(1, (free_func_t)asset_destroy);
-  // TODO: add body assets for the zappers and stuff
   body_t *user = make_user(OUTER_RADIUS, INNER_RADIUS, VEC_ZERO);
-  body_set_centroid(user, RESET_POS);
+  vector_t start_pos = {MAX.x / 2, MIN.y + OUTER_RADIUS + 50};
+  body_set_centroid(user, start_pos);
   scene_add_body(state->scene, user);
   asset_t *img = asset_make_image_with_body(USER_IMG_PATH, user);
   list_add(state->body_assets, img);
@@ -315,12 +294,27 @@ void add_zapper(game_play_state_t *game_play_state, double dt) {
   if (game_play_state->time >= ZAPPER_GENERATION_TIME) {
     fprintf(stderr, "added zapper!\n");
     game_play_state->time = 0;
-    // TODO: ensure that positions are reasonable
-    double y_pos = fmod(rand(), MAX.y - MIN.y) + 50;
+    double y_pos = fmod(rand(), (MAX.y - 50) - (MIN.y + 50));
     double x_pos = MAX.x + 15;
     vector_t center = {.x = x_pos, .y = y_pos};
     body_t *zapper = make_zapper(center, ZAPPER_WIDTH, ZAPPER_HEIGHT);
     scene_add_body(game_play_state->state->scene, zapper);
+
+    // fprintf(stderr, "zapper pointer: %p\n", zapper);
+    // list_t *asset_cache = get_asset_cache();
+    // size_t asset_cache_size = list_size(asset_cache);
+    // fprintf(stderr, "HERE num of asset cahche: %zu\n", asset_cache_size);
+    // for (size_t j = 0; j < asset_cache_size; j++) {
+    //   entry_t *cur_entry = get_entry(j);
+    //   image_asset_t *obj = (image_asset_t *)get_entry_obj(cur_entry);
+    //   fprintf(stderr, "obj pointer: %p\n", obj);
+    //   fprintf(stderr, "before if\n");
+    //   fprintf(stderr, "obj pointer: %p\n", obj);
+    //   if ((image_asset_get_body(obj)) == zapper) {
+    //     fprintf(stderr, "yay\n");
+    //   }
+    // }
+
     asset_t *img = asset_make_image_with_body(ZAPPER_PATH, zapper);
     list_add(game_play_state->state->body_assets, img);
     body_t *user = scene_get_body(game_play_state->state->scene, 0);
@@ -329,6 +323,21 @@ void add_zapper(game_play_state_t *game_play_state, double dt) {
     create_collision(game_play_state->state->scene, zapper, user, game_over, game_play_state,
                        0);
     // fprintf(stderr, "after collision\n");
+  }
+}
+
+void remove_zappers(game_play_state_t *game_play_state) {
+  size_t num_bodies = scene_bodies(game_play_state->state->scene);
+  for (size_t i = 0; i < num_bodies; i++) {
+    body_t *body = scene_get_body(game_play_state->state->scene, i);
+    // TODO: riigh thalf still stays
+    if (get_type(body) == ZAPPER && body_get_centroid(body).x + 50 < MIN.x) {
+      scene_remove_body(game_play_state->state->scene, i);
+      // size_t num_assets = list_size(game_play_state->state->body_assets);
+      // TODO: maybe find way to not pass in the num assets? can use encapsulation
+      // asset_remove_image(body, game_play_state->state->body_assets, num_assets);
+      fprintf(stderr, "removed zapper!\n");
+    }
   }
 }
 
@@ -343,11 +352,17 @@ state_type_t game_play_main(game_play_state_t *game_play_state) {
   sdl_render_scene(state->scene, NULL);
   // asset_render(state->background_state->bg1);
   // asset_render(state->background_state->bg2);
+  // TODO: got stuck below the ceiling
+  // TODO: maybe something better than what vansh said for ceiling adn ground?
 
-  for (size_t i = 0; i < list_size(state->body_assets); i++) {
+  size_t num_assets = list_size(state->body_assets);
+  for (size_t i = 0; i < num_assets; i++) {
     asset_render(list_get(state->body_assets, i));
   }
 
+  // TODO: change user image to be jetpack and circular so that it works
+  // TODO: store ground and ceiling in state
+  // TODO: slow without asan, dont make images if not needed
   size_t num_bodies = scene_bodies(game_play_state->state->scene);
   body_t *user = scene_get_body(game_play_state->state->scene, 0);
   for (size_t i = 0; i < num_bodies; i++) {
@@ -369,6 +384,8 @@ state_type_t game_play_main(game_play_state_t *game_play_state) {
     }
   }
 
+  remove_zappers(game_play_state);
+
   // for (size_t i = 0; i < list_size(state->background); i++) {
   //   asset_update_bounding_box(list_get(state->background, i), 1000*dt);
   //   asset_render(list_get(state->background, i));
@@ -386,6 +403,10 @@ void game_play_free(game_play_state_t *game_play_state) {
   asset_destroy(state->background_state->bg1);
   asset_destroy(state->background_state->bg2);
   free(state->background_state);
+  // size_t num_assets = list_size(state->body_assets);
+  // for (size_t i = 0; i < num_assets; i++) {
+  //   asset_destroy(list_get(state->body_assets, i));
+  // }
   // TODO: fix
   // TODO: add int main and link and compile to find memory leaks
   // list_free(state->body_assets);

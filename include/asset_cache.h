@@ -4,6 +4,26 @@
 #include "asset.h"
 #include <stddef.h>
 
+typedef struct entry entry_t;
+
+/**
+ * Returns the asset cache as a list.
+ * @return list of the assets
+*/
+list_t *get_asset_cache();
+
+/**
+ * Gets the entry of specific index of the asset cache.
+ * @return an entry_t in the asset cache
+*/
+entry_t *get_entry(size_t i);
+
+/**
+ * Gets the object in the specific entry.
+ * @return a void * with the object in the entry
+*/
+void *get_entry_obj(entry_t *entry);
+
 /**
  * Initializes the empty, list-based global asset cache. The caller must then
  * destroy the cache with `asset_cache_destroy` when done.

@@ -14,12 +14,23 @@ typedef struct asset {
   SDL_Rect bounding_box;
 } asset_t;
 
+typedef struct text_asset text_asset_t;
+typedef struct image_asset image_asset_t;
+typedef struct button_asset button_asset_t;
+
 /**
  * Gets the `asset_type_t` of the asset.
  *
  * @return the type of the asset.
  */
 asset_type_t asset_get_type(asset_t *asset);
+
+/**
+ * Gets the `body_t` type associated with an image asset.
+ * 
+ * @return the body associated with the image.
+*/
+body_t *image_asset_get_body(image_asset_t *image_asset);
 
 /**
  * Allocates memory for an image asset with the given parameters.
@@ -98,6 +109,12 @@ void asset_on_button_click(asset_t *button, state_t *state, double x, double y);
  * @param asset the asset to render
  */
 void asset_render(asset_t *asset);
+
+// /**
+//  * Given a body that is marked for removal, finds the body's associated image.
+//  * Then, removes that image from the asset cache and destorys it.
+// */
+// void asset_remove_image(body_t *body, list_t *body_assets, size_t num_assets);
 
 /**
  * Frees the memory allocated for the asset.
