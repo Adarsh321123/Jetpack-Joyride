@@ -256,7 +256,7 @@ SDL_Rect find_bounding_box(body_t *body) {
   }
 
   if (get_type(body) == USER) {
-    return make_texr(min_x, (max_y - (max_y - min_y)), 1.5 * (max_x - min_x), 1.5 * (max_y - min_y));
+    return make_texr(min_x - 15, (max_y - (max_y - min_y)) - 10, 2 * (max_x - min_x), 2 * (max_y - min_y));
   }
   return make_texr(min_x, (max_y - (max_y - min_y)), (max_x - min_x), (max_y - min_y));
 }

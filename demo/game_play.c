@@ -227,6 +227,7 @@ static void background_update(background_state_t *state, double dt) {
   state->bg2->bounding_box.x = state->bg_offset + WINDOW_WIDTH;
 }
 
+// TODO: why is the ground adn user collision bouncing without this?
 /**
  * Adds collision handler force creators between appropriate bodies.
  *
@@ -322,9 +323,9 @@ state_type_t game_play_main(game_play_state_t *game_play_state) {
   sdl_clear();
 
   background_update(state->background_state, dt);
-  sdl_render_scene(state->scene, NULL);
-  // asset_render(state->background_state->bg1);
-  // asset_render(state->background_state->bg2);
+  // sdl_render_scene(state->scene, NULL);
+  asset_render(state->background_state->bg1);
+  asset_render(state->background_state->bg2);
   // TODO: got stuck below the ceiling
 
   size_t num_assets = list_size(state->body_assets);
@@ -332,7 +333,6 @@ state_type_t game_play_main(game_play_state_t *game_play_state) {
     asset_render(list_get(state->body_assets, i));
   }
 
-  // TODO: change user image to be jetpack and circular so that it works
   // TODO: store ground and ceiling in state
   // TODO: slow without asan sometimes, dont make images if not needed
   size_t num_bodies = scene_bodies(game_play_state->state->scene);
