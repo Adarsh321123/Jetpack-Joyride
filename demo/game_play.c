@@ -77,11 +77,10 @@ struct background_state {
   double bg_offset;
 };
 
-// TODO: no need for asset, just use body_t instead
 struct state_temp {
   background_state_t *background_state;
   list_t *body_assets;
-  asset_t *user;
+  body_t *user;
   scene_t *scene;
   int16_t points;
 };
@@ -193,14 +192,13 @@ void add_walls(state_temp_t *state) {
 void on_key(char key, key_event_type_t type, double held_time, game_play_state_t *game_play_state) {
   // fprintf(stderr, "before getting user\n");
   // fprintf(stderr, "scene_bodies inside: %zu\n", scene_bodies(game_play_state->state->scene));
-  body_t *user = scene_get_body(game_play_state->state->scene, 0);
   // fprintf(stderr, "after getting user\n");
   if (key == SPACE_BAR) {
     if (type == KEY_PRESSED) {
-      body_set_velocity(user, USER_VEL);
+      body_set_velocity(game_play_state->state->user, USER_VEL);
       // fprintf(stderr, "space bar hit\n");
     } else if (type == KEY_RELEASED) {
-      body_set_velocity(user, vec_negate(USER_VEL));
+      body_set_velocity(game_play_state->state->user, vec_negate(USER_VEL));
       // fprintf(stderr, "no space bar hit\n");
     }
   }
@@ -237,14 +235,13 @@ static void background_update(background_state_t *state, double dt) {
 void add_force_creators(game_play_state_t *game_play_state) {
   size_t num_bodies = scene_bodies(game_play_state->state->scene);
   // fprintf(stderr, "num bodies fcs: %zu\n", num_bodies);
-  body_t *user = scene_get_body(game_play_state->state->scene, 0);
   for (size_t i = 0; i < num_bodies; i++) {
     body_t *body = scene_get_body(game_play_state->state->scene, i);
     // TODO: either this or the centorid check but not both
     if (get_type(body) == CEILING || get_type(body) == GROUND) {
-      create_physics_collision(game_play_state->state->scene, user, body, ELASTICITY);
+      create_physics_collision(game_play_state->state->scene, game_play_state->state->user, body, ELASTICITY);
     }
-    // create_physics_collision(game_play_state->state->scene, user, body, ELASTICITY);
+    // create_physics_collision(game_play_state->state->scene, game_play_state->state->user, body, ELASTICITY);
     // TODO: zappers need to be freed
     // TODO: make sure that random time stuff form gitlab and anything else is there 
     // TODO: lag if stuck on ceiling nad then let go
@@ -263,11 +260,11 @@ game_play_state_t *game_play_init() {
 
   state->scene = scene_init();
   state->body_assets = list_init(1, (free_func_t)asset_destroy);
-  body_t *user = make_user(OUTER_RADIUS, INNER_RADIUS, VEC_ZERO);
+  state->user = make_user(OUTER_RADIUS, INNER_RADIUS, VEC_ZERO);
   vector_t start_pos = {MAX.x / 2, MIN.y + OUTER_RADIUS + 50};
-  body_set_centroid(user, start_pos);
-  scene_add_body(state->scene, user);
-  asset_t *img = asset_make_image_with_body(USER_IMG_PATH, user);
+  body_set_centroid(state->user, start_pos);
+  scene_add_body(state->scene, state->user);
+  asset_t *img = asset_make_image_with_body(USER_IMG_PATH, state->user);
   list_add(state->body_assets, img);
   // fprintf(stderr, "scene_bodies: %zu\n", scene_bodies(state->scene));
   sdl_on_key((key_handler_t)on_key);
@@ -317,10 +314,8 @@ void add_zapper(game_play_state_t *game_play_state, double dt) {
 
     asset_t *img = asset_make_image_with_body(ZAPPER_PATH, zapper);
     list_add(game_play_state->state->body_assets, img);
-    body_t *user = scene_get_body(game_play_state->state->scene, 0);
-    assert(user);
     // fprintf(stderr, "before collision\n");
-    create_collision(game_play_state->state->scene, zapper, user, game_over, game_play_state,
+    create_collision(game_play_state->state->scene, zapper, game_play_state->state->user, game_over, game_play_state,
                        0);
     // fprintf(stderr, "after collision\n");
   }
@@ -364,22 +359,21 @@ state_type_t game_play_main(game_play_state_t *game_play_state) {
   // TODO: store ground and ceiling in state
   // TODO: slow without asan, dont make images if not needed
   size_t num_bodies = scene_bodies(game_play_state->state->scene);
-  body_t *user = scene_get_body(game_play_state->state->scene, 0);
   for (size_t i = 0; i < num_bodies; i++) {
     body_t *body = scene_get_body(game_play_state->state->scene, i);
-    vector_t user_centroid = body_get_centroid(user);
-    vector_t user_vel = body_get_velocity(user);
+    vector_t user_centroid = body_get_centroid(game_play_state->state->user);
+    vector_t user_vel = body_get_velocity(game_play_state->state->user);
     vector_t body_centroid = body_get_centroid(body);
     double displacement = OUTER_RADIUS;
     if (get_type(body) == GROUND) {
       if (user_vel.y < 0 && user_centroid.y - body_centroid.y < displacement) {
         vector_t new_centroid = {.x = body_centroid.x, .y = body_centroid.y + displacement};
-        body_set_centroid(user, new_centroid);
+        body_set_centroid(game_play_state->state->user, new_centroid);
       }
     } else if (get_type(body) == CEILING) {
       if (user_vel.y > 0 && body_centroid.y - user_centroid.y < displacement) {
         vector_t new_centroid = {.x = body_centroid.x, .y = body_centroid.y - displacement};
-        body_set_centroid(user, new_centroid);
+        body_set_centroid(game_play_state->state->user, new_centroid);
       }
     }
   }
@@ -393,8 +387,7 @@ state_type_t game_play_main(game_play_state_t *game_play_state) {
   sdl_show();
 
   scene_tick(state->scene, dt);
-  // body_t *user = scene_get_body(game_play_state->state->scene, 0);
-  // fprintf(stderr, "y of the user %f\n", body_get_centroid(user).y);
+  // fprintf(stderr, "y of the user %f\n", body_get_centroid(game_play_state->state->user).y);
   return game_play_state->curr_state;
 }
 
