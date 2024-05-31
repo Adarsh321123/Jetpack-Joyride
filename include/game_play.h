@@ -4,11 +4,20 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+typedef enum { USER, CEILING, GROUND, ZAPPER } body_type_t;
+
 typedef struct background_state background_state_t;
 
 typedef struct state_temp state_temp_t;
 
 typedef struct game_play_state game_play_state_t;
+
+/**
+ * Gets the type of the given body.
+ * @param body the body we want to get the type of
+ * @return the `body_type_t` of the body
+*/
+body_type_t get_type(body_t *body);
 
 /**
  * Initializes sdl as well as the variables needed

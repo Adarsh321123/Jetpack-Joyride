@@ -184,23 +184,32 @@ void asset_render(asset_t *asset) {
   }
 }
 
-void asset_remove_image(body_t *body, list_t *body_assets, size_t num_assets) {
-  for (size_t i = 0; i < num_assets; i++) {
-    image_asset_t *cur_img = (image_asset_t *)list_get(body_assets, i);
-    if ((image_asset_get_body(cur_img)) == body) {
-      list_t *asset_cache = get_asset_cache();
-      size_t asset_cache_size = list_size(asset_cache);
-      for (size_t j = 0; j < asset_cache_size; j++) {
-        entry_t *cur_entry = get_entry(j);
-        void *obj = get_entry_obj(cur_entry);
-        if (cur_img == obj) {
-          list_remove(asset_cache, i);
-          asset_destroy((asset_t *)cur_img);
-          return;
-        }
-      }
-    }
-  }
-}
+// void asset_remove_image(body_t *body, list_t *body_assets, size_t num_assets) {
+//   fprintf(stderr, "num of assets: %zu\n", num_assets);
+//   for (size_t i = 0; i < num_assets; i++) {
+//     image_asset_t *cur_img = (image_asset_t *)list_get(body_assets, i);
+//     if ((image_asset_get_body(cur_img)) == body) {
+//       image_asset_destroy(cur_img);
+//       break;
+//       // fprintf(stderr, "cur img pointer: %p\n", cur_img);
+//       // fprintf(stderr, "found image with body\n");
+//       // list_t *asset_cache = get_asset_cache();
+//       // size_t asset_cache_size = list_size(asset_cache);
+//       // fprintf(stderr, "num of asset cahche: %zu\n", asset_cache_size);
+//       // for (size_t j = 0; j < asset_cache_size; j++) {
+//       //   entry_t *cur_entry = get_entry(j);
+//       //   image_asset_t *obj = (image_asset_t *)get_entry_obj(cur_entry);
+//       //   fprintf(stderr, "before if\n");
+//       //   fprintf(stderr, "obj pointer: %p\n", obj);
+//       //   if (cur_img == obj) {
+//       //     list_remove(asset_cache, i);
+//       //     asset_destroy((asset_t *)cur_img);
+//       //     fprintf(stderr, "removed image from cache and destroyed\n");
+//       //     return;
+//       //   }
+//       // }
+//     }
+//   }
+// }
 
 void asset_destroy(asset_t *asset) { free(asset); }

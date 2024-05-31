@@ -1,5 +1,6 @@
 #include "sdl_wrapper.h"
 #include "asset_cache.h"
+#include "game_play.h"
 #include <SDL2/SDL.h>
 #include <SDL2/SDL2_gfxPrimitives.h>
 #include <SDL2/SDL_image.h>
@@ -253,7 +254,11 @@ SDL_Rect find_bounding_box(body_t *body) {
       max_y = pixel.y;
     }
   }
-  return make_texr(min_x, max_y - (max_y - min_y), (max_x - min_x), (max_y - min_y));
+
+  if (get_type(body) == USER) {
+    return make_texr(min_x, (max_y - (max_y - min_y)), 1.5 * (max_x - min_x), 1.5 * (max_y - min_y));
+  }
+  return make_texr(min_x, (max_y - (max_y - min_y)), (max_x - min_x), (max_y - min_y));
 }
 
 void render_text(const char *text, TTF_Font *fontin, rgb_color_t rgb_color,
