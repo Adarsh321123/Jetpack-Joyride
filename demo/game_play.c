@@ -227,25 +227,6 @@ static void background_update(background_state_t *state, double dt) {
   state->bg2->bounding_box.x = state->bg_offset + WINDOW_WIDTH;
 }
 
-// TODO: why is the ground adn user collision bouncing without this?
-/**
- * Adds collision handler force creators between appropriate bodies.
- *
- * @param state the current state of the demo
- */
-void add_force_creators(game_play_state_t *game_play_state) {
-  size_t num_bodies = scene_bodies(game_play_state->state->scene);
-  // fprintf(stderr, "num bodies fcs: %zu\n", num_bodies);
-  for (size_t i = 0; i < num_bodies; i++) {
-    body_t *body = scene_get_body(game_play_state->state->scene, i);
-    // TODO: either this or the centorid check but not both
-    if (get_type(body) == CEILING || get_type(body) == GROUND) {
-      create_physics_collision(game_play_state->state->scene, game_play_state->state->user, body, ELASTICITY);
-    }
-    // TODO: lag if stuck on ceiling nad then let go
-  }
-}
-
 game_play_state_t *game_play_init() {
   game_play_state_t *game_play_state = malloc(sizeof(game_play_state_t));
   assert(game_play_state != NULL);
@@ -269,7 +250,6 @@ game_play_state_t *game_play_init() {
   state->background_state = background_init(BACKGROUND_PATH);
   game_play_state->state = state;
   add_walls(game_play_state->state);
-  add_force_creators(game_play_state);
   game_play_state->curr_state = GAME_PLAY;
 
   game_play_state->state = state;
@@ -326,7 +306,6 @@ state_type_t game_play_main(game_play_state_t *game_play_state) {
   // sdl_render_scene(state->scene, NULL);
   asset_render(state->background_state->bg1);
   asset_render(state->background_state->bg2);
-  // TODO: got stuck below the ceiling
 
   size_t num_assets = list_size(state->body_assets);
   for (size_t i = 0; i < num_assets; i++) {
@@ -334,7 +313,6 @@ state_type_t game_play_main(game_play_state_t *game_play_state) {
   }
 
   // TODO: store ground and ceiling in state
-  // TODO: slow without asan sometimes, dont make images if not needed
   size_t num_bodies = scene_bodies(game_play_state->state->scene);
   for (size_t i = 0; i < num_bodies; i++) {
     body_t *body = scene_get_body(game_play_state->state->scene, i);
