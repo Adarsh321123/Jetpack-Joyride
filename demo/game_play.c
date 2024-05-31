@@ -241,9 +241,6 @@ void add_force_creators(game_play_state_t *game_play_state) {
     if (get_type(body) == CEILING || get_type(body) == GROUND) {
       create_physics_collision(game_play_state->state->scene, game_play_state->state->user, body, ELASTICITY);
     }
-    // create_physics_collision(game_play_state->state->scene, game_play_state->state->user, body, ELASTICITY);
-    // TODO: zappers need to be freed
-    // TODO: make sure that random time stuff form gitlab and anything else is there 
     // TODO: lag if stuck on ceiling nad then let go
   }
 }
@@ -297,21 +294,6 @@ void add_zapper(game_play_state_t *game_play_state, double dt) {
     body_t *zapper = make_zapper(center, ZAPPER_WIDTH, ZAPPER_HEIGHT);
     scene_add_body(game_play_state->state->scene, zapper);
 
-    // fprintf(stderr, "zapper pointer: %p\n", zapper);
-    // list_t *asset_cache = get_asset_cache();
-    // size_t asset_cache_size = list_size(asset_cache);
-    // fprintf(stderr, "HERE num of asset cahche: %zu\n", asset_cache_size);
-    // for (size_t j = 0; j < asset_cache_size; j++) {
-    //   entry_t *cur_entry = get_entry(j);
-    //   image_asset_t *obj = (image_asset_t *)get_entry_obj(cur_entry);
-    //   fprintf(stderr, "obj pointer: %p\n", obj);
-    //   fprintf(stderr, "before if\n");
-    //   fprintf(stderr, "obj pointer: %p\n", obj);
-    //   if ((image_asset_get_body(obj)) == zapper) {
-    //     fprintf(stderr, "yay\n");
-    //   }
-    // }
-
     asset_t *img = asset_make_image_with_body(ZAPPER_PATH, zapper);
     list_add(game_play_state->state->body_assets, img);
     // fprintf(stderr, "before collision\n");
@@ -325,12 +307,8 @@ void remove_zappers(game_play_state_t *game_play_state) {
   size_t num_bodies = scene_bodies(game_play_state->state->scene);
   for (size_t i = 0; i < num_bodies; i++) {
     body_t *body = scene_get_body(game_play_state->state->scene, i);
-    // TODO: riigh thalf still stays
     if (get_type(body) == ZAPPER && body_get_centroid(body).x + 50 < MIN.x) {
       scene_remove_body(game_play_state->state->scene, i);
-      // size_t num_assets = list_size(game_play_state->state->body_assets);
-      // TODO: maybe find way to not pass in the num assets? can use encapsulation
-      // asset_remove_image(body, game_play_state->state->body_assets, num_assets);
       fprintf(stderr, "removed zapper!\n");
     }
   }
@@ -348,7 +326,6 @@ state_type_t game_play_main(game_play_state_t *game_play_state) {
   // asset_render(state->background_state->bg1);
   // asset_render(state->background_state->bg2);
   // TODO: got stuck below the ceiling
-  // TODO: maybe something better than what vansh said for ceiling adn ground?
 
   size_t num_assets = list_size(state->body_assets);
   for (size_t i = 0; i < num_assets; i++) {
@@ -357,7 +334,7 @@ state_type_t game_play_main(game_play_state_t *game_play_state) {
 
   // TODO: change user image to be jetpack and circular so that it works
   // TODO: store ground and ceiling in state
-  // TODO: slow without asan, dont make images if not needed
+  // TODO: slow without asan sometimes, dont make images if not needed
   size_t num_bodies = scene_bodies(game_play_state->state->scene);
   for (size_t i = 0; i < num_bodies; i++) {
     body_t *body = scene_get_body(game_play_state->state->scene, i);
@@ -396,17 +373,16 @@ void game_play_free(game_play_state_t *game_play_state) {
   asset_destroy(state->background_state->bg1);
   asset_destroy(state->background_state->bg2);
   free(state->background_state);
-  // size_t num_assets = list_size(state->body_assets);
-  // for (size_t i = 0; i < num_assets; i++) {
-  //   asset_destroy(list_get(state->body_assets, i));
-  // }
-  // TODO: fix
+  free(state->user);
+  size_t num_assets = list_size(state->body_assets);
+  for (size_t i = 0; i < num_assets; i++) {
+    asset_destroy(list_get(state->body_assets, i));
+  }
   // TODO: add int main and link and compile to find memory leaks
-  // list_free(state->body_assets);
+  list_free(state->body_assets);
+  // TODO: why is this failing
   // scene_free(state->scene);
   asset_cache_destroy();
   free(state);
-  //TTF_Quit();
-  //asset_cache_destroy();
   free(game_play_state);
 }
