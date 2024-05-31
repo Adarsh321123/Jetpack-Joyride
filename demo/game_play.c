@@ -64,6 +64,8 @@ const double WALL_DIM = 1;
 rgb_color_t black = (rgb_color_t){0, 0, 0};
 
 const double ZAPPER_GENERATION_TIME = 5;
+const double MIN_ZAPPER_GENERATION_TIME = 1;
+const double MAX_ZAPPER_GENERATION_TIME = 5;
 
 const char *USER_IMG_PATH = "assets/Barry.png";
 const char *LOG_PATH = "assets/log.png";
@@ -88,6 +90,7 @@ struct state_temp {
 
 struct game_play_state {
   double time;
+  double time_until_zapper;
   state_type_t curr_state;
   state_temp_t *state;
 };
@@ -279,6 +282,7 @@ game_play_state_t *game_play_init() {
 
   game_play_state->state = state;
   game_play_state->time = 0;
+  game_play_state->time_until_zapper = 0;
   return game_play_state;
 }
 
@@ -291,9 +295,11 @@ void game_over(body_t *body1, body_t *body2, vector_t axis, void *aux,
 
 void add_zapper(game_play_state_t *game_play_state, double dt) {
   game_play_state->time += dt;
-  if (game_play_state->time >= ZAPPER_GENERATION_TIME) {
+  if (game_play_state->time >= game_play_state->time_until_zapper) {
     fprintf(stderr, "added zapper!\n");
     game_play_state->time = 0;
+    game_play_state->time_until_zapper = fmod(rand(), 
+    MAX_ZAPPER_GENERATION_TIME - MIN_ZAPPER_GENERATION_TIME) + MIN_ZAPPER_GENERATION_TIME;
     double y_pos = fmod(rand(), (MAX.y - 50) - (MIN.y + 50));
     double x_pos = MAX.x + 15;
     vector_t center = {.x = x_pos, .y = y_pos};

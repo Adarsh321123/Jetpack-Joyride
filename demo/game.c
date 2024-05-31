@@ -5,6 +5,7 @@
 #include <stdbool.h>
 
 #include "home.h"
+#include "settings.h"
 #include "game_play.h"
 #include "game_over.h"
 #include "asset.h"
@@ -13,7 +14,9 @@
 
 struct state {
   state_type_t curr_state;
+  difficulty_type_t difficulty_level;
   home_state_t *home_state;
+  settings_state_t *settings_state;
   game_play_state_t *game_play_state;
   game_over_state_t *game_over_state;
 };
@@ -33,6 +36,26 @@ void run_home(state_t *state) {
     state->home_state = NULL;
     state->curr_state = next_state;
     home_free(home_state);
+  }
+}
+
+void run_settings(state_t *state) {
+  settings_state_t *settings_state = state->settings_state;
+  if (!settings_state) {
+    settings_state = settings_init();
+    state->settings_state = settings_state;
+    settings_state->difficulty_level = state->difficulty_level;
+  }
+  state_type_t next_state = settings_main(settings_state);
+  state->difficulty_level = settings_state->difficulty_level;
+  if (sdl_is_done((void *)settings_state)) {
+    state->settings_state = NULL;
+    settings_free(settings_state);
+  }
+  else if (next_state != SETTINGS) {
+    state->settings_state = NULL;
+    state->curr_state = next_state;
+    settings_free(settings_state);
   }
 }
 
@@ -75,7 +98,9 @@ void run_game_over(state_t *state) {
 state_t *emscripten_init() {
   state_t *state = malloc(sizeof(state_t));
   state->curr_state = HOME;
+  state->difficulty_level = EASY;
   state->home_state = NULL;
+  state->settings_state = NULL;
   state->game_play_state = NULL;
   state->game_over_state = NULL;
   return state;
@@ -85,6 +110,10 @@ bool emscripten_main(state_t *state) {
   switch (state->curr_state) {
       case HOME: {
           run_home(state);
+          break;
+      }
+      case SETTINGS: {
+          run_settings(state);
           break;
       }
       case GAME_PLAY: {
