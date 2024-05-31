@@ -81,6 +81,8 @@ struct state_temp {
   background_state_t *background_state;
   list_t *body_assets;
   body_t *user;
+  body_t *ceiling;
+  body_t *ground;
   scene_t *scene;
   int16_t points;
 };
@@ -177,7 +179,9 @@ void add_walls(state_temp_t *state) {
   body_t *ground = body_init_with_info(ground_shape, INFINITY, black,
                                        make_type_info(GROUND), free);
   scene_add_body(state->scene, ceiling);
+  state->ceiling = ceiling;
   scene_add_body(state->scene, ground);
+  state->ground = ground;
 }
 
 /**
@@ -312,33 +316,20 @@ state_type_t game_play_main(game_play_state_t *game_play_state) {
     asset_render(list_get(state->body_assets, i));
   }
 
-  // TODO: store ground and ceiling in state
-  size_t num_bodies = scene_bodies(game_play_state->state->scene);
-  for (size_t i = 0; i < num_bodies; i++) {
-    body_t *body = scene_get_body(game_play_state->state->scene, i);
-    vector_t user_centroid = body_get_centroid(game_play_state->state->user);
-    vector_t user_vel = body_get_velocity(game_play_state->state->user);
-    vector_t body_centroid = body_get_centroid(body);
-    double displacement = OUTER_RADIUS;
-    if (get_type(body) == GROUND) {
-      if (user_vel.y < 0 && user_centroid.y - body_centroid.y < displacement) {
-        vector_t new_centroid = {.x = body_centroid.x, .y = body_centroid.y + displacement};
-        body_set_centroid(game_play_state->state->user, new_centroid);
-      }
-    } else if (get_type(body) == CEILING) {
-      if (user_vel.y > 0 && body_centroid.y - user_centroid.y < displacement) {
-        vector_t new_centroid = {.x = body_centroid.x, .y = body_centroid.y - displacement};
-        body_set_centroid(game_play_state->state->user, new_centroid);
-      }
-    }
+  vector_t user_centroid = body_get_centroid(game_play_state->state->user);
+  vector_t user_vel = body_get_velocity(game_play_state->state->user);
+  vector_t ground_centroid = body_get_centroid(game_play_state->state->ground);
+  vector_t ceiling_centroid = body_get_centroid(game_play_state->state->ceiling);
+  if (user_vel.y < 0 && user_centroid.y - ground_centroid.y < OUTER_RADIUS) {
+    vector_t new_centroid = {.x = ground_centroid.x, .y = ground_centroid.y + OUTER_RADIUS};
+    body_set_centroid(game_play_state->state->user, new_centroid);
+  } else if (user_vel.y > 0 && ceiling_centroid.y - user_centroid.y < OUTER_RADIUS) {
+    vector_t new_centroid = {.x = ceiling_centroid.x, .y = ceiling_centroid.y - OUTER_RADIUS};
+    body_set_centroid(game_play_state->state->user, new_centroid);
   }
 
   remove_zappers(game_play_state);
 
-  // for (size_t i = 0; i < list_size(state->background); i++) {
-  //   asset_update_bounding_box(list_get(state->background, i), 1000*dt);
-  //   asset_render(list_get(state->background, i));
-  // }
   sdl_show();
 
   scene_tick(state->scene, dt);
