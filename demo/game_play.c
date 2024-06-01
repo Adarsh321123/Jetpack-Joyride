@@ -256,11 +256,6 @@ void on_key(char key, key_event_type_t type, double held_time, game_play_state_t
   }
 }
 
-
-
-
-
-
 static background_state_t *background_init(const char *bg_path) {
   background_state_t *state = malloc(sizeof(background_state_t));
   assert(state != NULL);
@@ -283,14 +278,6 @@ static void background_update(background_state_t *state, double dt) {
   state->bg1->bounding_box.x = state->bg_offset;
   state->bg2->bounding_box.x = state->bg_offset + WINDOW_WIDTH;
 }
-
-
-
-
-
-
-
-
 
 game_play_state_t *game_play_init() {
   game_play_state_t *game_play_state = malloc(sizeof(game_play_state_t));
@@ -455,14 +442,14 @@ state_type_t game_play_main(game_play_state_t *game_play_state) {
   sdl_clear();
 
   background_update(state->background_state, dt);
-  sdl_render_scene(state->scene, NULL);
-  // asset_render(state->background_state->bg1);
-  // asset_render(state->background_state->bg2);
+  // sdl_render_scene(state->scene, NULL);
+  asset_render(state->background_state->bg1);
+  asset_render(state->background_state->bg2);
 
-  // size_t num_assets = list_size(state->body_assets);
-  // for (size_t i = 0; i < num_assets; i++) {
-  //   asset_render(list_get(state->body_assets, i));
-  // }
+  size_t num_assets = list_size(state->body_assets);
+  for (size_t i = 0; i < num_assets; i++) {
+    asset_render(list_get(state->body_assets, i));
+  }
 
   vector_t user_centroid = body_get_centroid(game_play_state->state->user);
   vector_t user_vel = body_get_velocity(game_play_state->state->user);
