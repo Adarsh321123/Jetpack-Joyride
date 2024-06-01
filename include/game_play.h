@@ -4,7 +4,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-typedef enum { USER, CEILING, GROUND, ZAPPER } body_type_t;
+typedef enum { USER, CEILING, GROUND, ZAPPER, LASER, LASER_ACTIVE } body_type_t;
 
 typedef struct background_state background_state_t;
 
