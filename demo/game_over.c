@@ -71,7 +71,7 @@ static void create_backgrounds(game_over_state_t *game_over_state) {
  * Initializes and stores the text assets in the game_over_state.
  */
 static void create_text(game_over_state_t *game_over_state) {
-  for (size_t i = 0; i < NUM_TEXT; i++) {
+  for (size_t i = 0; i < NUM_TEXT_GAME_OVER; i++) {
     text_info_t info = text_templates[i];
     asset_t *text = create_text_from_info(info);
     list_add(game_over_state->text, text);
@@ -108,7 +108,7 @@ game_over_state_t *game_over_init() {
   game_over_state->backgrounds = list_init(NUM_BACKGROUNDS, NULL);
   create_backgrounds(game_over_state);
 
-  game_over_state->text = list_init(NUM_TEXT, NULL);
+  game_over_state->text = list_init(NUM_TEXT_GAME_OVER, NULL);
   create_text(game_over_state);
 
   game_over_state->manual_buttons = list_init(NUM_BUTTONS_GAME_OVER, NULL);
@@ -132,7 +132,7 @@ state_type_t game_over_main(game_over_state_t *game_over_state) {
 
   // render the text
   list_t *text = game_over_state->text;
-  for (size_t i = 0; i < NUM_TEXT; i++){
+  for (size_t i = 0; i < NUM_TEXT_GAME_OVER; i++){
     asset_render(list_get(text, i));
   }
 

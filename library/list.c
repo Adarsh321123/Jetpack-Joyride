@@ -20,7 +20,7 @@ list_t *list_init(size_t initial_capacity, free_func_t freer) {
 }
 
 void list_free(list_t *list) {
-  if (list == NULL) {
+  if (list == 0 || list == NULL) {
     return;
   }
   assert(list->elements != NULL);

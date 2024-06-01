@@ -15,10 +15,17 @@ typedef struct state state_t;
 
 typedef enum {
     HOME,
+    SETTINGS,
     GAME_PLAY,
     GAME_OVER,
     EXIT
 } state_type_t;
+
+typedef enum {
+    EASY,
+    MEDIUM,
+    HARD
+} difficulty_type_t;
 
 /**
  * Initializes sdl as well as the variables needed
