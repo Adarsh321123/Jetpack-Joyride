@@ -103,9 +103,15 @@ void asset_update_bounding_box(asset_t *image, body_t *body) {
   image->bounding_box = find_bounding_box(body);
 }
 
-asset_t *asset_update_bounding_box_x(asset_t *image, int x) {  
+void asset_update_bounding_box_center(asset_t *image, vector_t *center, double w, double h) {  
+  image->bounding_box.x = center->x - w / 2;
+  image->bounding_box.y = center->y + h / 2;
+  image->bounding_box.w = w;
+  image->bounding_box.h = h;
+}
+
+void asset_update_bounding_box_x(asset_t *image, int x) {  
   image->bounding_box.x = x;
-  return image;
 }
 
 

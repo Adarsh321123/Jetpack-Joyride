@@ -44,7 +44,9 @@ asset_t *asset_make_image(const char *filepath, SDL_Rect bounding_box);
 
 void asset_update_bounding_box(asset_t *image, body_t *body);
 
-asset_t *asset_update_bounding_box_x(asset_t *image, int x); 
+void asset_update_bounding_box_center(asset_t *image, vector_t *center, double w, double h);
+
+void asset_update_bounding_box_x(asset_t *image, int x); 
 
 /**
  * Allocates memory for an image asset with an attached body. When the asset
