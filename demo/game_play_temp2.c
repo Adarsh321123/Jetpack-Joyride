@@ -53,7 +53,7 @@ const double LASER_HEIGHT_NOT_ACTIVE = 20;
 const double LASER_SIDE_WIDTH = 50;
 const double LASER_SIDE_HEIGHT = 60;
 const double LASER_WIDTH_ACTIVE = 990;
-const double LASER_HEIGHT_ACTIVE = 60;
+const double LASER_HEIGHT_ACTIVE = 98;
 
 // TODO: First make a basic laser appear on the screen with some frequency
 // Then, make the laser appear with a frequency based on a specific algorithm

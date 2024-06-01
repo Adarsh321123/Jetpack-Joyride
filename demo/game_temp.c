@@ -75,6 +75,17 @@ const double LASER_HEIGHT_ACTIVE = 60;
 //deactivate generation of lasers when lasers becomes first active
 // then activate again
 
+// now track tje time of spawn in one var (all of this is in the first if statement)
+
+
+// then if the current time - time of spawn > 3:
+// - track the time of activation .
+// - remove the body from the scene 
+// - move the asset of the body to somewhere (do that later)
+// - add new laser activated. 
+// - if the current_time - time_of_activation > 3:
+// - - remove the laser body from the scene
+
 //random number for number of clusters (between 1 and 2)
 //random number for number of lasers in each cluster (between 1 and 4) for one cluster
 //random number for two clusters between (1 and 3) between the bounds. 
@@ -109,7 +120,7 @@ const char *USER_IMG_PATH = "assets/Barry.png";
 const char *LOG_PATH = "assets/log.png";
 const char *BACKGROUND_PATH = "assets/BackdropMain.png";
 const char *ZAPPER_PATH = "assets/Zapper1.png";
-const char *LASER_PATH = "assets/laser.png";
+const char *LASER_PATH_INACTIVE = "assets/laser.png";
 
 
 struct background_state {
@@ -402,7 +413,7 @@ void add_laser(game_play_state_t *game_play_state, double dt) {
     vector_t center = {.x = x_pos, .y = y_pos};
     body_t *laser = make_laser(center);
     scene_add_body(game_play_state->state->scene, laser);
-    asset_t *img = asset_make_image_with_body(LASER_PATH, laser);
+    asset_t *img = asset_make_image_with_body(LASER_PATH_INACTIVE, laser);
     list_add(game_play_state->state->body_assets, img);
     body_t *user = scene_get_body(game_play_state->state->scene, 0);
     assert(user);
