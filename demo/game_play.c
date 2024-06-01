@@ -343,10 +343,6 @@ void game_play_free(game_play_state_t *game_play_state) {
   asset_destroy(state->background_state->bg2);
   free(state->background_state);
   free(state->user);
-  size_t num_assets = list_size(state->body_assets);
-  for (size_t i = 0; i < num_assets; i++) {
-    asset_destroy(list_get(state->body_assets, i));
-  }
   // TODO: add int main and link and compile to find memory leaks
   list_free(state->body_assets);
   // TODO: why is this failing
