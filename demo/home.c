@@ -11,6 +11,11 @@
 #include "sdl_wrapper.h"
 
 /**
+ * Handler for entering settings page
+ */
+static void settings(home_state_t *home_state);
+
+/**
  * Handler for entering game play
  */
 static void play(home_state_t *home_state);
@@ -30,12 +35,23 @@ static text_info_t text_templates[] = {
 static button_info_t button_templates[] = {
     {.image_path = "assets/button.png",
      .font_path = "assets/New Athletic M54.ttf",
-     .image_box = (SDL_Rect){350, 300, 300, 100},
-     .text_box = (SDL_Rect){450, 325, 150, 50},
+     .image_box = (SDL_Rect){150, 300, 300, 100},
+     .text_box = (SDL_Rect){200, 325, 150, 50},
+     .text_color = (rgb_color_t){255, 255, 255},
+     .text = "Settings",
+     .handler = (void *)settings},
+    {.image_path = "assets/button.png",
+     .font_path = "assets/New Athletic M54.ttf",
+     .image_box = (SDL_Rect){450, 300, 300, 100},
+     .text_box = (SDL_Rect){550, 325, 150, 50},
      .text_color = (rgb_color_t){255, 255, 255},
      .text = "Play",
      .handler = (void *)play}
      };
+
+static void settings(home_state_t *home_state){
+  home_state->curr_state = SETTINGS;
+}
 
 static void play(home_state_t *home_state){
   home_state->curr_state = GAME_PLAY;
@@ -56,7 +72,7 @@ static void create_backgrounds(home_state_t *home_state) {
  * Initializes and stores the text assets in the home_state.
  */
 static void create_text(home_state_t *home_state) {
-  for (size_t i = 0; i < NUM_TEXT; i++) {
+  for (size_t i = 0; i < NUM_TEXT_HOME; i++) {
     text_info_t info = text_templates[i];
     asset_t *text = create_text_from_info(info);
     list_add(home_state->text, text);
@@ -93,7 +109,7 @@ home_state_t *home_init() {
   home_state->backgrounds = list_init(NUM_BACKGROUNDS, NULL);
   create_backgrounds(home_state);
 
-  home_state->text = list_init(NUM_TEXT, NULL);
+  home_state->text = list_init(NUM_TEXT_HOME, NULL);
   create_text(home_state);
 
   home_state->manual_buttons = list_init(NUM_BUTTONS_HOME, NULL);
@@ -117,7 +133,7 @@ state_type_t home_main(home_state_t *home_state) {
 
   // render the text
   list_t *text = home_state->text;
-  for (size_t i = 0; i < NUM_TEXT; i++){
+  for (size_t i = 0; i < NUM_TEXT_HOME; i++){
     asset_render(list_get(text, i));
   }
 

@@ -82,7 +82,12 @@ rgb_color_t black = (rgb_color_t){0, 0, 0};
 rgb_color_t red = (rgb_color_t){1, 0, 0};
 
 const double ZAPPER_GENERATION_TIME = 5;
-const double LASER_GENERATION_TIME = 12;
+const double MIN_ZAPPER_GENERATION_TIME_EASY = 3;
+const double MAX_ZAPPER_GENERATION_TIME_EASY = 5;
+const double MIN_ZAPPER_GENERATION_TIME_MEDIUM = 2;
+const double MAX_ZAPPER_GENERATION_TIME_MEDIUM = 3;
+const double MIN_ZAPPER_GENERATION_TIME_HARD = 1;
+const double MAX_ZAPPER_GENERATION_TIME_HARD = 2;
 
 const char *USER_IMG_PATH = "assets/Barry.png";
 const char *LOG_PATH = "assets/log.png";
@@ -110,6 +115,9 @@ struct state_temp {
 
 struct game_play_state {
   double time;
+  double time_until_zapper;
+  double min_zapper_generation_time;
+  double max_zapper_generation_time;
   double zapper_time;
   // This is to use algorithm of random spawning
   double time_laser;
@@ -279,7 +287,29 @@ static void background_update(background_state_t *state, double dt) {
   state->bg2->bounding_box.x = state->bg_offset + WINDOW_WIDTH;
 }
 
-game_play_state_t *game_play_init() {
+/**
+ * Adds collision handler force creators between appropriate bodies.
+ *
+ * @param state the current state of the demo
+ */
+void add_force_creators(game_play_state_t *game_play_state) {
+  size_t num_bodies = scene_bodies(game_play_state->state->scene);
+  // fprintf(stderr, "num bodies fcs: %zu\n", num_bodies);
+  body_t *user = scene_get_body(game_play_state->state->scene, 0);
+  for (size_t i = 0; i < num_bodies; i++) {
+    body_t *body = scene_get_body(game_play_state->state->scene, i);
+    // TODO: either this or the centorid check but not both
+    if (get_type(body) == CEILING || get_type(body) == GROUND) {
+      create_physics_collision(game_play_state->state->scene, user, body, ELASTICITY);
+    }
+    // create_physics_collision(game_play_state->state->scene, user, body, ELASTICITY);
+    // TODO: zappers need to be freed
+    // TODO: make sure that random time stuff form gitlab and anything else is there 
+    // TODO: lag if stuck on ceiling nad then let go
+  }
+}
+
+game_play_state_t *game_play_init(difficulty_type_t difficulty_level) {
   game_play_state_t *game_play_state = malloc(sizeof(game_play_state_t));
   assert(game_play_state != NULL);
 
@@ -312,10 +342,46 @@ game_play_state_t *game_play_init() {
   game_play_state->laser_active = false;
   game_play_state->state = state;
   game_play_state->time = 0;
+  game_play_state->time_until_zapper = 0;
   game_play_state->zapper_time = 0;
   game_play_state->time_laser = 0;
   game_play_state->time_laser_spawn = 0;
   game_play_state->time_laser_activate = 0;
+  if (difficulty_level == EASY){
+    fprintf(stdout, "easy\n");
+  }
+  if (difficulty_level == MEDIUM){
+    fprintf(stdout, "medium\n");
+  }
+  if (difficulty_level == HARD){
+    fprintf(stdout, "hard\n");
+  }
+  switch (difficulty_level) {
+      case EASY: {
+          game_play_state->min_zapper_generation_time = 
+                                              MIN_ZAPPER_GENERATION_TIME_EASY;
+          game_play_state->max_zapper_generation_time = 
+                                              MAX_ZAPPER_GENERATION_TIME_EASY;
+          break;
+      }
+      case MEDIUM: {
+          game_play_state->min_zapper_generation_time = 
+                                              MIN_ZAPPER_GENERATION_TIME_MEDIUM;
+          game_play_state->max_zapper_generation_time = 
+                                              MAX_ZAPPER_GENERATION_TIME_MEDIUM;
+          break;
+      }
+      case HARD: {
+          game_play_state->min_zapper_generation_time = 
+                                              MIN_ZAPPER_GENERATION_TIME_HARD;
+          game_play_state->max_zapper_generation_time = 
+                                              MAX_ZAPPER_GENERATION_TIME_HARD;
+          break;
+      }
+      default: {
+          break;
+      }
+  }
   return game_play_state;
 }
 
@@ -366,10 +432,13 @@ void remove_lasers(game_play_state_t *game_play_state) {
 
 void add_zapper(game_play_state_t *game_play_state, double dt) {
   game_play_state->zapper_time += dt;
-  if (!game_play_state->laser_active && game_play_state->zapper_time >= ZAPPER_GENERATION_TIME) {
+  if (!game_play_state->laser_active && game_play_state->zapper_time >= game_play_state->time_until_zapper) {
     fprintf(stderr, "added zapper!\n");
     game_play_state->zapper_time = 0;
-    
+    game_play_state->time_until_zapper = fmod(rand(), 
+    game_play_state->max_zapper_generation_time - 
+    game_play_state->min_zapper_generation_time) + 
+    game_play_state->min_zapper_generation_time;
     double y_pos = fmod(rand(), (MAX.y - 50) - (MIN.y + 50));
     double x_pos = MAX.x + 15;
     vector_t center = {.x = x_pos, .y = y_pos};
