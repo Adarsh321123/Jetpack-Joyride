@@ -82,6 +82,7 @@ rgb_color_t black = (rgb_color_t){0, 0, 0};
 rgb_color_t red = (rgb_color_t){1, 0, 0};
 
 const double ZAPPER_GENERATION_TIME = 5;
+const double LASER_GENERATION_TIME = 12;
 const double MIN_ZAPPER_GENERATION_TIME_EASY = 3;
 const double MAX_ZAPPER_GENERATION_TIME_EASY = 5;
 const double MIN_ZAPPER_GENERATION_TIME_MEDIUM = 2;
