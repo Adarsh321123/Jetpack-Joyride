@@ -49,7 +49,7 @@ const vector_t OBS_SPACING = {120, 350};
 
 // LASERS: 
 const double LASER_WIDTH_ACTIVE = 990;
-const double LASER_HEIGHT_ACTIVE = 98;
+const double LASER_HEIGHT_ACTIVE = 42.14;
 
 vector_t LASER1 = {.x = 500, .y = 80};
 vector_t LASER2 = {.x = 500, .y = 101.25};
@@ -524,6 +524,10 @@ void add_laser(game_play_state_t *game_play_state, double dt) {
     game_play_state->laser->time_laser = 0;
 
     game_play_state->laser->time_laser_spawn = game_play_state->time;
+
+    for (size_t i = 0; i < list_size(game_play_state->laser->laser_spawn_positions); i++) { 
+      list_remove(game_play_state->laser->laser_spawn_positions, i);
+    }    
     // TODO: ensure that positions are reasonable
 
 
@@ -596,8 +600,8 @@ state_type_t game_play_main(game_play_state_t *game_play_state) {
 
   background_update(state->background_state, dt);
   sdl_render_scene(state->scene, NULL);
-  asset_render(state->background_state->bg1);
-  asset_render(state->background_state->bg2);
+  // asset_render(state->background_state->bg1);
+  // asset_render(state->background_state->bg2);
 
   size_t num_assets = list_size(state->body_assets);
   for (size_t i = 0; i < num_assets; i++) {

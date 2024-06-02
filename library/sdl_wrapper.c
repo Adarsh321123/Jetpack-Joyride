@@ -255,9 +255,15 @@ SDL_Rect find_bounding_box(body_t *body) {
     }
   }
 
+  // TODO: make_texr takes as int and we pass double. 
   if (get_type(body) == USER) {
     return make_texr(min_x - 15, (max_y - (max_y - min_y)) - 10, 2 * (max_x - min_x), 2 * (max_y - min_y));
   }
+
+  if (get_type(body) == LASER || get_type(body) == LASER_ACTIVE) {
+    return make_texr(min_x, (max_y - (max_y - min_y)) - 28, (max_x - min_x), (max_y - min_y) + 56);
+  }
+
   return make_texr(min_x, (max_y - (max_y - min_y)), (max_x - min_x), (max_y - min_y));
 }
 
