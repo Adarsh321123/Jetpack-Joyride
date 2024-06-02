@@ -4,16 +4,34 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+#ifndef STATE_H
+#define STATE_H
+
 /**
  * Stores the demo state
  * Use this to store any variable needed every 'tick' of your demo
  */
 typedef struct state state_t;
 
+typedef enum {
+    HOME,
+    SETTINGS,
+    GAME_PLAY,
+    GAME_OVER,
+    EXIT
+} state_type_t;
+
+typedef enum {
+    EASY,
+    MEDIUM,
+    HARD
+} difficulty_type_t;
+
 /**
  * Initializes sdl as well as the variables needed
  * Creates and stores all necessary variables for the demo in a created state
- * variable Returns the pointer to this state (This is the state emscripten_main
+ * variable 
+ * Returns the pointer to this state (This is the state emscripten_main
  * and emscripten_free work with)
  */
 state_t *emscripten_init();
@@ -35,3 +53,6 @@ bool emscripten_main(state_t *state);
  * @param state pointer to a state object with info about demo
  */
 void emscripten_free(state_t *state);
+
+
+#endif // STATE_H
