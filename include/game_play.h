@@ -12,6 +12,9 @@ typedef struct state_temp state_temp_t;
 
 typedef struct game_play_state game_play_state_t;
 
+typedef struct laser_state laser_state_t;
+
+
 /**
  * Gets the type of the given body.
  * @param body the body we want to get the type of
