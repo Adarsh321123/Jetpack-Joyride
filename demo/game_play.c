@@ -55,6 +55,8 @@ const double LASER_HEIGHT_ACTIVE = 42.14;
 // COINS:
 const double COIN_OUTER_RADIUS = 10;
 const double COIN_INNER_RADIUS = 10;
+const size_t COIN_GRID_SIZE = 3;
+const size_t NUM_COINS = 20;
 
 vector_t LASER1 = {.x = 500, .y = 80};
 vector_t LASER2 = {.x = 500, .y = 101.25};
@@ -152,21 +154,14 @@ struct laser_state {
 };
 
 struct coin_state {
-  // This is to use algorithm of random spawning
   double time_until_coin;
-  // This is to track times when event happens
   double coin_time;
   size_t coin_count;
-
-  list_t *coin_assets;
-
-  list_t *coin_centers;
-  list_t *coin_spawn_positions;
 };
 
 struct game_play_state {
   double time;
-  
+  double distance_traveled;
   double time_until_zapper;
   double min_zapper_generation_time;
   double max_zapper_generation_time;
@@ -397,6 +392,7 @@ game_play_state_t *game_play_init(difficulty_type_t difficulty_level) {
   game_play_state->laser->laser_active = false;
   game_play_state->state = state;
   game_play_state->time = 0;
+  game_play_state->distance_traveled = 0;
   game_play_state->time_until_zapper = 0;
   game_play_state->coin->time_until_coin = 0;
   game_play_state->zapper_time = 0;
@@ -431,7 +427,6 @@ game_play_state_t *game_play_init(difficulty_type_t difficulty_level) {
   list_add(game_play_state->laser->laser_centers, &LASER8);
   list_add(game_play_state->laser->laser_centers, &LASER9);
   list_add(game_play_state->laser->laser_centers, &LASER10);
-
 
   // list_add(game_play_state->laser->laser_centers, &LASER1);
   // for (size_t i = 0; i < 8; i++){
@@ -488,9 +483,11 @@ void game_over(body_t *body1, body_t *body2, vector_t axis, void *aux,
 void collect_coin(body_t *body1, body_t *body2, vector_t axis, void *aux,
                         double force_const) {
   fprintf(stderr, "collected coin!\n");
-  game_play_state_t *game_play_state = (game_play_state_t *) aux;
-  game_play_state->coin->coin_count++;
+  asset_t *asset = (asset_t *) aux;
+  // game_play_state_t *game_play_state = (game_play_state_t *) aux;
+  // game_play_state->coin->coin_count++;
   body_remove(body1);
+  asset_update_bounding_box_x(asset, -1000);
 }
 
 
@@ -588,15 +585,29 @@ void add_coins(game_play_state_t *game_play_state, double dt) {
     MIN_COIN_GENERATION_TIME;
     double y_pos = fmod(rand(), (MAX.y - 50) - (MIN.y + 50));
     double x_pos = MAX.x + 15;
-    vector_t center = {.x = x_pos, .y = y_pos};
-    body_t *coin = make_coin(COIN_OUTER_RADIUS, COIN_INNER_RADIUS, center);
-    scene_add_body(game_play_state->state->scene, coin);
-    asset_t *img = asset_make_image_with_body(COIN_PATH, coin);
-    list_add(game_play_state->state->body_assets, img);
-    // fprintf(stderr, "before collision\n");
-    create_collision(game_play_state->state->scene, coin, game_play_state->state->user, 
-    collect_coin, game_play_state, 0);
-    // fprintf(stderr, "after collision\n");
+    double y_shift = 40;
+    double x_shift = 40;
+    for (size_t i = 0; i < COIN_GRID_SIZE; i++) {
+      for (size_t j = 0; j < COIN_GRID_SIZE; j++) {
+        vector_t center = {.x = x_pos + (i * x_shift), .y = y_pos + (j * y_shift)};
+        body_t *coin = make_coin(COIN_OUTER_RADIUS, COIN_INNER_RADIUS, center);
+        scene_add_body(game_play_state->state->scene, coin);
+        asset_t *img = asset_make_image_with_body(COIN_PATH, coin);
+        list_add(game_play_state->state->body_assets, img);
+        // fprintf(stderr, "before collision\n");
+        create_collision(game_play_state->state->scene, coin, game_play_state->state->user, 
+        collect_coin, img, 0);
+      }
+    }
+    // vector_t center = {.x = x_pos, .y = y_pos};
+    // body_t *coin = make_coin(COIN_OUTER_RADIUS, COIN_INNER_RADIUS, center);
+    // scene_add_body(game_play_state->state->scene, coin);
+    // asset_t *img = asset_make_image_with_body(COIN_PATH, coin);
+    // list_add(game_play_state->state->body_assets, img);
+    // // fprintf(stderr, "before collision\n");
+    // create_collision(game_play_state->state->scene, coin, game_play_state->state->user, 
+    // collect_coin, img, 0);
+    // // fprintf(stderr, "after collision\n");
   }
 }
 
