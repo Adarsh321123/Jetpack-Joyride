@@ -25,6 +25,7 @@ const vector_t INVADER_BULLET_VEL = {0, -200};
 const vector_t USER_VEL = {0, 200};
 const vector_t BASE_OBJ_VEL = {30, 0};
 const vector_t ZAPPER_VEL = {-100, 0};
+const vector_t COIN_VEL = {-100, 0};
 const double EXTRA_VEL_MULT = 10;
 const double VEL_MULT_PROB = 0.2;
 
@@ -37,8 +38,8 @@ const double resting_speed = 300;
 const double ACCEL = 100;
 
 // USER: 
-const double OUTER_RADIUS = 15;
-const double INNER_RADIUS = 15;
+const double USER_OUTER_RADIUS = 15;
+const double USER_INNER_RADIUS = 15;
 
 // ZAPPER:
 const double ZAPPER_WIDTH = 46;
@@ -51,6 +52,10 @@ const vector_t OBS_SPACING = {120, 350};
 const double LASER_WIDTH_ACTIVE = 990;
 const double LASER_HEIGHT_ACTIVE = 42.14;
 
+// COINS:
+const double COIN_OUTER_RADIUS = 10;
+const double COIN_INNER_RADIUS = 10;
+
 vector_t LASER1 = {.x = 500, .y = 80};
 vector_t LASER2 = {.x = 500, .y = 101.25};
 vector_t LASER3 = {.x = 500, .y = 143.75};
@@ -61,7 +66,6 @@ vector_t LASER7 = {.x = 500, .y = 313.75};
 vector_t LASER8 = {.x = 500, .y = 356.25};
 vector_t LASER9 = {.x = 500, .y = 398.75};
 vector_t LASER10 = {.x = 500, .y = 420};
-
 
 // TODO: First make a basic laser appear on the screen with some frequency
 // Then, make the laser appear with a frequency based on a specific algorithm
@@ -88,8 +92,11 @@ const rgb_color_t user_color = (rgb_color_t){0.1, 0.9, 0.2};
 const double WALL_DIM = 1;
 rgb_color_t black = (rgb_color_t){0, 0, 0};
 rgb_color_t red = (rgb_color_t){1, 0, 0};
+rgb_color_t blue = (rgb_color_t){0, 0, 1};
 
 const double ZAPPER_GENERATION_TIME = 5;
+const double MIN_COIN_GENERATION_TIME = 3;
+const double MAX_COIN_GENERATION_TIME = 6;
 const double LASER_GENERATION_TIME = 12;
 const double MIN_ZAPPER_GENERATION_TIME_EASY = 3;
 const double MAX_ZAPPER_GENERATION_TIME_EASY = 5;
@@ -102,6 +109,7 @@ const char *USER_IMG_PATH = "assets/Barry.png";
 const char *LOG_PATH = "assets/log.png";
 const char *BACKGROUND_PATH = "assets/BackdropMain.png";
 const char *ZAPPER_PATH = "assets/Zapper1.png";
+const char *COIN_PATH = "assets/Coin.png";
 const char *LASER_PATH_INACTIVE = "assets/laser_noneactive.png";
 const char *LASER_PATH_ACTIVE = "assets/laser_active.png";
 
@@ -143,6 +151,19 @@ struct laser_state {
   list_t *laser_spawn_positions;
 };
 
+struct coin_state {
+  // This is to use algorithm of random spawning
+  double time_until_coin;
+  // This is to track times when event happens
+  double coin_time;
+  size_t coin_count;
+
+  list_t *coin_assets;
+
+  list_t *coin_centers;
+  list_t *coin_spawn_positions;
+};
+
 struct game_play_state {
   double time;
   
@@ -151,6 +172,7 @@ struct game_play_state {
   double max_zapper_generation_time;
   double zapper_time;
   laser_state_t *laser;
+  coin_state_t *coin;
   state_type_t curr_state;
   state_temp_t *state;
 };
@@ -245,6 +267,22 @@ body_t *make_laser_active(vector_t *center) {
   return laser;
 }
 
+body_t *make_coin(double outer_radius, double inner_radius, vector_t center) {
+  center.y += inner_radius;
+  list_t *coin_shape = list_init(USER_NUM_POINTS, free);
+  for (size_t i = 0; i < USER_NUM_POINTS; i++) {
+    double angle = 2 * M_PI * i / USER_NUM_POINTS;
+    vector_t *v = malloc(sizeof(*v));
+    *v = (vector_t){center.x + inner_radius * cos(angle),
+                    center.y + outer_radius * sin(angle)};
+    list_add(coin_shape, v);
+  }
+  body_t *coin =
+      body_init_with_info(coin_shape, 1, blue, make_type_info(COIN), free);
+  body_set_velocity(coin, COIN_VEL);
+  body_set_centroid(coin, center);
+  return coin;
+}
 
 
 /**
@@ -337,8 +375,8 @@ game_play_state_t *game_play_init(difficulty_type_t difficulty_level) {
   state->body_assets = list_init(1, (free_func_t)asset_destroy);
 
   // SET everything for the user
-  state->user = make_user(OUTER_RADIUS, INNER_RADIUS, VEC_ZERO);
-  vector_t start_pos = {MAX.x / 2, MIN.y + OUTER_RADIUS + 50};
+  state->user = make_user(USER_OUTER_RADIUS, USER_INNER_RADIUS, VEC_ZERO);
+  vector_t start_pos = {MAX.x / 2, MIN.y + USER_OUTER_RADIUS + 50};
   body_set_centroid(state->user, start_pos);
   scene_add_body(state->scene, state->user);
   asset_t *img = asset_make_image_with_body(USER_IMG_PATH, state->user);
@@ -353,16 +391,20 @@ game_play_state_t *game_play_init(difficulty_type_t difficulty_level) {
   game_play_state->curr_state = GAME_PLAY;
 
   game_play_state->laser = malloc(sizeof(laser_state_t));
+  game_play_state->coin = malloc(sizeof(coin_state_t));
 
   game_play_state->laser->laser_inactive = false;
   game_play_state->laser->laser_active = false;
   game_play_state->state = state;
   game_play_state->time = 0;
   game_play_state->time_until_zapper = 0;
+  game_play_state->coin->time_until_coin = 0;
   game_play_state->zapper_time = 0;
+  game_play_state->coin->coin_time = 0;
   game_play_state->laser->time_laser = 0;
   game_play_state->laser->time_laser_spawn = 0;
   game_play_state->laser->time_laser_activate = 0;
+  game_play_state->coin->coin_count = 0;
 
   SDL_Rect bounding_box = make_texr(-2000, 0, LASER_WIDTH_ACTIVE, LASER_HEIGHT_ACTIVE);
   // asset_t *active_laser = asset_make_image(LASER_PATH_ACTIVE, bounding_box);
@@ -443,6 +485,14 @@ void game_over(body_t *body1, body_t *body2, vector_t axis, void *aux,
   game_play_state->curr_state = GAME_OVER;
 }
 
+void collect_coin(body_t *body1, body_t *body2, vector_t axis, void *aux,
+                        double force_const) {
+  fprintf(stderr, "collected coin!\n");
+  game_play_state_t *game_play_state = (game_play_state_t *) aux;
+  game_play_state->coin->coin_count++;
+  body_remove(body1);
+}
+
 
 void remove_zappers(game_play_state_t *game_play_state) {
   size_t num_bodies = scene_bodies(game_play_state->state->scene);
@@ -451,6 +501,17 @@ void remove_zappers(game_play_state_t *game_play_state) {
     if (get_type(body) == ZAPPER && body_get_centroid(body).x + 50 < MIN.x) {
       scene_remove_body(game_play_state->state->scene, i);
       fprintf(stderr, "removed zapper!\n");
+    }
+  }
+}
+
+void remove_coins(game_play_state_t *game_play_state) {
+  size_t num_bodies = scene_bodies(game_play_state->state->scene);
+  for (size_t i = 0; i < num_bodies; i++) {
+    body_t *body = scene_get_body(game_play_state->state->scene, i);
+    if (get_type(body) == COIN && body_get_centroid(body).x + 50 < MIN.x) {
+      scene_remove_body(game_play_state->state->scene, i);
+      fprintf(stderr, "removed coin!\n");
     }
   }
 }
@@ -516,6 +577,29 @@ void add_zapper(game_play_state_t *game_play_state, double dt) {
   }
 }
 
+void add_coins(game_play_state_t *game_play_state, double dt) {
+  game_play_state->coin->coin_time += dt;
+  bool laser_state = !game_play_state->laser->laser_active && !game_play_state->laser->laser_inactive;
+  if (laser_state && game_play_state->coin->coin_time >= game_play_state->coin->time_until_coin) {
+    fprintf(stderr, "added coins!\n");
+    game_play_state->coin->coin_time = 0;
+    game_play_state->coin->time_until_coin = fmod(rand(), 
+    MAX_COIN_GENERATION_TIME - MIN_COIN_GENERATION_TIME) + 
+    MIN_COIN_GENERATION_TIME;
+    double y_pos = fmod(rand(), (MAX.y - 50) - (MIN.y + 50));
+    double x_pos = MAX.x + 15;
+    vector_t center = {.x = x_pos, .y = y_pos};
+    body_t *coin = make_coin(COIN_OUTER_RADIUS, COIN_INNER_RADIUS, center);
+    scene_add_body(game_play_state->state->scene, coin);
+    asset_t *img = asset_make_image_with_body(COIN_PATH, coin);
+    list_add(game_play_state->state->body_assets, img);
+    // fprintf(stderr, "before collision\n");
+    create_collision(game_play_state->state->scene, coin, game_play_state->state->user, 
+    collect_coin, game_play_state, 0);
+    // fprintf(stderr, "after collision\n");
+  }
+}
+
 
 void add_laser(game_play_state_t *game_play_state, double dt) {
   game_play_state->laser->time_laser += dt;
@@ -527,7 +611,7 @@ void add_laser(game_play_state_t *game_play_state, double dt) {
 
     for (size_t i = 0; i < list_size(game_play_state->laser->laser_spawn_positions); i++) { 
       list_remove(game_play_state->laser->laser_spawn_positions, i);
-    }    
+    }
     // TODO: ensure that positions are reasonable
 
 
@@ -596,9 +680,11 @@ state_type_t game_play_main(game_play_state_t *game_play_state) {
 
   add_zapper(game_play_state, dt);
   add_laser(game_play_state, dt);
+  add_coins(game_play_state, dt);
   sdl_clear();
 
   background_update(state->background_state, dt);
+
   sdl_render_scene(state->scene, NULL);
   // asset_render(state->background_state->bg1);
   // asset_render(state->background_state->bg2);
@@ -612,16 +698,17 @@ state_type_t game_play_main(game_play_state_t *game_play_state) {
   vector_t user_vel = body_get_velocity(game_play_state->state->user);
   vector_t ground_centroid = body_get_centroid(game_play_state->state->ground);
   vector_t ceiling_centroid = body_get_centroid(game_play_state->state->ceiling);
-  if (user_vel.y < 0 && user_centroid.y - ground_centroid.y < OUTER_RADIUS) {
-    vector_t new_centroid = {.x = ground_centroid.x, .y = ground_centroid.y + OUTER_RADIUS};
+  if (user_vel.y < 0 && user_centroid.y - ground_centroid.y < USER_OUTER_RADIUS) {
+    vector_t new_centroid = {.x = ground_centroid.x, .y = ground_centroid.y + USER_OUTER_RADIUS};
     body_set_centroid(game_play_state->state->user, new_centroid);
-  } else if (user_vel.y > 0 && ceiling_centroid.y - user_centroid.y < OUTER_RADIUS) {
-    vector_t new_centroid = {.x = ceiling_centroid.x, .y = ceiling_centroid.y - OUTER_RADIUS};
+  } else if (user_vel.y > 0 && ceiling_centroid.y - user_centroid.y < USER_OUTER_RADIUS) {
+    vector_t new_centroid = {.x = ceiling_centroid.x, .y = ceiling_centroid.y - USER_OUTER_RADIUS};
     body_set_centroid(game_play_state->state->user, new_centroid);
   }
 
   remove_zappers(game_play_state);
   remove_lasers(game_play_state);
+  remove_coins(game_play_state);
 
   sdl_show();
 

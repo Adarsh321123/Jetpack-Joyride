@@ -4,7 +4,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-typedef enum { USER, CEILING, GROUND, ZAPPER, LASER, LASER_ACTIVE } body_type_t;
+typedef enum { USER, CEILING, GROUND, ZAPPER, LASER, LASER_ACTIVE, COIN } body_type_t;
 
 typedef struct background_state background_state_t;
 
@@ -13,6 +13,8 @@ typedef struct state_temp state_temp_t;
 typedef struct game_play_state game_play_state_t;
 
 typedef struct laser_state laser_state_t;
+
+typedef struct coin_state coin_state_t;
 
 
 /**
