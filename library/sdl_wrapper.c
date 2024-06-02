@@ -1,5 +1,6 @@
 #include "sdl_wrapper.h"
 #include "asset_cache.h"
+#include "game_play.h"
 #include <SDL2/SDL.h>
 #include <SDL2/SDL2_gfxPrimitives.h>
 #include <SDL2/SDL_image.h>
@@ -218,13 +219,52 @@ TTF_Font *init_font(const char *FONT_PATH, size_t size) {
   return font;
 }
 
-SDL_Rect make_texr(size_t x, size_t y, size_t w, size_t h) {
+SDL_Rect make_texr(int x, int y, int w, int h) {
   SDL_Rect texr;
   texr.x = x;
   texr.y = y;
   texr.w = w;
   texr.h = h;
   return texr;
+}
+
+SDL_Rect find_bounding_box(body_t *body) {
+  double min_x = __DBL_MAX__;
+  double max_x = -__DBL_MAX__;
+  double min_y = __DBL_MAX__;
+  double max_y = -__DBL_MAX__;
+
+  vector_t window_center = get_window_center();
+
+  list_t *points = body_get_shape(body);
+  size_t num_vertices = list_size(points);
+  for (size_t i = 0; i < num_vertices; i++) {
+    vector_t *vertex = list_get(points, i);
+    vector_t pixel = get_window_position(*vertex, window_center);
+    if (pixel.x < min_x) {
+      min_x = pixel.x;
+    }
+    if (pixel.x > max_x) {
+      max_x = pixel.x;
+    }
+    if (pixel.y < min_y) {
+      min_y = pixel.y;
+    }
+    if (pixel.y > max_y) {
+      max_y = pixel.y;
+    }
+  }
+
+  // TODO: make_texr takes as int and we pass double. 
+  if (get_type(body) == USER) {
+    return make_texr(min_x - 15, (max_y - (max_y - min_y)) - 10, 2 * (max_x - min_x), 2 * (max_y - min_y));
+  }
+
+  if (get_type(body) == LASER || get_type(body) == LASER_ACTIVE) {
+    return make_texr(min_x, (max_y - (max_y - min_y)) - 28, (max_x - min_x), (max_y - min_y) + 56);
+  }
+
+  return make_texr(min_x, (max_y - (max_y - min_y)), (max_x - min_x), (max_y - min_y));
 }
 
 void render_text(const char *text, TTF_Font *fontin, rgb_color_t rgb_color,

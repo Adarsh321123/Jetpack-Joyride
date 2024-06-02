@@ -1,9 +1,7 @@
-# List of demo programs
-DEMOS = spaceinvaders
-# List of C files in "libraries" that you will write.
-# This also defines the order in which the tests are run.
-STUDENT_LIBS = vector list polygon body scene color forces collision
-TEST_LIBS = body scene forces collision
+# List of C files in "libraries" and "demo" that you have written. Any additional files
+# should be added here.
+GAMES = game home settings game_play game_over
+STUDENT_LIBS = asset_cache asset body collision color emscripten forces list polygon scene sdl_wrapper vector constants asset_helper
 
 # find <dir> is the command to find files in a directory
 # ! -name .gitignore tells find to ignore the .gitignore
@@ -15,7 +13,6 @@ find bin/ ! -name .gitignore -type f -delete
 # Compiling with asan (run 'make all' as normal)
 ifndef NO_ASAN
   CFLAGS = -fsanitize=address,undefined,leak
-  REF_FOLDER = ref/asan
   ifeq ($(wildcard .debug),)
     $(shell $(CLEAN_COMMAND))
     $(shell touch .debug)
@@ -23,7 +20,6 @@ ifndef NO_ASAN
 # Compiling without asan (run 'make NO_ASAN=true all')
 else
   CFLAGS = -O3
-  REF_FOLDER = ref/no_asan
   ifneq ($(wildcard .debug),)
     $(shell $(CLEAN_COMMAND))
     $(shell rm -f .debug)
@@ -68,19 +64,8 @@ STUDENT_OBJS = $(addprefix out/,$(STUDENT_LIBS:=.o))
 # List of compiled wasm.o files corresponding to STUDENT_LIBS
 # Similarly to above, we add .wasm.o to the end of each value in STUDENT_LIBS
 WASM_STUDENT_OBJS = $(addprefix out/,$(STUDENT_LIBS:=.wasm.o))
+GAME_OBJS = $(addprefix out/,$(GAMES:=.wasm.o))
 
-# List of test suite executables, e.g. "bin/test_suite_vector"
-TEST_BINS = $(addprefix bin/test_suite_,$(TEST_LIBS))
-# List of demo executables, i.e. "bin/bounce.html".
-DEMO_BINS = $(addsuffix .demo.html, $(addprefix bin/,$(DEMOS)))
-
-# The first Make rule. It is relatively simple
-# It builds the files in TEST_BINS and DEMO_BINS, as well as making the server for the demos
-# "To build 'all', make sure all files in TEST_BINS and DEMO_BINS are up to date."
-# You can execute this rule by running the command "make all", or just "make".
-all: $(TEST_BINS) $(DEMO_BINS) server
-
-demo: $(DEMO_BINS) server
 game: bin/game.html server
 
 # Make the python server for your demos
@@ -101,49 +86,28 @@ server:
 # and $@ means "the target file", so the command tells clang
 # to compile the source C file into the target .o file.
 out/%.o: library/%.c # source file may be found in "library"
-	@git commit -am "Autocommit of library for ${USER}" > /dev/null || true
 	$(CC) -c $(CFLAGS) $^ -o $@
 out/%.o: demo/%.c # or "demo"
-	@git commit -am "Autocommit of demo for ${USER}" > /dev/null || true
-	$(CC) -c $(CFLAGS) $^ -o $@
-out/%.o: tests/%.c # or "tests"
 	$(CC) -c $(CFLAGS) $^ -o $@
 
 # Emscripten compilation flags
 # This is very similar to the above compilation, except for emscripten
 out/%.wasm.o: library/%.c # source file may be found in "library"
-	@git commit -am "Autocommit of library for ${USER}" > /dev/null || true
 	$(EMCC) -c $(CFLAGS) $^ -o $@
 out/%.wasm.o: demo/%.c # or "demo"
-	@git commit -am "Autocommit of demo or game for ${USER}" > /dev/null || true
-	$(EMCC) -c $(CFLAGS) $^ -o $@
-out/%.wasm.o: tests/%.c # or "tests"
 	$(EMCC) -c $(CFLAGS) $^ -o $@
 
 # Builds bin/%.html by linking the necessary .wasm.o files.
 # Unlike the out/%.wasm.o rule, this uses the LIBS flags and omits the -c flag,
 # since it is building a full executable. Also notice it uses our EMCC_FLAGS
-
-DEMO_REF = color emscripten list polygon sdl_wrapper vector body scene forces collision asset_cache asset
-DEMO_REF_OBJS = $(addprefix $(REF_FOLDER)/,$(DEMO_REF:=.wasm.ref.o))
-
-GAME_REF = emscripten vector body scene list color polygon forces
-GAME_REF_OBJS = $(addprefix $(REF_FOLDER)/,$(GAME_REF:=.wasm.ref.o))
-
-GAME_STUDENT = game sdl_wrapper asset asset_cache
-GAME_STUDENT_OBJS = $(addprefix out/,$(GAME_STUDENT:=.wasm.o))
-
-bin/%.demo.html: out/%.wasm.o $(DEMO_REF_OBJS)
-	$(EMCC) $(EMCC_FLAGS) $(CFLAGS) $(LIBS) $^ -o $@
-
-bin/game.html: $(GAME_REF_OBJS) $(GAME_STUDENT_OBJS)
+bin/game.html: $(GAME_OBJS) $(WASM_STUDENT_OBJS)
 	$(EMCC) $(EMCC_FLAGS) $(CFLAGS) $(LIBS) $^ -o $@
 
 # Builds the test suite executables from the corresponding test .o file
 # and the library .o files. The only difference from the demo build command
 # is that it doesn't link the SDL libraries.
-bin/test_suite_%: out/test_suite_%.o out/test_util.o $(STUDENT_OBJS)
-	$(CC) $(CFLAGS) $(LIBS) $^ -o $@
+# bin/test_suite_%: out/test_suite_%.o out/test_util.o $(STUDENT_OBJS)
+# 	$(CC) $(CFLAGS) $(LIBS) $^ -o $@
 
 # Runs the tests. "$(TEST_BINS)" requires the test executables to be up to date.
 # The command is a simple shell script:
@@ -154,8 +118,8 @@ bin/test_suite_%: out/test_suite_%.o out/test_util.o $(STUDENT_OBJS)
 # "$$f" runs the test; "$$" escapes the $ character,
 #   and "$f" tells the shell to substitute the value of the variable f
 # "echo" prints a newline after each test's output, for readability
-test: $(TEST_BINS)
-	set -e; for f in $(TEST_BINS); do echo $$f; $$f; echo; done
+# test: $(TEST_BINS)
+# 	set -e; for f in $(TEST_BINS); do echo $$f; $$f; echo; done
 
 # Removes all compiled files.
 clean:
@@ -168,5 +132,3 @@ clean:
 .PRECIOUS: out/%.o
 # Tells Make not to delete the wasm.o files after the executable is built
 .PRECIOUS: out/%.wasm.o
-.PRECIOUS: ref/asan/%.wasm.ref.o
-.PRECIOUS: ref/no_asan/%.wasm.ref.o

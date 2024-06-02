@@ -6,7 +6,7 @@
 #include "body.h"
 
 const double ROTATION_SPEED = 0.0;
-const size_t INITIAL_CAPACITY = 10;
+const size_t INITIAL_LIST_CAPACITY = 10;
 const double INITIAL_ANGLE = 0.0;
 const double HALF = 0.5;
 
@@ -61,8 +61,9 @@ void body_free(body_t *body) {
 
 list_t *body_get_shape(body_t *body) {
   list_t *points = polygon_get_points(body->poly);
-  list_t *copy = list_init(INITIAL_CAPACITY, free);
+  list_t *copy = list_init(INITIAL_LIST_CAPACITY, free);
   size_t size = list_size(points);
+  assert(size >= 0);
   for (size_t i = 0; i < size; i++) {
     vector_t *list_v = malloc(sizeof(*list_v));
     assert(list_v);
@@ -144,6 +145,11 @@ void body_add_force(body_t *body, vector_t force) {
 
 void body_add_impulse(body_t *body, vector_t impulse) {
   body->impulse = vec_add(body->impulse, impulse);
+}
+
+void body_reset(body_t *body) {
+  body->force = VEC_ZERO;
+  body->impulse = VEC_ZERO;
 }
 
 void body_remove(body_t *body) { body->removed = true; }
