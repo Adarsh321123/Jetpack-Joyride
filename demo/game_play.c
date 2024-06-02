@@ -55,7 +55,8 @@ const double LASER_HEIGHT_ACTIVE = 42.14;
 // COINS:
 const double COIN_OUTER_RADIUS = 10;
 const double COIN_INNER_RADIUS = 10;
-const size_t COIN_GRID_SIZE = 3;
+const size_t MIN_COIN_GRID_SIZE = 2;
+const size_t MAX_COIN_GRID_SIZE = 4;
 const size_t NUM_COINS = 20;
 
 vector_t LASER1 = {.x = 500, .y = 80};
@@ -587,8 +588,10 @@ void add_coins(game_play_state_t *game_play_state, double dt) {
     double x_pos = MAX.x + 15;
     double y_shift = 40;
     double x_shift = 40;
-    for (size_t i = 0; i < COIN_GRID_SIZE; i++) {
-      for (size_t j = 0; j < COIN_GRID_SIZE; j++) {
+    size_t COIN_GRID_WIDTH = (rand() % (MAX_COIN_GRID_SIZE - MIN_COIN_GRID_SIZE + 1)) + MIN_COIN_GRID_SIZE;
+    size_t COIN_GRID_HEIGHT = (rand() % (MAX_COIN_GRID_SIZE - MIN_COIN_GRID_SIZE + 1)) + MIN_COIN_GRID_SIZE;
+    for (size_t i = 0; i < COIN_GRID_WIDTH; i++) {
+      for (size_t j = 0; j < COIN_GRID_HEIGHT; j++) {
         vector_t center = {.x = x_pos + (i * x_shift), .y = y_pos + (j * y_shift)};
         body_t *coin = make_coin(COIN_OUTER_RADIUS, COIN_INNER_RADIUS, center);
         scene_add_body(game_play_state->state->scene, coin);
