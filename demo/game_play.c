@@ -552,6 +552,7 @@ void game_play_free(game_play_state_t *game_play_state) {
   // TODO: add int main and link and compile to find memory leaks
   //list_free(state->body_assets);
   // TODO: why is this failing
+  // TODO: make sure the entire zapper is on the scren and below ceiling and above ground
   // scene_free(state->scene);
   asset_cache_destroy();
   free(state);
