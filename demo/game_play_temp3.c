@@ -429,12 +429,8 @@ game_play_state_t *game_play_init(difficulty_type_t difficulty_level) {
   game_play_state->laser->laser_inactive_assets = list_init(10, NULL);
 
   for (size_t i = 0; i < 10; i++) {
-    asset_t *laser_active = asset_make_image(LASER_PATH_ACTIVE, bounding_box_laser);
-    list_add(game_play_state->laser->laser_active_assets, laser_active);
-    asset_t *laser_inactive = asset_make_image(LASER_PATH_INACTIVE, bounding_box_laser);
-    list_add(game_play_state->laser->laser_inactive_assets, laser_inactive);  
-    list_add(game_play_state->state->body_assets, laser_active);
-    list_add(game_play_state->state->body_assets, laser_inactive);
+    list_add(game_play_state->laser->laser_active_assets, asset_make_image(LASER_PATH_ACTIVE, bounding_box_laser));
+    list_add(game_play_state->laser->laser_inactive_assets, asset_make_image(LASER_PATH_INACTIVE, bounding_box_laser));  
   }
 
   game_play_state->laser->laser_centers = list_init(10, NULL);
@@ -517,8 +513,8 @@ void remove_zappers(game_play_state_t *game_play_state) {
 }
 
 void remove_lasers_inactive(game_play_state_t *game_play_state) {
-  // size_t num_bodies = scene_bodies(game_play_state->state->scene);
-  for (size_t i = 0; i < scene_bodies(game_play_state->state->scene); i++) {
+  size_t num_bodies = scene_bodies(game_play_state->state->scene);
+  for (size_t i = 0; i < num_bodies; i++) {
     body_t *body = scene_get_body(game_play_state->state->scene, i);
     if (get_type(body) == LASER) {
       // asset_update_bounding_box_x(game_play_state->laser_inactive_asset, 2 * 1000);
@@ -536,8 +532,8 @@ void remove_lasers(game_play_state_t *game_play_state) {
   if (game_play_state->time - game_play_state->laser->time_laser_activate >= 3) {
     game_play_state->laser->laser_active = false;                        
     game_play_state->laser->time_laser_activate = game_play_state->time;
-    // size_t num_bodies = scene_bodies(game_play_state->state->scene);
-    for (size_t i = 0; i < scene_bodies(game_play_state->state->scene); i++) {
+    size_t num_bodies = scene_bodies(game_play_state->state->scene);
+    for (size_t i = 0; i < num_bodies; i++) {
       body_t *body = scene_get_body(game_play_state->state->scene, i);
       if (get_type(body) == LASER_ACTIVE) {
         // asset_update_bounding_box_x(game_play_state->laser_active_asset, 2 * 1000);
@@ -645,9 +641,8 @@ void add_rocket(game_play_state_t *game_play_state, double dt) {
     body_t *rocket = make_rocket(&game_play_state->rocket->rocket_spawn_position);
     scene_add_body(game_play_state->state->scene, rocket);
  
-    // asset_update_bounding_box(game_play_state->rocket->rocket_active_asset, rocket);
-    // asset_t *img = game_play_state->rocket->rocket_active_asset;
-    asset_t *img = asset_make_image_with_body(ROCKET_PATH, rocket);
+    asset_update_bounding_box(game_play_state->rocket->rocket_active_asset, rocket);
+    asset_t *img = game_play_state->rocket->rocket_active_asset;    
 
     list_add(game_play_state->state->body_assets, img);
     body_t *user = scene_get_body(game_play_state->state->scene, 0);
@@ -670,12 +665,20 @@ void add_laser(game_play_state_t *game_play_state, double dt) {
   if (!game_play_state->laser->laser_inactive && game_play_state->laser->time_laser >= LASER_GENERATION_TIME) {
     game_play_state->laser->time_laser = 0;
 
-    for (size_t i = 0; i < list_size(game_play_state->laser->laser_spawn_positions); i++) { 
-      list_remove(game_play_state->laser->laser_spawn_positions, i);
-    }
-
     game_play_state->laser->time_laser_spawn = game_play_state->time;
 
+    for (size_t i = 0; i < list_size(game_play_state->laser->laser_spawn_positions); i++) { 
+      list_remove(game_play_state->laser->laser_spawn_positions, i);
+    }    
+    // TODO: ensure that positions are reasonable
+
+
+    //logic for spawning randomly for now.
+    // create two random seeds
+    // we now have the positions of all the lasers in a list to access
+    // using random seeds
+    // create a laser body with that position and store in the list
+    // dont forget to remove everything from spwn_position_list
     size_t num_laser_initialize = (size_t) round(fmod(rand(), 5));
     size_t start_laser_position = (size_t) round(fmod(rand(), 10.0 - num_laser_initialize)); 
 
@@ -685,7 +688,11 @@ void add_laser(game_play_state_t *game_play_state, double dt) {
       list_add(game_play_state->laser->laser_spawn_positions, center);
       body_t *laser = make_laser(center);
       scene_add_body(game_play_state->state->scene, laser);
+
       asset_update_bounding_box(list_get(game_play_state->laser->laser_inactive_assets, i), laser);
+      asset_t *img = list_get(game_play_state->laser->laser_inactive_assets, i);
+
+      list_add(game_play_state->state->body_assets, img);
     }
 
     game_play_state->laser->laser_inactive = true;
@@ -697,16 +704,22 @@ void add_laser(game_play_state_t *game_play_state, double dt) {
     
     remove_lasers_inactive(game_play_state);
 
+
     for (size_t i = 0; i < list_size(game_play_state->laser->laser_spawn_positions); i++) {
       fprintf(stderr, "added active laser!\n");
       body_t *laser = make_laser_active(list_get(game_play_state->laser->laser_spawn_positions, i));
       scene_add_body(game_play_state->state->scene, laser);
+
       asset_update_bounding_box(list_get(game_play_state->laser->laser_active_assets, i), laser);
+      asset_t *img = list_get(game_play_state->laser->laser_active_assets, i);    
+
+      list_add(game_play_state->state->body_assets, img);
       body_t *user = scene_get_body(game_play_state->state->scene, 0);
       assert(user);    
       create_collision(game_play_state->state->scene, laser, user, game_over, game_play_state,
                         0);
     } 
+
     for (size_t i = 0; i < list_size(game_play_state->laser->laser_spawn_positions); i++) { 
       list_remove(game_play_state->laser->laser_spawn_positions, i);
     }
@@ -715,45 +728,6 @@ void add_laser(game_play_state_t *game_play_state, double dt) {
     game_play_state->laser->laser_active = true;                        
   }
 }
-
-
-// void spawn_inactive_lasers(game_play_state_t *game_play_state) {
-//     for (size_t i = 0; i < list_size(game_play_state->laser->laser_centers); i++) {
-//         vector_t *center = list_get(game_play_state->laser->laser_centers, i);
-//         body_t *laser = make_laser(center);
-//         scene_add_body(game_play_state->state->scene, laser);
-//     }
-//     game_play_state->laser->laser_inactive = true;
-//     game_play_state->laser->time_laser_spawn = game_play_state->time;
-// }
-
-// void activate_lasers(game_play_state_t *game_play_state) {
-//     for (size_t i = 0; i < list_size(game_play_state->laser->laser_centers); i++) {
-//         vector_t *center = list_get(game_play_state->laser->laser_centers, i);
-//         body_t *laser = make_laser_active(center);
-//         scene_add_body(game_play_state->state->scene, laser);
-//     }
-//     game_play_state->laser->laser_active = true;
-//     game_play_state->laser->time_laser_activate = game_play_state->time;
-// }
-
-// void update_lasers(game_play_state_t *game_play_state, double dt) {
-//     game_play_state->laser->time_laser += dt;
-    
-//     if (!game_play_state->laser->laser_inactive && game_play_state->laser->time_laser >= LASER_GENERATION_TIME) {
-//         spawn_inactive_lasers(game_play_state);
-//     }
-    
-//     if (game_play_state->laser->laser_inactive && game_play_state->time - game_play_state->laser->time_laser_spawn >= SPAWN_TIME) {
-//         remove_lasers_inactive(game_play_state);
-//         activate_lasers(game_play_state);
-//     }
-    
-//     if (game_play_state->laser->laser_active && game_play_state->time - game_play_state->laser->time_laser_activate >= LASER_ACTIVE_DURATION) {
-//         remove_lasers(game_play_state);
-//     }
-// }
-
 
 
 state_type_t game_play_main(game_play_state_t *game_play_state) {

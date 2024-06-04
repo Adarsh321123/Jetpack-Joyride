@@ -4,7 +4,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-typedef enum { USER, CEILING, GROUND, ZAPPER, LASER, LASER_ACTIVE } body_type_t;
+typedef enum { USER, CEILING, GROUND, ZAPPER, LASER, LASER_ACTIVE, ROCKET_WARNING, ROCKET } body_type_t;
 
 typedef struct background_state background_state_t;
 
@@ -14,6 +14,7 @@ typedef struct game_play_state game_play_state_t;
 
 typedef struct laser_state laser_state_t;
 
+typedef struct rocket_state rocket_state_t;
 
 /**
  * Gets the type of the given body.
