@@ -164,7 +164,7 @@ struct rocket_state {
   bool rocket_active;    
   
   asset_t *rocket_inactive_asset;
-  asset_t *rocket_active_asset;
+  // asset_t *rocket_active_asset;
   vector_t rocket_spawn_position;
 };
 
@@ -404,10 +404,10 @@ game_play_state_t *game_play_init(difficulty_type_t difficulty_level) {
   game_play_state->rocket->time_rocket = 0;
   game_play_state->rocket->time_rocket_spawn = 0;
   game_play_state->rocket->time_rocket_activate = 0;
-  SDL_Rect bounding_box_rocket = make_texr(-2000, 0, ROCKET_WIDTH, ROCKET_HEIGHT);
+  // SDL_Rect bounding_box_rocket = make_texr(-2000, 0, ROCKET_WIDTH, ROCKET_HEIGHT);
   SDL_Rect bounding_box_rocket_warning = make_texr(-2000, 0, WARNING_WIDTH, WARNING_HEIGHT);
 
-  game_play_state->rocket->rocket_active_asset = asset_make_image(ROCKET_PATH, bounding_box_rocket);
+  // game_play_state->rocket->rocket_active_asset = asset_make_image(ROCKET_PATH, bounding_box_rocket);
   game_play_state->rocket->rocket_inactive_asset = asset_make_image(ROCKET_WARNING_PATH, bounding_box_rocket_warning);
 
   // LASER
@@ -571,7 +571,7 @@ void remove_rockets(game_play_state_t *game_play_state) {
   for (size_t i = 0; i < num_bodies; i++) {
     body_t *body = scene_get_body(game_play_state->state->scene, i);
     if (get_type(body) == ROCKET && body_get_centroid(body).x + 50 < MIN.x) {
-      asset_update_bounding_box_x(game_play_state->rocket->rocket_active_asset, 2 * 1000);
+      // asset_update_bounding_box_x(game_play_state->rocket->rocket_active_asset, 2 * 1000);
       scene_remove_body(game_play_state->state->scene, i);
       fprintf(stderr, "removed rocket!\n");
     }
