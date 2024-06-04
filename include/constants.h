@@ -14,6 +14,7 @@ extern const vector_t CENTER;
 extern const size_t INITIAL_ASSET_CAPACITY;
 
 extern const size_t TEXT_SIZE;
+extern const size_t FONT_SIZE;
 extern const size_t TEXT_HEIGHT_SCALE;
 extern const size_t NUM_TEXT_HOME;
 extern const size_t NUM_TEXT_SETTINGS;

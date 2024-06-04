@@ -8,6 +8,7 @@ const vector_t CENTER = {500, 250};
 const size_t INITIAL_ASSET_CAPACITY = 10;
 
 const size_t TEXT_SIZE = 50;
+const size_t FONT_SIZE = 50;
 const size_t TEXT_HEIGHT_SCALE = 2;
 const size_t NUM_TEXT_HOME = 1;
 const size_t NUM_TEXT_SETTINGS = 2;

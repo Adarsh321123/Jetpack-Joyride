@@ -65,6 +65,14 @@ const double COIN_INNER_RADIUS = 10;
 const size_t MIN_COIN_GRID_SIZE = 2;
 const size_t MAX_COIN_GRID_SIZE = 4;
 const size_t NUM_COINS = 20;
+const size_t COIN_TEXT_SIZE = 50;
+const size_t COIN_FONT_SIZE = 30;
+const SDL_Rect COIN_BOX = (SDL_Rect){25, 75, 0, 0};
+
+// DISTANCE:
+const size_t DISTANCE_TEXT_SIZE = 50;
+const size_t DISTANCE_FONT_SIZE = 30;
+const SDL_Rect DISTANCE_BOX = (SDL_Rect){25, 25, 0, 0};
 
 vector_t LASER1 = {.x = 500, .y = 80};
 vector_t LASER2 = {.x = 500, .y = 101.25};
@@ -102,8 +110,11 @@ const size_t USER_NUM_POINTS = 20;
 const rgb_color_t user_color = (rgb_color_t){0.1, 0.9, 0.2};
 const double WALL_DIM = 1;
 rgb_color_t black = (rgb_color_t){0, 0, 0};
-rgb_color_t red = (rgb_color_t){1, 0, 0};
-rgb_color_t blue = (rgb_color_t){0, 0, 1};
+rgb_color_t white = (rgb_color_t){255, 255, 255};
+rgb_color_t red = (rgb_color_t){255, 0, 0};
+rgb_color_t green = (rgb_color_t){0, 255, 0};
+rgb_color_t blue = (rgb_color_t){0, 0, 255};
+rgb_color_t yellow = (rgb_color_t){255, 255, 0};
 
 const double ZAPPER_GENERATION_TIME = 5;
 const double MIN_COIN_GENERATION_TIME = 3;
@@ -127,6 +138,7 @@ const char *LASER_PATH_INACTIVE = "assets/laser_noneactive.png";
 const char *LASER_PATH_ACTIVE = "assets/laser_active.png";
 const char *ROCKET_WARNING_PATH = "assets/warning.png";
 const char *ROCKET_PATH = "assets/missle.png";
+const char *FONT_PATH = "assets/New Athletic M54.ttf";
 
 struct background_state {
   asset_t *bg1;
@@ -193,11 +205,14 @@ struct game_play_state {
   double min_zapper_generation_time;
   double max_zapper_generation_time;
   double zapper_time;
+  TTF_Font *distance_font;
+  TTF_Font *coins_collected_font;
   laser_state_t *laser;
   coin_state_t *coin;
   rocket_state_t *rocket;
   state_type_t curr_state;
   state_temp_t *state;
+  asset_t *next_asset_to_remove;
 };
 
 
@@ -454,6 +469,9 @@ game_play_state_t *game_play_init(difficulty_type_t difficulty_level) {
   game_play_state->laser->laser_active = false;
   game_play_state->state = state;
   game_play_state->time = 0;
+  game_play_state->next_asset_to_remove = NULL;
+  game_play_state->distance_font = init_font(FONT_PATH, DISTANCE_FONT_SIZE);
+  game_play_state->coins_collected_font = init_font(FONT_PATH, COIN_FONT_SIZE);
   game_play_state->distance_traveled = 0;
   game_play_state->time_until_zapper = 0;
   game_play_state->coin->time_until_coin = 0;
@@ -550,9 +568,10 @@ void game_over(body_t *body1, body_t *body2, vector_t axis, void *aux,
 void collect_coin(body_t *body1, body_t *body2, vector_t axis, void *aux,
                         double force_const) {
   fprintf(stderr, "collected coin!\n");
-  asset_t *asset = (asset_t *) aux;
   // game_play_state_t *game_play_state = (game_play_state_t *) aux;
   // game_play_state->coin->coin_count++;
+  // asset_t *asset = game_play_state->next_asset_to_remove;
+  asset_t *asset = (asset_t *) aux;
   body_remove(body1);
   asset_update_bounding_box_x(asset, -1000);
 }
@@ -819,12 +838,38 @@ void add_laser(game_play_state_t *game_play_state, double dt) {
   }
 }
 
+void render_distance(game_play_state_t *game_play_state) {
+  char distance_text[DISTANCE_TEXT_SIZE];
+  size_t seconds = (size_t)floor(game_play_state->distance_traveled);
+  sprintf(distance_text, "%zu M", seconds); // convert the time to a string
+  SDL_Rect bounding_box = DISTANCE_BOX;
+  // TTF_Font *font = init_font(FONT_PATH, DISTANCE_FONT_SIZE);
+  TTF_Font *font = game_play_state->distance_font;
+  TTF_SizeText(font, distance_text, &bounding_box.w, &bounding_box.h);
+  render_text(distance_text, font, green, bounding_box);
+}
+
+void render_coins_collected(game_play_state_t *game_play_state) {
+  char coin_text[COIN_TEXT_SIZE];
+  size_t seconds = (size_t)floor(game_play_state->coin->coin_count);
+  sprintf(coin_text, "%zu COINS", seconds); // convert the time to a string
+  SDL_Rect bounding_box = COIN_BOX;
+  // TTF_Font *font = init_font(FONT_PATH, COIN_FONT_SIZE);
+  TTF_Font *font = game_play_state->coins_collected_font;
+  TTF_SizeText(font, coin_text, &bounding_box.w, &bounding_box.h);
+  render_text(coin_text, font, yellow, bounding_box);
+}
+
 
 state_type_t game_play_main(game_play_state_t *game_play_state) {
 
   double dt = time_since_last_tick();
   game_play_state->time += dt;
+  
   state_temp_t *state = game_play_state->state;
+
+  double scroll_speed = state->background_state->scroll_speed;
+  game_play_state->distance_traveled += (dt * scroll_speed);
 
   add_zapper(game_play_state, dt);
   add_laser(game_play_state, dt);
@@ -841,6 +886,9 @@ state_type_t game_play_main(game_play_state_t *game_play_state) {
   for (size_t i = 0; i < num_assets; i++) {
     asset_render(list_get(state->body_assets, i));
   }
+
+  render_distance(game_play_state);
+  render_coins_collected(game_play_state);
 
   vector_t user_centroid = body_get_centroid(game_play_state->state->user);
   vector_t user_vel = body_get_velocity(game_play_state->state->user);

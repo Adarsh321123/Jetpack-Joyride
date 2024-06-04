@@ -114,7 +114,6 @@ void asset_update_bounding_box_x(asset_t *image, int x) {
   image->bounding_box.x = x;
 }
 
-
 asset_t *asset_make_text(const char *filepath, SDL_Rect bounding_box,
                          const char *text, rgb_color_t color) {
   text_asset_t *text_asset = malloc(sizeof(text_asset_t));
