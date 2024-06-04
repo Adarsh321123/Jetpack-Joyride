@@ -16,6 +16,7 @@ typedef struct settings_state {
   list_t *button_assets;
   state_type_t curr_state;
   difficulty_type_t difficulty_level;
+  TTF_Font *difficulty_font;
 } settings_state_t;
 
 /**

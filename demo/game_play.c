@@ -109,12 +109,6 @@ const size_t BODY_ASSETS = 2;
 const size_t USER_NUM_POINTS = 20;
 const rgb_color_t user_color = (rgb_color_t){0.1, 0.9, 0.2};
 const double WALL_DIM = 1;
-rgb_color_t black = (rgb_color_t){0, 0, 0};
-rgb_color_t white = (rgb_color_t){255, 255, 255};
-rgb_color_t red = (rgb_color_t){255, 0, 0};
-rgb_color_t green = (rgb_color_t){0, 255, 0};
-rgb_color_t blue = (rgb_color_t){0, 0, 255};
-rgb_color_t yellow = (rgb_color_t){255, 255, 0};
 
 const double ZAPPER_GENERATION_TIME = 5;
 const double MIN_COIN_GENERATION_TIME = 3;
@@ -138,7 +132,6 @@ const char *LASER_PATH_INACTIVE = "assets/laser_noneactive.png";
 const char *LASER_PATH_ACTIVE = "assets/laser_active.png";
 const char *ROCKET_WARNING_PATH = "assets/warning.png";
 const char *ROCKET_PATH = "assets/missle.png";
-const char *FONT_PATH = "assets/New Athletic M54.ttf";
 
 struct background_state {
   asset_t *bg1;
@@ -212,7 +205,6 @@ struct game_play_state {
   rocket_state_t *rocket;
   state_type_t curr_state;
   state_temp_t *state;
-  asset_t *next_asset_to_remove;
 };
 
 
@@ -469,7 +461,6 @@ game_play_state_t *game_play_init(difficulty_type_t difficulty_level) {
   game_play_state->laser->laser_active = false;
   game_play_state->state = state;
   game_play_state->time = 0;
-  game_play_state->next_asset_to_remove = NULL;
   game_play_state->distance_font = init_font(FONT_PATH, DISTANCE_FONT_SIZE);
   game_play_state->coins_collected_font = init_font(FONT_PATH, COIN_FONT_SIZE);
   game_play_state->distance_traveled = 0;
@@ -840,8 +831,8 @@ void add_laser(game_play_state_t *game_play_state, double dt) {
 
 void render_distance(game_play_state_t *game_play_state) {
   char distance_text[DISTANCE_TEXT_SIZE];
-  size_t seconds = (size_t)floor(game_play_state->distance_traveled);
-  sprintf(distance_text, "%zu M", seconds); // convert the time to a string
+  size_t distance = (size_t)floor(game_play_state->distance_traveled);
+  sprintf(distance_text, "%zu M", distance); // convert the time to a string
   SDL_Rect bounding_box = DISTANCE_BOX;
   // TTF_Font *font = init_font(FONT_PATH, DISTANCE_FONT_SIZE);
   TTF_Font *font = game_play_state->distance_font;
@@ -851,8 +842,8 @@ void render_distance(game_play_state_t *game_play_state) {
 
 void render_coins_collected(game_play_state_t *game_play_state) {
   char coin_text[COIN_TEXT_SIZE];
-  size_t seconds = (size_t)floor(game_play_state->coin->coin_count);
-  sprintf(coin_text, "%zu COINS", seconds); // convert the time to a string
+  size_t coins = game_play_state->coin->coin_count;
+  sprintf(coin_text, "%zu COINS", coins); // convert the time to a string
   SDL_Rect bounding_box = COIN_BOX;
   // TTF_Font *font = init_font(FONT_PATH, COIN_FONT_SIZE);
   TTF_Font *font = game_play_state->coins_collected_font;

@@ -27,6 +27,15 @@ extern const size_t NUM_BUTTONS_GAME_OVER;
 extern const size_t DEFAULT_WIDTH;
 extern const size_t DEFAULT_HEIGHT;
 
+extern const rgb_color_t black;
+extern const rgb_color_t white;
+extern const rgb_color_t red;
+extern const rgb_color_t green;
+extern const rgb_color_t blue;
+extern const rgb_color_t yellow;
+
+extern const char *FONT_PATH;
+
 extern const double INTERVAL;
 
 #endif // CONSTANTS_H
