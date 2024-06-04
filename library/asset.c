@@ -170,7 +170,7 @@ void asset_render(asset_t *asset) {
   switch (asset->type) {
   case ASSET_IMAGE: {
     image_asset_t *image_asset = (image_asset_t *)asset;
-    if (image_asset->body != NULL) {
+    if (image_asset->body != NULL && body_is_removed(image_asset->body) == false) {
       image_asset->base.bounding_box = find_bounding_box(image_asset->body);
     }
     render_copy(image_asset->texture, image_asset->base.bounding_box);

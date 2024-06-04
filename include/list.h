@@ -27,12 +27,12 @@ typedef struct list {
  * The list is initially empty.
  * Asserts that the required memory was allocated.
  *
- * @param initial_size the number of elements to allocate space for
+ * @param initial_capacity the number of elements to allocate space for
  * @param freer if non-NULL, a function to call on elements in the list
  *   in list_free() when they are no longer in use
  * @return a pointer to the newly allocated list
  */
-list_t *list_init(size_t initial_size, free_func_t freer);
+list_t *list_init(size_t initial_capacity, free_func_t freer);
 
 /**
  * Releases the memory allocated for a list.
