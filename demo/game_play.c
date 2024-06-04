@@ -833,9 +833,9 @@ state_type_t game_play_main(game_play_state_t *game_play_state) {
   sdl_clear();
 
   background_update(state->background_state, dt);
-  sdl_render_scene(state->scene, NULL);
-  // asset_render(state->background_state->bg1);
-  // asset_render(state->background_state->bg2);
+  // sdl_render_scene(state->scene, NULL);
+  asset_render(state->background_state->bg1);
+  asset_render(state->background_state->bg2);
 
   size_t num_assets = list_size(state->body_assets);
   for (size_t i = 0; i < num_assets; i++) {
