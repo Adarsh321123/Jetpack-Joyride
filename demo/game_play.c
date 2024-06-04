@@ -660,7 +660,6 @@ void add_laser(game_play_state_t *game_play_state, double dt) {
     
     remove_lasers_inactive(game_play_state);
 
-
     for (size_t i = 0; i < list_size(game_play_state->laser->laser_spawn_positions); i++) {
       fprintf(stderr, "added active laser!\n");
       body_t *laser = make_laser_active(list_get(game_play_state->laser->laser_spawn_positions, i));
