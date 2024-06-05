@@ -551,6 +551,7 @@ void game_play_free(game_play_state_t *game_play_state) {
   free(state->background_state);
   free(state->user);
   // TODO: add int main and link and compile to find memory leaks
+  // TODO: if time, change to jetpack sprite + have bullets show up
   //list_free(state->body_assets);
   // TODO: why is this failing
   // TODO: make sure the entire zapper is on the scren and below ceiling and above ground
