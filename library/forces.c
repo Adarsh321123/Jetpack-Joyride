@@ -198,7 +198,7 @@ void create_drag(scene_t *scene, double gamma, body_t *body) {
  * The force creator for collisions. Checks if the bodies in the collision aux
  * are colliding, and if they do, runs the collision handler on the bodies.
  *
- * @param info auxiliary information about the force and associated body
+ * @param collision_aix auxiliary information about the force and associated body
  */
 static void collision_force_creator(void *collision_aux) {
   collision_aux_t *col_aux = collision_aux;
