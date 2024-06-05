@@ -56,53 +56,45 @@ We have gathered together the following list of some example features you might 
 - implement music
 
 Priority 1 Features
-- Scrolling background and pseudo-randomly generating bodies for obstacles such as Zappers in the game. We will implement relative motion of the obstacles to the player and ensure that the pseudorandomness allows it to be passable. (Adarsh)
+
+- Scrolling background, adding the player, and implementing the keyboard functionality for moving the player. (Adarsh)
     - So, we will keep the player the same horizontally
     - The player only moves vertically
-    - The obstacles and background moves to the left of the player
-    - Also, we will make the obstacle randomly span vertically but within some random and acceptable time period so the game is not impossible to beat
-    - We also need to handle the part where the objects enter and leave the screen and dynamically destroy all the objects that leave the screen. 
+    - The background moves to the left of the player
 - Porting all the features from the physics engine implemented so far, namely the controls using keyboard and mouse handler, implementing the layout and position of the static bodies in the background and associating assets with bodies. (Dhruv)
-    - We also need to port over the collision ability with the zapper and the forces and impulses with things like the zappers
+    - We also need to port over the collision ability for the zapper and the forces and impulses with things like the zappers
+    - Implementation of encapsulation of different priority features in different files such as one for lasers, rockets and zappers. Additional encapsulation required for powerups and other features added in the game.
 - Home Screen and navigation, ability to navigate to multiple menus and associating a specific menu with objects in that menu. (Rayhan)
     - We will also include a settings UI that will use the features that we will implement in the future like the difficulty level potentially
     - This will also include the game over screen when the user hits the obstacle
-    - This is extensible to the rockets and lasers too
+
 
 Priority 2 Features
-- Implement position of Lasers and rockets. Add forces here and associate a specific type of force associated when the main player collides with either of the obstacles. Ensure the compatibility of placement of lasers and rockets with the pseudorandomness of the zappers introduced earlier. Ensure that the speed of the rockets generates is commensurate with the speed of the movement of other obstacles and the background.
-    - Also ensure that the rockets are moving to the left (Dhruv)
-    - The laser ends should appear on both ends of the screen and then the laser activates a bit later
-- Implementation of custom sound effects and background music. Associate a specific type of sound effect with each collision or force creator and have a specific randomly selected music chosen for each game chosen from a preexisting list of music tracks added to the game. Additionally, modify the sound effect frequency depending upon the collision with a specific type of object.  (Adarsh)
-    - For example, based on how fast the collsioin with the zapper is, we can change the frequency of the resulting sound
-    - Also, we can use custom music or the music from jetpack joyride if we are allowed to
-- Add levels to the main menu to select from. The difficulty of the levels could be probabilistic and the generation of each obstacle could be randomly scaled depending on the difficulty of the level. Velocity of the background could be associated with each level and the frequency of generation of different obstacles could be attributed with each level. (Rayhan)
-    - For example, the placement of the rockets is probabilistic but can track the user better for more difficult levels
+
+- Implement Lasers in this function. There are multiple subfeatures associated with the laser. First, ensure that the levels are passable which means zappers and lasers are not generated at the same time. Reuse the same images rendered for lasers the first time lasers are generated for the lasers generated at other timestamps to avoid the cost of rendering images and reduce the lag. Lasers are generated pseudorandomly. Add functionality of display for one lasers initially and then extend that to display multiple lasers at the same time. (Dhruv)
+- Pseudo-randomly generating bodies for obstacles such as Zappers in the game + collision detection for game over (Adarsh)
+    - We will make the obstacle randomly span vertically
+- Add levels to the main menu to select from in the settings page. Display the current difficulty selected, and allow the user to toggle difficulty. The difficulty of the levels could be probabilistic and the frequency of generation of different obstacles could be attributed with each level. (Rayhan)
 
 Priority 3 Features
-- Add coins to the game. We must generate multiple coins in a cluster depending upon the placement of the obstacles in the game (The main function determining the pseudorandomness of different obstacles added so far could be modified to include the generation of coins). Similar to the game, multiple coins can be generated with a specific shape at different positions. Add a magnet powerup to the game and associate a gravitational force with all the coin objects relative to the coin powerup collected. Attribute time period for the existence of the magnetic powerup in the game. Add different sprites for the coin to add a rotating effect for the coin as it remains on the screen. (Rayhan)
-    - We can also update the shape of the coins to be different sizes of blocks probabilistically
-    - This can change based on the level difficulty too
-    - We can get the magnetic effect with gear icon upgrade that appears in the real game
-- To store the previous records and achievements of the player playing the game, we can add a local memory in the game. The way this might work (we can modify this with better ideas later) is to use a text or storage file to store the current stats of the player and the records made so far and add it to the file. When the game is loaded, the text from the file can be rendered in a specific section of the menu. (Adarsh)
-    - We can use the text file to keep track of progress toward some achievement
-    - For example, we can have an achievement of total number of coins collected and read and write to the text file to update the progress towards this achievement
-- Adding power ups to the game. The idea over here is to replicate the powerups in the jetpack joyride game such as boost, disable obstacles for a specific period of time and implement a random weight to the randomness of each powerup depending on the assistance it offers to the player playing the game.  (Dhruv)
-    - This can also depend on the difficulty of game
-    - So harder difficulties might mean the power up lasts for less time
+
+- Add achievements of the player playing the game (Adarsh)
+Use a text file to store the current stats of the player for achievements
+Show the stats in the setting menu
+- Add coins to the game. We must generate multiple coins in a cluster. We can also update the shape of the coins to be different sizes of blocks probabilistically. Add text to screen to track distance traveled and coins collected. (Rayhan)
+- Adding rockets to the game ensures that the levels are still passable with rockets and zappers implemented and we must iterate upon the logic from passability. Add animation to rockets and lasers which allows changing from inactive to active state for lasers and from warning state to rocket being deployed for rockets. Ensure that the velocity of the rockets and the time for display for lasers depend on the difficulty of the level. (Dhruv)
 
 Priority 4 Features
-- Mechanics that are more similar to the real game: Here are some of these things (Adarsh)
-    - We want to ensure that as the user presses the space bar, the jetpack moves up AND has bullets that spray downward
-    - These bullets should spray in a bit of random direction instead of straight down to be more realistic
-    - Also, we want the zappers to rotate at times like the real game
-    - We also want multiple lasers to show up at a time and move down and up sometimes
-- Gravity swap: Power-up that can switch gravity of Jetpack character (Rayhan)
-    - We want to be able to walk on the ceiling and then switch to move down to the ground 
-- Custom sprites: Depending upon the local memory feature that we implement, we can also add a menu in the home screen for custom sprites which use the coins collected and distance covered across the levels so far to buy different sprites. Each sprite can change the avatar of the player or the background or both depending on the amount the player spends on the custom sprites. (Dhruv)
-    - This can aid customizability so we can easily add things here 
-
-
+- Adding power ups to the game. We will be adding the basic powerup to disable all the obstacles for a specific amount of time. Implement the framework for the powerups to activate it using collision_handlers centrally. Additionally, add powerup to generate more coins for the given time frame of powerup. (Dhruv)
+    - This can also depend on the difficulty of game
+    - So harder difficulties might mean the power up lasts for less time.
+- Implementation of custom sound effects and background music. (Adarsh)
+    - Have a sound effect with hitting the coins
+    - Have a sound effect for hitting the obstacles like zappers, lasers, and rockets
+    - We can use background music for the game
+- Additional Powerups (Rayhan)
+    - Gravity swap: Power-up that can switch gravity of Jetpack character
+    - Add a magnet powerup to the game and associate a gravitational force with all the coin objects relative to the coin powerup collected. Attribute time period for the existence of the magnetic powerup in the game.
 
 ## Section 3: Timeline
 This section should assign every feature in the previous section to a particular group member and a particular week they will implement it.
