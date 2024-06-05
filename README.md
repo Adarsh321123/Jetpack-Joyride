@@ -79,8 +79,8 @@ Priority 2 Features
 Priority 3 Features
 
 - Add achievements of the player playing the game (Adarsh)
-Use a text file to store the current stats of the player for achievements
-Show the stats in the setting menu
+    - Store the current stats of the player for achievements
+    - Show the stats in the setting menu
 - Add coins to the game. We must generate multiple coins in a cluster. We can also update the shape of the coins to be different sizes of blocks probabilistically. Add text to screen to track distance traveled and coins collected. (Rayhan)
 - Adding rockets to the game ensures that the levels are still passable with rockets and zappers implemented and we must iterate upon the logic from passability. Add animation to rockets and lasers which allows changing from inactive to active state for lasers and from warning state to rocket being deployed for rockets. Ensure that the velocity of the rockets and the time for display for lasers depend on the difficulty of the level. (Dhruv)
 
