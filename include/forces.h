@@ -39,7 +39,7 @@ void apply_force_creator(force_creator_info_t *info);
  * @param force_const the force constant passed to create_collision()
  */
 typedef void (*collision_handler_t)(body_t *body1, body_t *body2, vector_t axis,
-                                    void *aux, double force_const);
+                                    void *aux1, void *aux2, double force_const);
 
 /**
  * Adds a force creator to a scene that applies gravity between two bodies.
@@ -100,7 +100,7 @@ void create_drag(scene_t *scene, double gamma, body_t *body);
  * @param force_const a constant to pass to the handler
  */
 void create_collision(scene_t *scene, body_t *body1, body_t *body2,
-                      collision_handler_t handler, void *aux,
+                      collision_handler_t handler, void *aux1, void *aux2,
                       double force_const);
 
 /**
@@ -120,7 +120,7 @@ void create_destructive_collision(scene_t *scene, body_t *body1, body_t *body2);
  * bodies according to the elasticity in `aux`.
  */
 void physics_collision_handler(body_t *body1, body_t *body2, vector_t axis,
-                               void *aux, double force_const);
+                               void *aux1, void *aux2, double force_const);
 
 /**
  * Adds a force creator to a scene that applies impulses

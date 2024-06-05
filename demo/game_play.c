@@ -549,22 +549,22 @@ game_play_state_t *game_play_init(difficulty_type_t difficulty_level) {
   return game_play_state;
 }
 
-void game_over(body_t *body1, body_t *body2, vector_t axis, void *aux,
-                        double force_const) {
+void game_over(body_t *body1, body_t *body2, vector_t axis, void *aux1,
+                        void *aux2, double force_const) {
   fprintf(stderr, "game over!\n");
-  game_play_state_t *game_play_state = (game_play_state_t *) aux;
+  game_play_state_t *game_play_state = (game_play_state_t *) aux1;
   game_play_state->curr_state = GAME_OVER;
 }
 
-void collect_coin(body_t *body1, body_t *body2, vector_t axis, void *aux,
-                        double force_const) {
+void collect_coin(body_t *body1, body_t *body2, vector_t axis, void *aux1,
+                        void *aux2, double force_const) {
   fprintf(stderr, "collected coin!\n");
-  // game_play_state_t *game_play_state = (game_play_state_t *) aux;
-  // game_play_state->coin->coin_count++;
-  // asset_t *asset = game_play_state->next_asset_to_remove;
-  asset_t *asset = (asset_t *) aux;
+  asset_t *asset = (asset_t *) aux1;
   body_remove(body1);
   asset_update_bounding_box_x(asset, -1000);
+
+  game_play_state_t *game_play_state = (game_play_state_t *) aux2;
+  game_play_state->coin->coin_count++;
 }
 
 void remove_zappers(game_play_state_t *game_play_state) {
@@ -672,8 +672,8 @@ void add_zapper(game_play_state_t *game_play_state, double dt) {
     asset_t *img = asset_make_image_with_body(ZAPPER_PATH, zapper);
     list_add(game_play_state->state->body_assets, img);
     // fprintf(stderr, "before collision\n");
-    create_collision(game_play_state->state->scene, zapper, game_play_state->state->user, game_over, game_play_state,
-                       0);
+    create_collision(game_play_state->state->scene, zapper, game_play_state->state->user, 
+    game_over, game_play_state, NULL, 0);
     // fprintf(stderr, "after collision\n");
   }
 }
@@ -703,7 +703,7 @@ void add_coins(game_play_state_t *game_play_state, double dt) {
         list_add(game_play_state->state->body_assets, img);
         // fprintf(stderr, "before collision\n");
         create_collision(game_play_state->state->scene, coin, game_play_state->state->user, 
-        collect_coin, img, 0);
+        collect_coin, img, game_play_state, 0);
       }
     }
     // vector_t center = {.x = x_pos, .y = y_pos};
@@ -765,8 +765,8 @@ void add_rocket(game_play_state_t *game_play_state, double dt) {
     list_add(game_play_state->state->body_assets, img);
     body_t *user = scene_get_body(game_play_state->state->scene, 0);
     assert(user);    
-    create_collision(game_play_state->state->scene, rocket, user, game_over, game_play_state,
-                       0);
+    create_collision(game_play_state->state->scene, rocket, user, game_over, 
+    game_play_state, NULL, 0);
     game_play_state->rocket->rocket_inactive = false;                        
     game_play_state->rocket->rocket_active = true;                        
   }
@@ -817,8 +817,8 @@ void add_laser(game_play_state_t *game_play_state, double dt) {
       asset_update_bounding_box(list_get(game_play_state->laser->laser_active_assets, i), laser);
       body_t *user = scene_get_body(game_play_state->state->scene, 0);
       assert(user);    
-      create_collision(game_play_state->state->scene, laser, user, game_over, game_play_state,
-                        0);
+      create_collision(game_play_state->state->scene, laser, user, game_over, 
+      game_play_state, NULL, 0);
     } 
     for (size_t i = 0; i < list_size(game_play_state->laser->laser_spawn_positions); i++) { 
       list_remove(game_play_state->laser->laser_spawn_positions, i);
