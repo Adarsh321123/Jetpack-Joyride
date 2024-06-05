@@ -395,6 +395,7 @@ void game_over(body_t *body1, body_t *body2, vector_t axis, void *aux,
 
 
 void remove_zappers(game_play_state_t *game_play_state) {
+  // TODO: remove from body assets once deleted so the image is not re-rendered each time
   size_t num_bodies = scene_bodies(game_play_state->state->scene);
   for (size_t i = 0; i < num_bodies; i++) {
     body_t *body = scene_get_body(game_play_state->state->scene, i);
