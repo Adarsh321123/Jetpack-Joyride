@@ -5,6 +5,7 @@
 #include <string.h>
 #include <time.h>
 #include <math.h>
+#include <emscripten.h>  // TODO: this is also in emscripten.c, is that fine?
 
 #include "collision.h"
 #include "forces.h"
@@ -73,6 +74,9 @@ const SDL_Rect COIN_BOX = (SDL_Rect){25, 75, 0, 0};
 const size_t DISTANCE_TEXT_SIZE = 50;
 const size_t DISTANCE_FONT_SIZE = 30;
 const SDL_Rect DISTANCE_BOX = (SDL_Rect){25, 25, 0, 0};
+
+// ACHIEVEMENTS:
+static bool mounted = false;
 
 vector_t LASER1 = {.x = 500, .y = 80};
 vector_t LASER2 = {.x = 500, .y = 101.25};
@@ -189,6 +193,10 @@ struct rocket_state {
   asset_t *rocket_inactive_asset;
   // asset_t *rocket_active_asset;
   vector_t rocket_spawn_position;
+};
+
+struct achievements_t {
+  size_t total_coins;
 };
 
 struct game_play_state {
@@ -405,8 +413,85 @@ static void background_update(background_state_t *state, double dt) {
 }
 
 
+void init_achievements_file(const char *achievements_filename) {
+  // TODO: repetition with writing to file mehtod
+  // TODO: if first time ever playing will need to init the storage with usable stuff, test by clearing cache?
+  // TODO: remove the local file
+  FILE *achievements_file = fopen(achievements_filename, "w");
+  assert(achievements_file != NULL);
+  fprintf(achievements_file, "Player Name: %s\n", "Adarsh");
+  fprintf(achievements_file, "Player Name: %s\n", "Dhruv");
+  fprintf(achievements_file, "Player Name: %s\n", "Rayhan");
+  int close_result = fclose(achievements_file);  // using int from Adam's example
+  assert(close_result == 0);
+  fprintf(stderr, "Initialized new achievements file\n");
+}
 
+void read_achievements(const char *achievements_filename) {
+  FILE *achievements_file = fopen(achievements_filename, "r");
+  if (achievements_file == NULL) {
+    fprintf(stderr, "Achievements file not found. Creating a new one.\n");
+    init_achievements_file(achievements_filename);
+    achievements_file = fopen(achievements_filename, "r");
+    assert(achievements_file != NULL);
+  }
+  fprintf(stderr, "File opened for reading\n");
+  size_t char_read = 100;
+  char *temp_string = malloc(sizeof(char) * (char_read + 1));
+  while(fgets(temp_string, char_read, achievements_file)) {
+    fprintf(stderr, "%s", temp_string);
+  }
+  int close_result = fclose(achievements_file);
+  assert(close_result == 0);
+  free(temp_string);
+}
 
+void write_achievements(const char *achievements_filename) {
+  FILE *achievements_file = fopen(achievements_filename, "w");
+  assert(achievements_file != NULL);
+  fprintf(stderr, "File opened for writing\n");
+  fprintf(achievements_file, "Player Name: %s\n", "Rayhan");
+  fprintf(stderr, "File written to\n");
+
+  int close_result = fclose(achievements_file);
+  assert(close_result == 0);
+}
+
+void sync_to_persistent_storage() {
+  EM_ASM(
+    FS.syncfs(function (err) {
+      assert(!err);
+      console.log("Filesystem synchronized to persistent storage.");
+    });
+  );
+}
+// TODO: remove console logs
+void sync_from_persistent_storage_and_write() {
+  EM_ASM(
+    FS.syncfs(true, function (err) {
+      assert(!err);
+      console.log("Filesystem synchronized from persistent storage.");
+      ccall('read_achievements', 'void', ['string'], ['/persistent/achievements.txt']);
+      ccall('write_achievements', 'void', ['string'], ['/persistent/achievements.txt']);
+      ccall('sync_to_persistent_storage', 'void', []);
+    });
+  );
+}
+
+void mount_persistent_fs() {
+  if (!mounted) {
+    EM_ASM(
+      if (!FS.analyzePath('/persistent').exists) {
+        FS.mkdir('/persistent');
+      }
+      FS.mount(IDBFS, {}, '/persistent');
+    );
+    mounted = true;
+  }
+}
+
+// TODO: clean up later such as constants for strings
+// TODO: what are all of the console logs like the stderr at beginnning of service worker?
 game_play_state_t *game_play_init(difficulty_type_t difficulty_level) {
   game_play_state_t *game_play_state = malloc(sizeof(game_play_state_t));
   assert(game_play_state != NULL);
@@ -546,6 +631,13 @@ game_play_state_t *game_play_init(difficulty_type_t difficulty_level) {
           break;
       }
   }
+
+  mount_persistent_fs();
+  // sync the filesystem from IndexedDB to the in-memory filesystem
+  // then, write and sync back to persistent storage
+  // TODO: func names too long like this one
+  sync_from_persistent_storage_and_write();
+
   return game_play_state;
 }
 
