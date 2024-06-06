@@ -102,7 +102,6 @@ static void on_mouse(char key, void *home_state, SDL_Event event) {
 void init_achievements_file(const char *achievements_filename) {
   // TODO: repetition with writing to file mehtod
   // TODO: if first time ever playing will need to init the storage with usable stuff, test by clearing cache?
-  // TODO: is it ok to change the makefile like I did? unintended consequences?
   // TODO: remove the local file
   FILE *achievements_file = fopen(achievements_filename, "w");
   assert(achievements_file != NULL);
@@ -178,7 +177,6 @@ void mount_persistent_fs() {
 }
 
 // TODO: clean up later such as constants for strings
-// TODO: can we use these macros?
 home_state_t *home_init() {
   home_state_t *home_state = malloc(sizeof(home_state_t));
   assert(home_state);
@@ -323,6 +321,7 @@ home_state_t *home_init() {
   mount_persistent_fs();
   // sync the filesystem from IndexedDB to the in-memory filesystem
   // then, write and sync back to persistent storage
+  // TODO: func names too long like this one
   sync_from_persistent_storage_and_write();
 
   return home_state;
