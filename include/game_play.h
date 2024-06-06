@@ -19,8 +19,6 @@ typedef struct rocket_state rocket_state_t;
 
 typedef struct coin_state coin_state_t;
 
-typedef struct achievements achievements_t;
-
 /**
  * Gets the type of the given body.
  * @param body the body we want to get the type of

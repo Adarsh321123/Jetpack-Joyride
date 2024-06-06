@@ -1,7 +1,7 @@
 # List of C files in "libraries" and "demo" that you have written. Any additional files
 # should be added here.
 GAMES = game home settings game_play game_over
-STUDENT_LIBS = asset_cache asset body collision color emscripten forces list polygon scene sdl_wrapper vector constants asset_helper
+STUDENT_LIBS = asset_cache asset body collision color emscripten forces list polygon scene sdl_wrapper vector constants asset_helper observer subject achievement
 
 # find <dir> is the command to find files in a directory
 # ! -name .gitignore tells find to ignore the .gitignore

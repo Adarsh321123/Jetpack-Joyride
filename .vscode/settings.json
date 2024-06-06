@@ -1,6 +1,9 @@
 {
     "files.associations": {
         "constants.h": "c",
-        "sdl_wrapper.h": "c"
+        "sdl_wrapper.h": "c",
+        "vector.h": "c",
+        "observer.h": "c",
+        "cmath": "c"
     }
 }
