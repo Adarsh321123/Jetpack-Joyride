@@ -3,13 +3,13 @@
 #include <assert.h>
 
 #include "asset.h"
+#include "constants.h"
 #include "asset_cache.h"
 #include "list.h"
 #include "sdl_wrapper.h"
 
 static list_t *ASSET_CACHE;
 
-const size_t FONT_SIZE = 50;
 const size_t INITIAL_CAPACITY = 5;
 
 struct entry {

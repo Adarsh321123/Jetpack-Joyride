@@ -10,6 +10,10 @@
 #include "asset_cache.h"
 #include "sdl_wrapper.h"
 
+const size_t DIFFICULTY_TEXT_SIZE = 50;
+const size_t DIFFICULTY_FONT_SIZE = 50;
+const SDL_Rect DIFFICULTY_BOX = (SDL_Rect){600, 325, 0, 0};
+
 /**
  * Handler for going back to home screen
  */
@@ -41,16 +45,9 @@ static text_info_t text_templates[] = {
      .text_color = (rgb_color_t){255, 255, 255},
      .text = "Settings"},
      {.font_path = "assets/New Athletic M54.ttf",
-     .text_box = (SDL_Rect){100, 325, 150, 50},
-     .text_color = (rgb_color_t){255, 255, 255},
-     .text = "Current Difficulty Level: "}
-     };
-
-static text_info_t dynamic_text_templates[] = {
-     {.font_path = "assets/New Athletic M54.ttf",
-     .text_box = (SDL_Rect){300, 325, 150, 50},
-     .text_color = (rgb_color_t){255, 255, 255},
-     .text = "Current Difficulty Level: "}
+     .text_box = (SDL_Rect){50, 325, 150, 50},
+     .text_color = (rgb_color_t){0, 0, 0},
+     .text = "Current Difficulty Level : "}
      };
 
 static button_info_t button_templates[] = {
@@ -134,7 +131,7 @@ static void create_buttons(settings_state_t *settings_state) {
 }
 
 static void display_difficulty_level(settings_state_t *settings_state){
-    char difficulty_text[10];
+    char difficulty_text[DIFFICULTY_TEXT_SIZE];
 
     switch (settings_state->difficulty_level) {
         case EASY: {
@@ -155,8 +152,10 @@ static void display_difficulty_level(settings_state_t *settings_state){
         }
     }
 
-    // dynamic_text
-    // create_text_from_info()
+    SDL_Rect bounding_box = DIFFICULTY_BOX;
+    TTF_Font *font = settings_state->difficulty_font;
+    TTF_SizeText(font, difficulty_text, &bounding_box.w, &bounding_box.h);
+    render_text(difficulty_text, font, black, bounding_box);
 }
 
 static void on_mouse(char key, void *settings_state, SDL_Event event) {
@@ -188,6 +187,7 @@ settings_state_t *settings_init() {
 
   settings_state->curr_state = SETTINGS;
   settings_state->difficulty_level = EASY;
+  settings_state->difficulty_font = init_font(FONT_PATH, DIFFICULTY_FONT_SIZE);
   return settings_state;
 }
 

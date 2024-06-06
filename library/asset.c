@@ -99,6 +99,21 @@ asset_t *asset_make_image_with_body(const char *filepath, body_t *body) {
   return (asset_t *)image_asset;
 }
 
+void asset_update_bounding_box(asset_t *image, body_t *body) {  
+  image->bounding_box = find_bounding_box(body);
+}
+
+void asset_update_bounding_box_center(asset_t *image, vector_t *center, double w, double h) {  
+  image->bounding_box.x = center->x - w / 2;
+  image->bounding_box.y = center->y + h / 2;
+  image->bounding_box.w = w;
+  image->bounding_box.h = h;
+}
+
+void asset_update_bounding_box_x(asset_t *image, int x) {  
+  image->bounding_box.x = x;
+}
+
 asset_t *asset_make_text(const char *filepath, SDL_Rect bounding_box,
                          const char *text, rgb_color_t color) {
   text_asset_t *text_asset = malloc(sizeof(text_asset_t));
@@ -154,7 +169,7 @@ void asset_render(asset_t *asset) {
   switch (asset->type) {
   case ASSET_IMAGE: {
     image_asset_t *image_asset = (image_asset_t *)asset;
-    if (image_asset->body != NULL) {
+    if (image_asset->body != NULL && body_is_removed(image_asset->body) == false) {
       image_asset->base.bounding_box = find_bounding_box(image_asset->body);
     }
     render_copy(image_asset->texture, image_asset->base.bounding_box);

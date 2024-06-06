@@ -19,6 +19,11 @@ static bool mounted = false;
 static void settings(home_state_t *home_state);
 
 /**
+ * Handler for entering settings page
+ */
+static void settings(home_state_t *home_state);
+
+/**
  * Handler for entering game play
  */
 static void play(home_state_t *home_state);
