@@ -15,19 +15,6 @@ const char *FIRST_ACHIEVEMENT = "Collect 50 Coins|0|50|false";
 const char *SECOND_ACHIEVEMENT = "Travel 1000 meters|0|1000|false";
 const char *THIRD_ACHIEVEMENT = "Dodge 10 Zappers|0|10|false";
 
-struct achievement {
-    char *name;
-    size_t progress;
-    size_t target;
-    bool unlocked;
-};
-
-// TODO: need filename?
-struct achievements {
-    observer_t *observer;
-    list_t *achievements_list;
-};
-
 size_t achievements_size(achievements_t *achievements) {
     return list_size(achievements->achievements_list);
 }
@@ -201,27 +188,30 @@ void achievements_on_notify(observer_t *observer, event_t event) {
     //         break;
     // }
 }
+// TODO: rename this file achievements (plural)
 // TODO: PERSISTENCE NOT WORKING ANYMORE, might be related to other logs about restarting service worker
 // TODO: is the table index out of bounds issue related to threads?
-achievements_t *achievements_init() {
+achievements_t *achievements_init(on_notify_t test_on_notify) {
     achievements_t *achievements = malloc(sizeof(achievements_t));
     assert(achievements != NULL);
-    achievements->observer = observer_init(achievements_on_notify);
+    // TODO: do what asset does which is deal with pointer but dereference the result
+    // achievements->observer = observer_init(test_on_notify);
+    achievements->observer.on_notify = test_on_notify;
+    fprintf(stderr, "Achievements initialized at %p, observer at %p\n", (void*)achievements, (void*)(&(achievements->observer)));
     // TODO: maybe change to achievements free, same with subject and observer
     // TODO: is it double free to free these thigns in this file and then also set list_free as freer?
-    achievements->achievements_list = list_init(INITIAL_ACHIEVEMENTS, (free_func_t)list_free);
-    fprintf(stderr, "Initialized achievements list\n");
-    mount_persistent_fs();
-    // sync the filesystem from IndexedDB to the in-memory filesystem
-    // then, write and sync back to persistent storage
-    // TODO: func names too long like this one
-    sync_from_persistent_storage_and_read(achievements);
-    fprintf(stderr, "Read achievements file into the list\n");
+    // achievements->achievements_list = list_init(INITIAL_ACHIEVEMENTS, (free_func_t)list_free);
+    // fprintf(stderr, "Initialized achievements list\n");
+    // mount_persistent_fs();
+    // // sync the filesystem from IndexedDB to the in-memory filesystem
+    // // then, write and sync back to persistent storage
+    // // TODO: func names too long like this one
+    // sync_from_persistent_storage_and_read(achievements);
+    // fprintf(stderr, "Read achievements file into the list\n");
     return achievements;
 }
 
 void achievements_free(achievements_t *achievements) {
-    observer_free(achievements->observer);
     list_free(achievements->achievements_list);
     free(achievements);
 }

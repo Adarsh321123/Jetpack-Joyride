@@ -10,13 +10,13 @@ subject_t *subject_init() {
     subject_t *subject = malloc(sizeof(subject_t));
     assert(subject != NULL);
     subject->observers = list_init(INITIAL_NUM_OBSERVERS, (free_func_t) list_free);
-    fprintf(stderr, "Subject initialized\n");
+    fprintf(stderr, "Subject initialized at %p\n", (void*)subject);
     return subject;
 }
 
 void subject_add_observer(subject_t *subject, observer_t *observer) {
     list_add(subject->observers, observer);
-    fprintf(stderr, "Added observer to subject\n");
+    fprintf(stderr, "Adding observer at %p to subject at %p\n", (void*)observer, (void*)subject);
 }
 
 size_t subject_num_observers(subject_t *subject) {
@@ -36,10 +36,10 @@ void subject_remove_observer(subject_t *subject, observer_t *observer) {
 
 void subject_notify(subject_t *subject, event_t event) {
     size_t num_observers = subject_num_observers(subject);
-    fprintf(stderr, "Notify: Number of observers: %zu\n", num_observers);
+    fprintf(stderr, "Notifying %zu observers for event %d\n", num_observers, event);
     for (size_t i = 0; i < num_observers; i++) {
         observer_t *cur_observer = list_get(subject->observers, i);
-        fprintf(stderr, "retrieved observer %zu\n", i);
+        fprintf(stderr, "Observer %zu at %p, notify function %p\n", i, (void*)cur_observer, (void*)cur_observer->on_notify);
         // TODO: remove
         if (cur_observer == NULL) {
             fprintf(stderr, "Observer %zu is null\n", i);
@@ -49,14 +49,14 @@ void subject_notify(subject_t *subject, event_t event) {
             fprintf(stderr, "Observer %zu notify function is null\n", i);
             continue;
         }
-        fprintf(stderr, "Calling notify function for observer %zu\n", i);
         cur_observer->on_notify(cur_observer, event);
-        fprintf(stderr, "notified observer %zu\n", i);
+        fprintf(stderr, "Notified observer %zu at %p, notify function %p\n", i, (void*)cur_observer, (void*)cur_observer->on_notify);
     }
     fprintf(stderr, "Notified %zu observers\n", num_observers);
 }
 
 void subject_free(subject_t *subject) {
+    fprintf(stderr, "Freeing subject at %p \n", (void*)subject);
     list_free(subject->observers);
     free(subject);
 }
