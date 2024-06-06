@@ -38,7 +38,7 @@ struct observer {
  * 
  * @return an initialized `observer_t`
 */
-observer_t *observer_init(on_notify_t on_notify);
-void observer_free(observer_t *observer);
+// observer_t *observer_init(on_notify_t on_notify);
+// void observer_free(observer_t *observer);
 
 #endif  // #ifndef __OBSERVER_H__

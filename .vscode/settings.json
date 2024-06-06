@@ -4,6 +4,7 @@
         "sdl_wrapper.h": "c",
         "vector.h": "c",
         "observer.h": "c",
-        "cmath": "c"
+        "cmath": "c",
+        "stddef.h": "c"
     }
 }

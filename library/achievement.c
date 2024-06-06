@@ -1,5 +1,5 @@
 #include "achievement.h"
-// TODO: is the include error why emscripten does not work?
+// TODO: is the include error why persistence does not work?
 #include <emscripten.h>  // TODO: this is also in emscripten.c, is that fine?
 
 // TODO: should we use the observer subject pattern for game over and switching screens?
@@ -155,53 +155,62 @@ void mount_persistent_fs() {
 // TODO: clean up later such as constants for strings
 // TODO: what are all of the console logs like the stderr at beginnning of service worker?
 void achievements_on_notify(observer_t *observer, event_t event) {
-    // fprintf(stderr, "startign the function pointer call\n");
-    // achievements_t *achievements = (achievements_t *)observer;
-    // size_t num_achievements = achievements_size(achievements);
-    // fprintf(stderr, "Number of achievements: %zu\n", num_achievements);
-    // // TODO: maybe do logic in sep funcs instead of switch?
-    // switch (event) {
-    //     case EVENT_COIN_COLLECTED:
-    //         fprintf(stderr, "Achievements recieved EVENT_COIN_COLLECTED\n");
-    //         for (size_t i = 0; i < num_achievements; i++) {
-    //             achievement_t *cur_achievement = list_get(achievements->achievements_list, i);
-    //             fprintf(stderr, "Got achievement %zu\n", i);
-    //             // TODO: remove magic string, how can we make this scalable?
-    //             if (strcmp(cur_achievement->name, "Collect 50 Coins") == 0) {
-    //                 // TODO: update encapsulation later with an "edit" or "put" func to avoid this direct change
-    //                 // TODO: save instead of casting each time?
-    //                 ((achievement_t *)(achievements->achievements_list->elements[i]))->progress++;
-    //                 fprintf(stderr, "Updated progress on collecting coins\n");
-    //                 if (((achievement_t *)(achievements->achievements_list->elements[i]))->progress >= ((achievement_t *)(achievements->achievements_list->elements[i]))->target) {
-    //                     ((achievement_t *)(achievements->achievements_list->elements[i]))->unlocked = true;
-    //                     fprintf(stderr, "Achievement Unlocked: %s\n", ((achievement_t *)(achievements->achievements_list->elements[i]))->name);
-    //                 }
-    //                 break;
-    //             }
-    //         }
-    //         // TODO: maybe write only at end?
-    //         sync_from_persistent_storage_and_write(achievements);
-    //         break;
-    //     // TODO: add other cases
-    //     default:
-    //         fprintf(stderr, "default on switch for achievements\n");
-    //         break;
-    // }
+    fprintf(stderr, "inside achievements_on_notify\n");
+    achievements_t *achievements = (achievements_t *)observer;
+    size_t num_achievements = achievements_size(achievements);
+    fprintf(stderr, "Number of achievements: %zu\n", num_achievements);
+    // TODO: maybe do logic in sep funcs instead of switch?
+    switch (event) {
+        case EVENT_COIN_COLLECTED:
+            fprintf(stderr, "Achievements recieved EVENT_COIN_COLLECTED\n");
+            for (size_t i = 0; i < num_achievements; i++) {
+                achievement_t *cur_achievement = list_get(achievements->achievements_list, i);
+                fprintf(stderr, "Got achievement %zu\n", i);
+                // TODO: remove magic string, how can we make this scalable?
+                if (strcmp(cur_achievement->name, "Collect 50 Coins") == 0) {
+                    // TODO: update encapsulation later with an "edit" or "put" func to avoid this direct change
+                    // TODO: save instead of casting each time?
+                    ((achievement_t *)(achievements->achievements_list->elements[i]))->progress++;
+                    fprintf(stderr, "Progress on collecting coins: %zu / 50\n", ((achievement_t *)(achievements->achievements_list->elements[i]))->progress);
+                    if (!((achievement_t *)(achievements->achievements_list->elements[i]))->unlocked &&
+                        ((achievement_t *)(achievements->achievements_list->elements[i]))->progress >=
+                        ((achievement_t *)(achievements->achievements_list->elements[i]))->target) {
+                        ((achievement_t *)(achievements->achievements_list->elements[i]))->unlocked = true;
+                        fprintf(stderr, "Achievement Unlocked: %s\n", ((achievement_t *)(achievements->achievements_list->elements[i]))->name);
+                    }
+                    break;
+                }
+            }
+            // TODO: maybe write only at end?
+            // sync_from_persistent_storage_and_write(achievements);
+            break;
+        // TODO: add other cases
+        default:
+            fprintf(stderr, "default on switch for achievements\n");
+            break;
+    }
 }
 // TODO: rename this file achievements (plural)
 // TODO: PERSISTENCE NOT WORKING ANYMORE, might be related to other logs about restarting service worker
-// TODO: is the table index out of bounds issue related to threads?
-achievements_t *achievements_init(on_notify_t test_on_notify) {
+// TODO: laggy
+achievements_t *achievements_init() {
     achievements_t *achievements = malloc(sizeof(achievements_t));
     assert(achievements != NULL);
-    // TODO: do what asset does which is deal with pointer but dereference the result
-    // achievements->observer = observer_init(test_on_notify);
-    achievements->observer.on_notify = test_on_notify;
+    achievements->observer.on_notify = achievements_on_notify;
     fprintf(stderr, "Achievements initialized at %p, observer at %p\n", (void*)achievements, (void*)(&(achievements->observer)));
     // TODO: maybe change to achievements free, same with subject and observer
     // TODO: is it double free to free these thigns in this file and then also set list_free as freer?
-    // achievements->achievements_list = list_init(INITIAL_ACHIEVEMENTS, (free_func_t)list_free);
-    // fprintf(stderr, "Initialized achievements list\n");
+    achievements->achievements_list = list_init(INITIAL_ACHIEVEMENTS, (free_func_t)list_free);
+    fprintf(stderr, "Initialized achievements list\n");
+
+    // TODO: remove after testing
+    // achievement_t *achievement = malloc(sizeof(achievement_t));
+    // achievement->name = "Collect 50 Coins";
+    // achievement->progress = 0;
+    // achievement->target = 5;
+    // achievement->unlocked = false;
+    // list_add(achievements->achievements_list, achievement);
+
     // mount_persistent_fs();
     // // sync the filesystem from IndexedDB to the in-memory filesystem
     // // then, write and sync back to persistent storage

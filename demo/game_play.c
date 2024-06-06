@@ -194,7 +194,6 @@ struct rocket_state {
   vector_t rocket_spawn_position;
 };
 
-// TODO: FOR INHERITANCE, MUST MAKE SUBJECT NOT A POINTER AND MOVE IT TO THE TOP
 struct game_play_state {
   double time;
   double distance_traveled;
@@ -406,22 +405,9 @@ static void background_update(background_state_t *state, double dt) {
   state->bg2->bounding_box.x = state->bg_offset + WINDOW_WIDTH;
 }
 
-void test_on_notify(observer_t *observer, event_t event) {
-  fprintf(stderr, "inside test_on_notify\n");
-  return;
-}
-
-void init_observers(game_play_state_t *game_play_state) {
-  // TODO: remove after done testing
-  // TODO: remove overall stuff that I added for testing
-  // game_play_state->subject = subject_init();
-  // observer_t *observer = observer_init(test_on_notify);
-  // fprintf(stderr, "Observer created notify function is %p\n", (void*)observer->on_notify);
-  // subject_add_observer(game_play_state->subject, observer);
-  // fprintf(stderr, "End of init_observers in game_play.c\n");
-  
+void init_observers(game_play_state_t *game_play_state) {  
   game_play_state->subject = subject_init();
-  achievements_t *achievements = achievements_init(test_on_notify);
+  achievements_t *achievements = achievements_init();
   fprintf(stderr, "Observer created notify function is %p\n", (void*)achievements->observer.on_notify);
   subject_add_observer(game_play_state->subject, &(achievements->observer));
   fprintf(stderr, "End of init_observers in game_play.c\n");
