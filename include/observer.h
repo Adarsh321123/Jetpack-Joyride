@@ -8,7 +8,7 @@
 typedef enum {
     EVENT_COIN_COLLECTED,
     EVENT_DISTANCE_TRAVELED,
-    EVENT_ZAPPERS_DODGED
+    EVENT_LASERS_AVOIDED
 } event_t;
 
 // TODO: update all of these docstrings for observer, subject, achievement

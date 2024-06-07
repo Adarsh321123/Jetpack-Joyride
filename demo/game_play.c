@@ -631,6 +631,7 @@ void remove_lasers(game_play_state_t *game_play_state) {
         // asset_update_bounding_box_x(game_play_state->laser_active_asset, 2 * 1000);
         scene_remove_body(game_play_state->state->scene, i);
         fprintf(stderr, "removed laser!\n");
+        subject_notify(game_play_state->subject, EVENT_LASERS_AVOIDED, NULL);
       }
     }
 

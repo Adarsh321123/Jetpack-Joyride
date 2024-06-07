@@ -4,13 +4,14 @@
 // TODO: inconsistent tabs
 // TODO: figure out how to add and remove achievements if necessary
 // TODO: occasional weird output in unicode other lang?
+// TODO: keep testing and make sure no async write and read problems
 
-const size_t INITIAL_ACHIEVEMENTS = 5;
+const size_t INITIAL_ACHIEVEMENTS = 3;
 static bool mounted = false;  // TODO: bad practice
 const char *ACHIEVEMENTS_FILENAME = "/persistent/achievements.txt";
 const char *FIRST_ACHIEVEMENT = "Collect 50 Coins|0|50|false";
 const char *SECOND_ACHIEVEMENT = "Travel 1000 Meters|0|1000|false";
-const char *THIRD_ACHIEVEMENT = "Dodge 10 Zappers|0|10|false";
+const char *THIRD_ACHIEVEMENT = "Avoid 5 Lasers|0|5|false";
 
 size_t achievements_size(achievements_t *achievements) {
     return list_size(achievements->achievements_list);
@@ -201,7 +202,27 @@ void achievements_on_notify(observer_t *observer, event_t event, void *aux) {
               }
           }
           break;
-        // TODO: add other cases
+        case EVENT_LASERS_AVOIDED:
+          fprintf(stderr, "Achievements recieved EVENT_LASERS_AVOIDED\n");
+          for (size_t i = 0; i < num_achievements; i++) {
+              achievement_t *cur_achievement = list_get(achievements->achievements_list, i);
+              fprintf(stderr, "Got achievement %zu\n", i);
+              // TODO: remove magic string, how can we make this scalable?
+              if (strcmp(cur_achievement->name, "Avoid 5 Lasers") == 0) {
+                  // TODO: update encapsulation later with an "edit" or "put" func to avoid this direct change
+                  // TODO: save instead of casting each time?
+                  ((achievement_t *)(achievements->achievements_list->elements[i]))->progress++;
+                  fprintf(stderr, "Progress on lasers avoided: %zu / 5\n", ((achievement_t *)(achievements->achievements_list->elements[i]))->progress);
+                  if (!((achievement_t *)(achievements->achievements_list->elements[i]))->unlocked &&
+                      ((achievement_t *)(achievements->achievements_list->elements[i]))->progress >=
+                      ((achievement_t *)(achievements->achievements_list->elements[i]))->target) {
+                      ((achievement_t *)(achievements->achievements_list->elements[i]))->unlocked = true;
+                      fprintf(stderr, "Achievement Unlocked: %s\n", ((achievement_t *)(achievements->achievements_list->elements[i]))->name);
+                  }
+                  break;
+              }
+          }
+          break;
         default:
             fprintf(stderr, "default on switch for achievements\n");
             break;
