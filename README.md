@@ -27,15 +27,15 @@ This section should also address:
 - **game flow** (what does the game look like from start to end for the player?)
 - **graphics** (will you draw polygons? use sprites? make your own vector graphics?)
 
-The game starts with the player at the bottom left of the screen and the idea is that, instead of moving the player forward, we move the obstacles and background relative to the position and velocity of the player. The main menu of the game allows the player to see their recent stats, highest record so far in that instance of the game, custom sprite store, enter different levels and start playing in that instance of the game. We add several different levels to the game and add a probabilistic complexity to each level of the game. We associate a pseudorandomness to the generation of obstacles and power ups in the game and the velocity. The main controls of the game are the space bar that the user can use to shoot pellets that propel the jetpack character upwards. When they release the space bar, the jetpack character falls towards the floor. The user tries to keep going unlimited times until the user hits the zapper, rocket, or lasers. Then, the user loses and the game over screen shows up. Also, if the user tries the story mode the game will progress based on that like different levels. There are no win conditions but the user can try to achieve the achievements. For point we keep track of number of coins collected and distance covered.
+The game starts with the player at the bottom left of the screen and the idea is that, instead of moving the player forward, we move the obstacles and background relative to the position and velocity of the player. The settings of the game allows the player to see their stats on achievements. You can also enter difficulty levels and start playing in that instance of the game. We associate a pseudorandomness to the generation of obstacles and power ups in the game. The main controls of the game are the space bar that the user can use to move upwards. When they release the space bar, the character falls towards the floor. The user tries to keep going unlimited times until the user hits the zapper, rocket, or lasers. Then, the user loses and the game over screen shows up. here are no win conditions but the user can try to achieve the achievements.
 
-We will use the space bar for the moving up and down of the jetpack.
+We will use the space bar for the moving up and down of the character.
 
 The physics engine will be used in the collision detection and the coin collecting mechanics mentioned below.
 
 Please see above for the game flow.
 
-We will use sprites for the jetpack character, the zappers, lasers, and rockets. Please see below.
+We will use sprites for the character, the zappers, lasers, and rockets. Please see below.
 
 
 ## Section 2: Feature Set
@@ -81,7 +81,6 @@ Priority 3 Features
 - Implement an event structure to be used by achievements in Priority 4 (Adarsh)
     - There will be an observer and a subject
     - The game play state has a subject which has observers watching it
-    - An achievement is an observer
     - So the subject can notify that an event happened, and the observers can do as they wish
 - Add coins to the game. We must generate multiple coins in a cluster. We can also update the shape of the coins to be different sizes of blocks probabilistically. Add text to screen to track distance traveled and coins collected. (Rayhan)
 - Adding rockets to the game ensures that the levels are still passable with rockets and zappers implemented and we must iterate upon the logic from passability. Add animation to rockets and lasers which allows changing from inactive to active state for lasers and from warning state to rocket being deployed for rockets. Ensure that the velocity of the rockets and the time for display for lasers depend on the difficulty of the level. (Dhruv)
