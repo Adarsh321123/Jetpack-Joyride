@@ -34,7 +34,7 @@ void subject_remove_observer(subject_t *subject, observer_t *observer) {
   }
 }
 
-void subject_notify(subject_t *subject, event_t event) {
+void subject_notify(subject_t *subject, event_t event, void *aux) {
     size_t num_observers = subject_num_observers(subject);
     fprintf(stderr, "Notifying %zu observers for event %d\n", num_observers, event);
     for (size_t i = 0; i < num_observers; i++) {
@@ -49,7 +49,7 @@ void subject_notify(subject_t *subject, event_t event) {
             fprintf(stderr, "Observer %zu notify function is null\n", i);
             continue;
         }
-        cur_observer->on_notify(cur_observer, event);
+        cur_observer->on_notify(cur_observer, event, aux);
         fprintf(stderr, "Notified observer %zu at %p, notify function %p\n", i, (void*)cur_observer, (void*)cur_observer->on_notify);
     }
     fprintf(stderr, "Notified %zu observers\n", num_observers);

@@ -9,7 +9,7 @@ const size_t INITIAL_ACHIEVEMENTS = 5;
 static bool mounted = false;  // TODO: bad practice
 const char *ACHIEVEMENTS_FILENAME = "/persistent/achievements.txt";
 const char *FIRST_ACHIEVEMENT = "Collect 50 Coins|0|50|false";
-const char *SECOND_ACHIEVEMENT = "Travel 1000 meters|0|1000|false";
+const char *SECOND_ACHIEVEMENT = "Travel 1000 Meters|0|1000|false";
 const char *THIRD_ACHIEVEMENT = "Dodge 10 Zappers|0|10|false";
 
 size_t achievements_size(achievements_t *achievements) {
@@ -150,7 +150,7 @@ void mount_persistent_fs() {
 
 // TODO: clean up later such as constants for strings
 // TODO: what are all of the console logs like the stderr at beginnning of service worker?
-void achievements_on_notify(observer_t *observer, event_t event) {
+void achievements_on_notify(observer_t *observer, event_t event, void *aux) {
     fprintf(stderr, "inside achievements_on_notify\n");
     achievements_t *achievements = (achievements_t *)observer;
     size_t num_achievements = achievements_size(achievements);
@@ -177,16 +177,39 @@ void achievements_on_notify(observer_t *observer, event_t event) {
                     break;
                 }
             }
-            // write and sync back to persistent storage
-            // TODO: since this is async, is it possible that the last one is not recorded before free, resulting in heap use after free?
-            sync_from_persistent_storage_and_write(achievements);
-            fprintf(stderr, "wrote and synced\n");
             break;
+        case EVENT_DISTANCE_TRAVELED:
+          fprintf(stderr, "Achievements recieved EVENT_DISTANCE_TRAVELED\n");
+          char *dist_traveled = (char *)aux;
+          size_t dist_traveled_num = atoi(dist_traveled);
+          for (size_t i = 0; i < num_achievements; i++) {
+              achievement_t *cur_achievement = list_get(achievements->achievements_list, i);
+              fprintf(stderr, "Got achievement %zu\n", i);
+              // TODO: remove magic string, how can we make this scalable?
+              if (strcmp(cur_achievement->name, "Travel 1000 Meters") == 0) {
+                  // TODO: update encapsulation later with an "edit" or "put" func to avoid this direct change
+                  // TODO: save instead of casting each time?
+                  ((achievement_t *)(achievements->achievements_list->elements[i]))->progress += dist_traveled_num;
+                  fprintf(stderr, "Progress on distance traveled: %zu / 1000\n", ((achievement_t *)(achievements->achievements_list->elements[i]))->progress);
+                  if (!((achievement_t *)(achievements->achievements_list->elements[i]))->unlocked &&
+                      ((achievement_t *)(achievements->achievements_list->elements[i]))->progress >=
+                      ((achievement_t *)(achievements->achievements_list->elements[i]))->target) {
+                      ((achievement_t *)(achievements->achievements_list->elements[i]))->unlocked = true;
+                      fprintf(stderr, "Achievement Unlocked: %s\n", ((achievement_t *)(achievements->achievements_list->elements[i]))->name);
+                  }
+                  break;
+              }
+          }
+          break;
         // TODO: add other cases
         default:
             fprintf(stderr, "default on switch for achievements\n");
             break;
     }
+    // write and sync back to persistent storage
+    // TODO: since this is async, is it possible that the last one is not recorded before free, resulting in heap use after free?
+    sync_from_persistent_storage_and_write(achievements);
+    fprintf(stderr, "wrote and synced\n");
 }
 // TODO: rename this file achievements (plural)
 // TODO: PERSISTENCE NOT WORKING ANYMORE, might be related to other logs about restarting service worker

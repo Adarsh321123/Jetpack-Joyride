@@ -25,7 +25,7 @@ typedef enum {
 // TODO: why need observer?
 typedef struct observer observer_t;
 
-typedef void (*on_notify_t)(observer_t *observer, event_t event);
+typedef void (*on_notify_t)(observer_t *observer, event_t event, void *aux);
 typedef void (*freer_t)(void *observer);
 
 // TODO: do we need this struct then?

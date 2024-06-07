@@ -42,7 +42,7 @@ void subject_remove_observer(subject_t *subject, observer_t *observer);
  * @param subject subject that is being observerd
  * @param event event that occurred that is sent to the observers
 */
-void subject_notify(subject_t *subject, event_t event);
+void subject_notify(subject_t *subject, event_t event, void *aux);
 
 void subject_free(subject_t *subject);
 

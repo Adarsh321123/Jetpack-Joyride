@@ -76,6 +76,7 @@ const SDL_Rect COIN_BOX = (SDL_Rect){25, 75, 0, 0};
 const size_t DISTANCE_TEXT_SIZE = 50;
 const size_t DISTANCE_FONT_SIZE = 30;
 const SDL_Rect DISTANCE_BOX = (SDL_Rect){25, 25, 0, 0};
+const double UPDATE_INTERVAL = 0.5;
 
 vector_t LASER1 = {.x = 500, .y = 80};
 vector_t LASER2 = {.x = 500, .y = 101.25};
@@ -196,6 +197,7 @@ struct rocket_state {
 
 struct game_play_state {
   double time;
+  double last_update_time;
   double distance_traveled;
   double time_until_zapper;
   double min_zapper_generation_time;
@@ -467,6 +469,7 @@ game_play_state_t *game_play_init(difficulty_type_t difficulty_level) {
   game_play_state->laser->laser_active = false;
   game_play_state->state = state;
   game_play_state->time = 0;
+  game_play_state->last_update_time = 0;
   game_play_state->distance_font = init_font(FONT_PATH, DISTANCE_FONT_SIZE);
   game_play_state->coins_collected_font = init_font(FONT_PATH, COIN_FONT_SIZE);
   game_play_state->distance_traveled = 0;
@@ -574,7 +577,7 @@ void collect_coin(body_t *body1, body_t *body2, vector_t axis, void *aux1,
 
   game_play_state_t *game_play_state = (game_play_state_t *) aux2;
   game_play_state->coin->coin_count++;
-  subject_notify(game_play_state->subject, EVENT_COIN_COLLECTED);
+  subject_notify(game_play_state->subject, EVENT_COIN_COLLECTED, NULL);
 }
 
 void remove_zappers(game_play_state_t *game_play_state) {
@@ -849,6 +852,10 @@ void render_distance(game_play_state_t *game_play_state) {
   TTF_Font *font = game_play_state->distance_font;
   TTF_SizeText(font, distance_text, &bounding_box.w, &bounding_box.h);
   render_text(distance_text, font, green, bounding_box);
+  if (game_play_state->time - game_play_state->last_update_time > UPDATE_INTERVAL) {
+    game_play_state->last_update_time = game_play_state->time;
+    subject_notify(game_play_state->subject, EVENT_DISTANCE_TRAVELED, distance_text);
+  }
 }
 
 void render_coins_collected(game_play_state_t *game_play_state) {
