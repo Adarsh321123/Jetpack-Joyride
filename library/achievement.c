@@ -3,15 +3,11 @@
 
 // TODO: inconsistent tabs
 // TODO: occasional weird output in unicode other lang?
-// TODO: keep testing and make sure no async write and read problems
-// TODO: if possible, make this async stuff sync so we can write right before end and not interfere with reading
-// TODO: figure out the issue with extra work only if needed
 
 const size_t INITIAL_ACHIEVEMENTS = 3;
-static bool mounted = false;  // TODO: bad practice
-const char *ACHIEVEMENTS_FILENAME = "/persistent/achievements.txt";
+const char *ACHIEVEMENTS_FILENAME = "/achievements.txt";
 const char *FIRST_ACHIEVEMENT = "Collect 50 Coins|0|50|false";
-const char *SECOND_ACHIEVEMENT = "Travel 1000 Meters|0|1000|false";
+const char *SECOND_ACHIEVEMENT = "Travel 1000 Meters In A Game|0|1000|false";  // TODO: test this one more
 const char *THIRD_ACHIEVEMENT = "Avoid 5 Lasers|0|5|false";
 
 size_t achievements_size(achievements_t *achievements) {
@@ -93,20 +89,6 @@ void write_achievements(achievements_t *achievements) {
     } else {
       unlocked = "false";
     }
-    // TODO: got this once:
-    /**
-     * Uncaught RuntimeError: memory access out of bounds
-    at game.wasm.memchr (memchr.c:17:40)
-    at game.wasm.strnlen (strnlen.c:5:18)
-    at game.wasm.printf_core (vfprintf.c:654:12)
-    at game.wasm.__vfprintf_internal (vfprintf.c:746:13)
-    at game.wasm.vfiprintf (vfprintf.c:769:9)
-    at game.wasm.fiprintf (fprintf.c:21:8)
-    at game.wasm.write_achievements (achievement.c:95:5)
-    at game.js:865:12
-    at ccall (game.js:9639:17)
-    at game.js:1169:144
-     */
 
     fprintf(achievements_file, "%s|%zu|%zu|%s\n",
             achievement->name,
@@ -121,52 +103,7 @@ void write_achievements(achievements_t *achievements) {
   assert(close_result == 0);
 }
 
-void sync_to_persistent_storage() {
-  EM_ASM(
-    FS.syncfs(function (err) {
-      assert(!err);
-      console.log("Filesystem synchronized to persistent storage.");
-    });
-  );
-}
-
-// TODO: remove console logs
-void sync_from_persistent_storage_and_read(achievements_t *achievements) {
-    EM_ASM(
-        FS.syncfs(true, function (err) {
-            assert(!err);
-            console.log("Filesystem synchronized from persistent storage for reading.");
-            ccall('read_achievements', 'void', ['number'], [$0]);
-        }), achievements
-    );
-}
-
-void sync_from_persistent_storage_and_write(achievements_t *achievements) {
-    EM_ASM(
-        FS.syncfs(true, function (err) {
-            assert(!err);
-            console.log("Filesystem synchronized from persistent storage for writing.");
-            ccall('write_achievements', 'void', ['number'], [$0]);
-            ccall('sync_to_persistent_storage', 'void', []);
-        }), achievements
-    );
-}
-
-void mount_persistent_fs() {
-  if (!mounted) {
-    EM_ASM(
-      if (!FS.analyzePath('/persistent').exists) {
-        console.log("/persistent does not exist");
-        FS.mkdir('/persistent');
-      }
-      FS.mount(IDBFS, {}, '/persistent');
-    );
-    mounted = true;
-  }
-}
-
 // TODO: clean up later such as constants for strings
-// TODO: what are all of the console logs like the stderr at beginnning of service worker?
 void achievements_on_notify(observer_t *observer, event_t event, void *aux) {
     fprintf(stderr, "inside achievements_on_notify\n");
     achievements_t *achievements = (achievements_t *)observer;
@@ -201,7 +138,7 @@ void achievements_on_notify(observer_t *observer, event_t event, void *aux) {
           for (size_t i = 0; i < num_achievements; i++) {
               achievement_t *cur_achievement = list_get(achievements->achievements_list, i);
               fprintf(stderr, "Got achievement %zu\n", i);
-              if (strcmp(cur_achievement->name, "Travel 1000 Meters") == 0) {
+              if (strcmp(cur_achievement->name, "Travel 1000 Meters In A Game") == 0) {
                   // TODO: update encapsulation later with an "edit" or "put" func to avoid this direct change
                   // TODO: save instead of casting each time?
                   // TODO: only update progress if not unlocked sicne then easier to show in settings
@@ -241,13 +178,10 @@ void achievements_on_notify(observer_t *observer, event_t event, void *aux) {
             fprintf(stderr, "default on switch for achievements\n");
             break;
     }
-    // write and sync back to persistent storage
-    // TODO: since this is async, is it possible that the last one is not recorded before free, resulting in heap use after free?
-    sync_from_persistent_storage_and_write(achievements);
-    fprintf(stderr, "wrote and synced\n");
 }
 // TODO: rename this file achievements (plural)
 // TODO: laggy
+// TODO: change makefile to not use persistence anymore
 achievements_t *achievements_init() {
     achievements_t *achievements = malloc(sizeof(achievements_t));
     assert(achievements != NULL);
@@ -263,20 +197,15 @@ achievements_t *achievements_init() {
     // achievement->target = 5;
     // achievement->unlocked = false;
     // list_add(achievements->achievements_list, achievement);
-
-    mount_persistent_fs();
-    fprintf(stderr, "Mounted persistent file storage\n");
-    // sync the filesystem from IndexedDB to the in-memory filesystem
-    // TODO: func names too long like this one
-    sync_from_persistent_storage_and_read(achievements);
-    fprintf(stderr, "synced and read\n");
-    fprintf(stderr, "Read achievements file into the list\n");
+    read_achievements(achievements);
     return achievements;
 }
 
+// TODO: heap use after free sometimes
 void achievements_free(void *observer) {
-    achievements_t *achievements = (achievements_t *)observer;
     fprintf(stderr, "Inside achievements_free\n");
+    achievements_t *achievements = (achievements_t *)observer;
+    write_achievements(achievements);
     list_free(achievements->achievements_list);
     free(achievements);
 }

@@ -7,7 +7,6 @@ const vector_t CENTER = {500, 250};
 
 const size_t INITIAL_ASSET_CAPACITY = 10;
 
-// TODO: ulimit -n 4096 does not work anymore
 const size_t TEXT_SIZE = 50;
 const size_t FONT_SIZE = 50;
 const size_t TEXT_HEIGHT_SCALE = 2;

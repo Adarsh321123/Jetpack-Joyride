@@ -19,10 +19,10 @@ typedef struct achievements {
 } achievements_t;
 
 const size_t INITIAL_ACHIEVEMENTS = 5;
-static bool mounted = false;
-const char *ACHIEVEMENTS_FILENAME = "/persistent/achievements.txt";
+// static bool mounted = false;
+const char *ACHIEVEMENTS_FILENAME = "/achievements.txt";
 const char *FIRST_ACHIEVEMENT = "Collect 50 Coins|0|50|false";
-const char *SECOND_ACHIEVEMENT = "Travel 1000 meters|0|1000|false";
+const char *SECOND_ACHIEVEMENT = "Travel 1000 Meters In A Game|0|1000|false";
 const char *THIRD_ACHIEVEMENT = "Dodge 10 Zappers|0|10|false";
 
 size_t achievements_size(achievements_t *achievements) {
@@ -117,50 +117,6 @@ void write_achievements(achievements_t *achievements) {
     assert(close_result == 0);
 }
 
-void sync_to_persistent_storage() {
-    EM_ASM(
-        FS.syncfs(function (err) {
-            assert(!err);
-            console.log("Filesystem synchronized to persistent storage.");
-        });
-    );
-}
-
-// TODO: remove console logs
-void sync_from_persistent_storage_and_read(achievements_t *achievements) {
-    EM_ASM(
-        FS.syncfs(true, function (err) {
-            assert(!err);
-            console.log("Filesystem synchronized from persistent storage for reading.");
-            ccall('read_achievements', 'void', ['number'], [$0]);
-        }), achievements
-    );
-}
-
-void sync_from_persistent_storage_and_write(achievements_t *achievements) {
-    EM_ASM(
-        FS.syncfs(true, function (err) {
-            assert(!err);
-            console.log("Filesystem synchronized from persistent storage for writing.");
-            ccall('write_achievements', 'void', ['number'], [$0]);
-            ccall('sync_to_persistent_storage', 'void', []);
-        }), achievements
-    );
-}
-
-void mount_persistent_fs() {
-  if (!mounted) {
-    EM_ASM(
-      if (!FS.analyzePath('/persistent').exists) {
-        console.log("/persistent does not exist");
-        FS.mkdir('/persistent');
-      }
-      FS.mount(IDBFS, {}, '/persistent');
-    );
-    mounted = true;
-  }
-}
-
 // TODO: clean up later such as constants for strings
 // TODO: figure out the issue with extra work only if needed
 int main() {
@@ -171,13 +127,8 @@ int main() {
     achievements->achievements_list = list_init(INITIAL_ACHIEVEMENTS, (free_func_t)list_free);
     fprintf(stderr, "Initialized achievements list\n");
 
-    // mount the persistent filesystem
-    mount_persistent_fs();
-
-    // sync the filesystem from IndexedDB to the in-memory filesystem
-    // then, write and sync back to persistent storage
-    sync_from_persistent_storage_and_read(achievements);
-    sync_from_persistent_storage_and_write(achievements);
+    read_achievements(achievements);
+    write_achievements(achievements);
 
     return 0;
 }
