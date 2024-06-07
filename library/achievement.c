@@ -5,6 +5,7 @@
 // TODO: figure out how to add and remove achievements if necessary
 // TODO: occasional weird output in unicode other lang?
 // TODO: keep testing and make sure no async write and read problems
+// TODO: if possible, make this async stuff sync so we can write right before end and not interfere with reading
 
 const size_t INITIAL_ACHIEVEMENTS = 3;
 static bool mounted = false;  // TODO: bad practice
@@ -92,6 +93,21 @@ void write_achievements(achievements_t *achievements) {
     } else {
       unlocked = "false";
     }
+    // TODO: got this once:
+    /**
+     * Uncaught RuntimeError: memory access out of bounds
+    at game.wasm.memchr (memchr.c:17:40)
+    at game.wasm.strnlen (strnlen.c:5:18)
+    at game.wasm.printf_core (vfprintf.c:654:12)
+    at game.wasm.__vfprintf_internal (vfprintf.c:746:13)
+    at game.wasm.vfiprintf (vfprintf.c:769:9)
+    at game.wasm.fiprintf (fprintf.c:21:8)
+    at game.wasm.write_achievements (achievement.c:95:5)
+    at game.js:865:12
+    at ccall (game.js:9639:17)
+    at game.js:1169:144
+     */
+
     fprintf(achievements_file, "%s|%zu|%zu|%s\n",
             achievement->name,
             achievement->progress,
