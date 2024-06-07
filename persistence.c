@@ -1,7 +1,10 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <assert.h>
+#include <stdbool.h>
 #include <emscripten.h>
+
+static bool mounted = false;
 
 void init_achievements_file(const char *achievements_filename) {
   FILE *achievements_file = fopen(achievements_filename, "w");
@@ -37,7 +40,7 @@ void write_achievements(const char *achievements_filename) {
     FILE *achievements_file = fopen(achievements_filename, "w");
     assert(achievements_file != NULL);
     fprintf(stderr, "File opened for writing\n");
-    fprintf(achievements_file, "Player Name: %s\n", "Zach7");
+    fprintf(achievements_file, "Player Name: %s\n", "Rayhan");
     fprintf(stderr, "File written to\n");
 
     int close_result = fclose(achievements_file);
@@ -64,15 +67,26 @@ void sync_from_persistent_storage_and_write() {
         });
     );
 }
+
+void mount_persistent_fs() {
+  if (!mounted) {
+    EM_ASM(
+      if (!FS.analyzePath('/persistent').exists) {
+        console.log("/persistent does not exist");
+        FS.mkdir('/persistent');
+      }
+      FS.mount(IDBFS, {}, '/persistent');
+    );
+    mounted = true;
+  }
+}
+
 // TODO: clean up later such as constants for strings
 // TODO: can we use these macros?
 int main() {
     fprintf(stderr, "Inside persistence.c main()\n");
     // mount the persistent filesystem
-    EM_ASM(
-        FS.mkdir('/persistent');
-        FS.mount(IDBFS, {}, '/persistent');
-    );
+    mount_persistent_fs();
 
     // sync the filesystem from IndexedDB to the in-memory filesystem
     // then, write and sync back to persistent storage
