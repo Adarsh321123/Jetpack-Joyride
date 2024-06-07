@@ -2,7 +2,6 @@
 #include <state.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <emscripten.h>
 
 #include "settings.h"
 #include "asset.h"
@@ -10,6 +9,7 @@
 #include "constants.h"
 #include "asset_cache.h"
 #include "sdl_wrapper.h"
+#include "achievement.h"
 
 const size_t DIFFICULTY_TEXT_SIZE = 50;
 const size_t DIFFICULTY_FONT_SIZE = 50;
@@ -189,59 +189,6 @@ static void display_difficulty_level(settings_state_t *settings_state){
     render_text(difficulty_text, font, black, bounding_box);
 }
 
-void init_achievements_file_settings() {
-  FILE *achievements_file = fopen("/achievements.txt", "w");
-  assert(achievements_file != NULL);
-  fprintf(achievements_file, "%s\n", "Collect 50 Coins|0|50|false");
-  fprintf(achievements_file, "%s\n", "Travel 1000 Meters In A Game|0|1000|false");
-  fprintf(achievements_file, "%s\n", "Avoid 5 Lasers|0|5|false");
-  fflush(achievements_file);
-  int close_result = fclose(achievements_file);  // using int from Adam's example
-  assert(close_result == 0);
-  fprintf(stderr, "Initialized new achievements file\n");
-}
-
-static void read_achievements_settings() {
-  FILE *achievements_file = fopen("/achievements.txt", "r");
-  if (achievements_file == NULL) {
-    fprintf(stderr, "Achievements file not found. Creating a new one.\n");
-    init_achievements_file_settings();
-    achievements_file = fopen("/achievements.txt", "r");
-    assert(achievements_file != NULL);
-  }
-  fprintf(stderr, "File opened for reading\n");
-  size_t char_read = 256;
-  char *line = malloc(sizeof(char) * (char_read + 1));
-  size_t i = 0;
-  while(fgets(line, char_read + 1, achievements_file)) {
-    fprintf(stderr, "%s", line);
-    char *result = malloc(sizeof(char) * (char_read + 1));
-    line[strcspn(line, "\n")] = '\0';
-    char *token = strtok(line, "|");
-    if (token != NULL) {
-      strcpy(result, token);
-    }
-    strcat(result, " ");
-    token = strtok(NULL, "|");
-    if (token != NULL) {
-      strcat(result, token);
-    }
-    strcat(result, "/");
-    token = strtok(NULL, "|");
-    if (token != NULL) {
-      strcat(result, token);
-    }
-    fprintf(stderr, "result: %s\n", result);
-    achievements_templates[i + 1].text = strdup(result);
-    free(result);
-    i++;
-  }
-  int close_result = fclose(achievements_file);
-  assert(close_result == 0);
-  free(line);
-}
-
-
 static void display_achievements(settings_state_t *settings_state) {
   size_t num_achievements = get_num_achievements();
   TTF_Font *font = settings_state->achievements_font;
@@ -284,7 +231,12 @@ settings_state_t *settings_init() {
   settings_state->difficulty_level = EASY;
   settings_state->difficulty_font = init_font(FONT_PATH, DIFFICULTY_FONT_SIZE);
   settings_state->achievements_font = init_font(ACHIEVEMENTS_FONT_PATH, ACHIEVEMENTS_FONT_SIZE);
-  read_achievements_settings();
+  list_t *results = read_achievements_settings();
+  fprintf(stderr, "received results");
+  size_t num_results = list_size(results);
+  for (size_t i = 0; i < num_results; i++) {
+    achievements_templates[i + 1].text = list_get(results, i);
+  }
   return settings_state;
 }
 
