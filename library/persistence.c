@@ -55,7 +55,7 @@ void read_achievements(achievements_t *achievements) {
     fprintf(stderr, "File opened for reading\n");
     size_t char_read = 256;
     char *line = malloc(sizeof(char) * (char_read + 1));
-    while(fgets(line, char_read, achievements_file)) {
+    while(fgets(line, char_read + 1, achievements_file)) {
         fprintf(stderr, "%s", line);
         achievement_t *achievement = malloc(sizeof(achievement_t));
         line[strcspn(line, "\n")] = '\0';
@@ -84,6 +84,11 @@ void read_achievements(achievements_t *achievements) {
     fprintf(stderr, "%s\n", ((achievement_t *)list_get(achievements->achievements_list, 0))->name);
     fprintf(stderr, "%zu\n", ((achievement_t *)list_get(achievements->achievements_list, 0))->progress);
     fprintf(stderr, "%zu\n", ((achievement_t *)list_get(achievements->achievements_list, 0))->target);
+    if (((achievement_t *)list_get(achievements->achievements_list, 0))->unlocked) {
+        fprintf(stderr, "true\n");
+    } else {
+        fprintf(stderr, "false\n");
+    }
     int close_result = fclose(achievements_file);  // using int from Adam's example
     assert(close_result == 0);
     free(line);
@@ -108,6 +113,7 @@ void write_achievements(achievements_t *achievements) {
                 achievement->target + 1,
                 unlocked);
     }
+    fflush(achievements_file);
     fprintf(stderr, "Wrote all lines\n");
 
     int close_result = fclose(achievements_file);

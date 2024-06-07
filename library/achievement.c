@@ -1,4 +1,5 @@
 #include "achievement.h"
+#include <emscripten.h>
 
 // TODO: inconsistent tabs
 // TODO: figure out how to add and remove achievements if necessary
@@ -20,6 +21,7 @@ void init_achievements_file(achievements_t *achievements) {
   fprintf(achievements_file, "%s\n", FIRST_ACHIEVEMENT);
   fprintf(achievements_file, "%s\n", SECOND_ACHIEVEMENT);
   fprintf(achievements_file, "%s\n", THIRD_ACHIEVEMENT);
+  fflush(achievements_file);
   int close_result = fclose(achievements_file);  // using int from Adam's example
   assert(close_result == 0);
   fprintf(stderr, "Initialized new achievements file\n");
@@ -36,7 +38,7 @@ void read_achievements(achievements_t *achievements) {
   fprintf(stderr, "File opened for reading\n");
   size_t char_read = 256;
   char *line = malloc(sizeof(char) * (char_read + 1));
-  while(fgets(line, sizeof(line), achievements_file)) {
+  while(fgets(line, char_read + 1, achievements_file)) {
     fprintf(stderr, "%s", line);
     achievement_t *achievement = malloc(sizeof(achievement_t));
     line[strcspn(line, "\n")] = '\0';
@@ -62,6 +64,14 @@ void read_achievements(achievements_t *achievements) {
     list_add(achievements->achievements_list, achievement);
   }
   fprintf(stderr, "Read all lines\n");
+  fprintf(stderr, "%s\n", ((achievement_t *)list_get(achievements->achievements_list, 0))->name);
+  fprintf(stderr, "%zu\n", ((achievement_t *)list_get(achievements->achievements_list, 0))->progress);
+  fprintf(stderr, "%zu\n", ((achievement_t *)list_get(achievements->achievements_list, 0))->target);
+  if (((achievement_t *)list_get(achievements->achievements_list, 0))->unlocked) {
+      fprintf(stderr, "true\n");
+  } else {
+      fprintf(stderr, "false\n");
+  }
   int close_result = fclose(achievements_file);
   assert(close_result == 0);
   free(line);
@@ -82,10 +92,11 @@ void write_achievements(achievements_t *achievements) {
     }
     fprintf(achievements_file, "%s|%zu|%zu|%s\n",
             achievement->name,
-            achievement->progress,
-            achievement->target,
+            achievement->progress + 1,  // TODO: remove
+            achievement->target + 1,  // TODO: remove
             unlocked);
   }
+  fflush(achievements_file);
   fprintf(stderr, "Wrote all lines\n");
 
   int close_result = fclose(achievements_file);
@@ -208,13 +219,14 @@ achievements_t *achievements_init() {
     // achievement->unlocked = false;
     // list_add(achievements->achievements_list, achievement);
 
-    // mount_persistent_fs();
-    // fprintf(stderr, "Mounted persistent file storage\n");
-    // // sync the filesystem from IndexedDB to the in-memory filesystem
-    // // TODO: func names too long like this one
-    // sync_from_persistent_storage_and_read(achievements);
-    // fprintf(stderr, "synced and read\n");
-    // fprintf(stderr, "Read achievements file into the list\n");
+    mount_persistent_fs();
+    fprintf(stderr, "Mounted persistent file storage\n");
+    // sync the filesystem from IndexedDB to the in-memory filesystem
+    // TODO: func names too long like this one
+    sync_from_persistent_storage_and_read(achievements);
+    fprintf(stderr, "synced and read\n");
+    fprintf(stderr, "Read achievements file into the list\n");
+    sync_from_persistent_storage_and_write(achievements); // TODO: remove
     return achievements;
 }
 
