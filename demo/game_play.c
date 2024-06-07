@@ -17,6 +17,10 @@
 #include "observer.h"
 #include "achievement.h"
 
+// TODO: rockets laggy
+// TODO: lasers appear randomly
+// TODO: delay for saying removed active lasers
+
 const double WEDGE_ANGLE = 3.6 * M_PI / 3;
 const double INCREMENT_ANGLE = 0.1;
 const double RADIUS = 40;
