@@ -9,7 +9,14 @@
 
 typedef enum { ASSET_IMAGE, ASSET_FONT, ASSET_BUTTON } asset_type_t;
 
-typedef struct asset asset_t;
+typedef struct asset {
+  asset_type_t type;
+  SDL_Rect bounding_box;
+} asset_t;
+
+typedef struct text_asset text_asset_t;
+typedef struct image_asset image_asset_t;
+typedef struct button_asset button_asset_t;
 
 /**
  * Gets the `asset_type_t` of the asset.
@@ -17,6 +24,13 @@ typedef struct asset asset_t;
  * @return the type of the asset.
  */
 asset_type_t asset_get_type(asset_t *asset);
+
+/**
+ * Gets the `body_t` type associated with an image asset.
+ * 
+ * @return the body associated with the image.
+*/
+body_t *image_asset_get_body(image_asset_t *image_asset);
 
 /**
  * Allocates memory for an image asset with the given parameters.
@@ -27,6 +41,12 @@ asset_type_t asset_get_type(asset_t *asset);
  * @return a pointer to the newly allocated image asset
  */
 asset_t *asset_make_image(const char *filepath, SDL_Rect bounding_box);
+
+void asset_update_bounding_box(asset_t *image, body_t *body);
+
+void asset_update_bounding_box_center(asset_t *image, vector_t *center, double w, double h);
+
+void asset_update_bounding_box_x(asset_t *image, int x); 
 
 /**
  * Allocates memory for an image asset with an attached body. When the asset
@@ -93,6 +113,12 @@ void asset_on_button_click(asset_t *button, state_t *state, double x, double y);
  * @param asset the asset to render
  */
 void asset_render(asset_t *asset);
+
+// /**
+//  * Given a body that is marked for removal, finds the body's associated image.
+//  * Then, removes that image from the asset cache and destorys it.
+// */
+// void asset_remove_image(body_t *body, list_t *body_assets, size_t num_assets);
 
 /**
  * Frees the memory allocated for the asset.

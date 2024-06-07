@@ -1,6 +1,6 @@
 # List of C files in "libraries" and "demo" that you have written. Any additional files
 # should be added here.
-GAMES = game home game_play game_over
+GAMES = game home settings game_play game_over
 STUDENT_LIBS = asset_cache asset body collision color emscripten forces list polygon scene sdl_wrapper vector constants asset_helper
 
 # find <dir> is the command to find files in a directory
@@ -86,19 +86,15 @@ server:
 # and $@ means "the target file", so the command tells clang
 # to compile the source C file into the target .o file.
 out/%.o: library/%.c # source file may be found in "library"
-	@git commit -am "Autocommit of library for ${USER}" > /dev/null || true
 	$(CC) -c $(CFLAGS) $^ -o $@
 out/%.o: demo/%.c # or "demo"
-	@git commit -am "Autocommit of game for ${USER}" > /dev/null || true
 	$(CC) -c $(CFLAGS) $^ -o $@
 
 # Emscripten compilation flags
 # This is very similar to the above compilation, except for emscripten
 out/%.wasm.o: library/%.c # source file may be found in "library"
-	@git commit -am "Autocommit of library for ${USER}" > /dev/null || true
 	$(EMCC) -c $(CFLAGS) $^ -o $@
 out/%.wasm.o: demo/%.c # or "demo"
-	@git commit -am "Autocommit of game for ${USER}" > /dev/null || true
 	$(EMCC) -c $(CFLAGS) $^ -o $@
 
 # Builds bin/%.html by linking the necessary .wasm.o files.

@@ -2,7 +2,6 @@
 #include <assert.h>
 #include <math.h>
 #include <stddef.h>
-#include <stdio.h>
 #include <stdlib.h>
 
 const size_t INITIAL_SIZE = 10;

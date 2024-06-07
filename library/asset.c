@@ -3,35 +3,31 @@
 #include <assert.h>
 
 #include "asset.h"
+#include "constants.h"
 #include "asset_cache.h"
 #include "color.h"
 #include "sdl_wrapper.h"
 
-typedef struct asset {
-  asset_type_t type;
-  SDL_Rect bounding_box;
-} asset_t;
-
-typedef struct text_asset {
+struct text_asset {
   asset_t base;
   TTF_Font *font;
   const char *text;
   rgb_color_t color;
-} text_asset_t;
+};
 
-typedef struct image_asset {
+struct image_asset {
   asset_t base;
   SDL_Texture *texture;
   body_t *body;
-} image_asset_t;
+};
 
-typedef struct button_asset {
+struct button_asset {
   asset_t base;
   image_asset_t *image_asset;
   text_asset_t *text_asset;
   button_handler_t handler;
   bool is_rendered;
-} button_asset_t;
+};
 
 /**
  * Allocates memory for an asset with the given parameters.
@@ -68,6 +64,8 @@ static asset_t *asset_init(asset_type_t ty, SDL_Rect bounding_box) {
 
 asset_type_t asset_get_type(asset_t *asset) { return asset->type; }
 
+body_t *image_asset_get_body(image_asset_t *image_asset) { return image_asset->body; }
+
 /**
  * Encapsulates the duplicate code used by both the functions
  *
@@ -99,6 +97,21 @@ asset_t *asset_make_image_with_body(const char *filepath, body_t *body) {
   image_asset_t *image_asset =
       asset_encapsulate_image(filepath, bounding_box, body);
   return (asset_t *)image_asset;
+}
+
+void asset_update_bounding_box(asset_t *image, body_t *body) {  
+  image->bounding_box = find_bounding_box(body);
+}
+
+void asset_update_bounding_box_center(asset_t *image, vector_t *center, double w, double h) {  
+  image->bounding_box.x = center->x - w / 2;
+  image->bounding_box.y = center->y + h / 2;
+  image->bounding_box.w = w;
+  image->bounding_box.h = h;
+}
+
+void asset_update_bounding_box_x(asset_t *image, int x) {  
+  image->bounding_box.x = x;
 }
 
 asset_t *asset_make_text(const char *filepath, SDL_Rect bounding_box,
@@ -156,7 +169,7 @@ void asset_render(asset_t *asset) {
   switch (asset->type) {
   case ASSET_IMAGE: {
     image_asset_t *image_asset = (image_asset_t *)asset;
-    if (image_asset->body != NULL) {
+    if (image_asset->body != NULL && body_is_removed(image_asset->body) == false) {
       image_asset->base.bounding_box = find_bounding_box(image_asset->body);
     }
     render_copy(image_asset->texture, image_asset->base.bounding_box);
@@ -185,5 +198,33 @@ void asset_render(asset_t *asset) {
   }
   }
 }
+
+// void asset_remove_image(body_t *body, list_t *body_assets, size_t num_assets) {
+//   fprintf(stderr, "num of assets: %zu\n", num_assets);
+//   for (size_t i = 0; i < num_assets; i++) {
+//     image_asset_t *cur_img = (image_asset_t *)list_get(body_assets, i);
+//     if ((image_asset_get_body(cur_img)) == body) {
+//       image_asset_destroy(cur_img);
+//       break;
+//       // fprintf(stderr, "cur img pointer: %p\n", cur_img);
+//       // fprintf(stderr, "found image with body\n");
+//       // list_t *asset_cache = get_asset_cache();
+//       // size_t asset_cache_size = list_size(asset_cache);
+//       // fprintf(stderr, "num of asset cahche: %zu\n", asset_cache_size);
+//       // for (size_t j = 0; j < asset_cache_size; j++) {
+//       //   entry_t *cur_entry = get_entry(j);
+//       //   image_asset_t *obj = (image_asset_t *)get_entry_obj(cur_entry);
+//       //   fprintf(stderr, "before if\n");
+//       //   fprintf(stderr, "obj pointer: %p\n", obj);
+//       //   if (cur_img == obj) {
+//       //     list_remove(asset_cache, i);
+//       //     asset_destroy((asset_t *)cur_img);
+//       //     fprintf(stderr, "removed image from cache and destroyed\n");
+//       //     return;
+//       //   }
+//       // }
+//     }
+//   }
+// }
 
 void asset_destroy(asset_t *asset) { free(asset); }

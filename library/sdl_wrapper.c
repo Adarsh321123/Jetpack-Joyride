@@ -1,5 +1,6 @@
 #include "sdl_wrapper.h"
 #include "asset_cache.h"
+#include "game_play.h"
 #include <SDL2/SDL.h>
 #include <SDL2/SDL2_gfxPrimitives.h>
 #include <SDL2/SDL_image.h>
@@ -218,7 +219,7 @@ TTF_Font *init_font(const char *FONT_PATH, size_t size) {
   return font;
 }
 
-SDL_Rect make_texr(size_t x, size_t y, size_t w, size_t h) {
+SDL_Rect make_texr(int x, int y, int w, int h) {
   SDL_Rect texr;
   texr.x = x;
   texr.y = y;
@@ -253,7 +254,17 @@ SDL_Rect find_bounding_box(body_t *body) {
       max_y = pixel.y;
     }
   }
-  return make_texr(min_x, max_y, (max_x - min_x), (max_y - min_y));
+
+  // TODO: make_texr takes as int and we pass double. 
+  if (get_type(body) == USER) {
+    return make_texr(min_x - 15, (max_y - (max_y - min_y)) - 10, 2 * (max_x - min_x), 2 * (max_y - min_y));
+  }
+
+  if (get_type(body) == LASER || get_type(body) == LASER_ACTIVE) {
+    return make_texr(min_x, (max_y - (max_y - min_y)) - 28, (max_x - min_x), (max_y - min_y) + 56);
+  }
+
+  return make_texr(min_x, (max_y - (max_y - min_y)), (max_x - min_x), (max_y - min_y));
 }
 
 void render_text(const char *text, TTF_Font *fontin, rgb_color_t rgb_color,
