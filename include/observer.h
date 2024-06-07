@@ -12,7 +12,6 @@ typedef enum {
 } event_t;
 
 // TODO: update all of these docstrings for observer, subject, achievement
-// TODO: use this instead of putting in struct
 /**
  * A observer handler.
  * When an event occurs, the observer is passed the event
@@ -22,7 +21,6 @@ typedef enum {
  * @param event event SDL_Event to retrieve position of mouse clicks
  */
 
-// TODO: why need observer?
 typedef struct observer observer_t;
 
 typedef void (*on_notify_t)(observer_t *observer, event_t event, void *aux);
@@ -34,13 +32,5 @@ struct observer {
     on_notify_t on_notify;
     freer_t freer;
 };
-
-/**
- * Initializes a observer struct with empty information.
- * 
- * @return an initialized `observer_t`
-*/
-// observer_t *observer_init(on_notify_t on_notify);
-// void observer_free(observer_t *observer);
 
 #endif  // #ifndef __OBSERVER_H__

@@ -10,6 +10,12 @@
 #include "asset_cache.h"
 #include "sdl_wrapper.h"
 
+// TODO: print some texts
+// TODO: make it better wihtout sprintf
+// TODO: read from file
+// TODO: init file
+// TODO: use code from other file
+
 const size_t DIFFICULTY_TEXT_SIZE = 50;
 const size_t DIFFICULTY_FONT_SIZE = 50;
 const SDL_Rect DIFFICULTY_BOX = (SDL_Rect){600, 325, 0, 0};
@@ -47,7 +53,11 @@ static text_info_t text_templates[] = {
      {.font_path = "assets/New Athletic M54.ttf",
      .text_box = (SDL_Rect){50, 325, 150, 50},
      .text_color = (rgb_color_t){0, 0, 0},
-     .text = "Current Difficulty Level : "}
+     .text = "Current Difficulty Level : "},
+     {.font_path = "assets/New Athletic M54.ttf",
+     .text_box = (SDL_Rect){625, 150, 150, 50},
+     .text_color = (rgb_color_t){255, 255, 255},
+     .text = "Achievements"}
      };
 
 static button_info_t button_templates[] = {

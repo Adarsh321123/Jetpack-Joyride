@@ -249,7 +249,6 @@ void achievements_on_notify(observer_t *observer, event_t event, void *aux) {
     fprintf(stderr, "wrote and synced\n");
 }
 // TODO: rename this file achievements (plural)
-// TODO: PERSISTENCE NOT WORKING ANYMORE, might be related to other logs about restarting service worker
 // TODO: laggy
 achievements_t *achievements_init() {
     achievements_t *achievements = malloc(sizeof(achievements_t));

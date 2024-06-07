@@ -29,14 +29,6 @@ void subject_add_observer(subject_t *subject, observer_t *observer);
 size_t subject_num_observers(subject_t *subject);
 
 /**
- * Remove an observer from the given subject
- * 
- * @param subject subject to remove the observer from
- * @param observer observer to remove from the subject
-*/
-void subject_remove_observer(subject_t *subject, observer_t *observer);
-
-/**
  * Notifies each of the subject's observers that an event happened.
  * 
  * @param subject subject that is being observerd

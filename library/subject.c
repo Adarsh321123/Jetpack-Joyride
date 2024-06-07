@@ -23,17 +23,6 @@ size_t subject_num_observers(subject_t *subject) {
     return list_size(subject->observers);
 }
 
-void subject_remove_observer(subject_t *subject, observer_t *observer) {
-  size_t num_observers = subject_num_observers(subject);
-  for (size_t i = 0; i < num_observers; i++) {
-    observer_t *cur_observer = list_get(subject->observers, i);
-    if (observer == cur_observer) {
-        list_remove(subject->observers, i);
-        return;
-    }
-  }
-}
-
 void subject_notify(subject_t *subject, event_t event, void *aux) {
     size_t num_observers = subject_num_observers(subject);
     fprintf(stderr, "Notifying %zu observers for event %d\n", num_observers, event);
