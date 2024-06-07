@@ -3,6 +3,7 @@
 #include <assert.h>
 #include <stdbool.h>
 #include <emscripten.h>
+#include <string.h>
 
 // TODO: add header for this to replicate achievmeents later
 
@@ -47,21 +48,44 @@ void read_achievements(achievements_t *achievements) {
     }
     fprintf(stderr, "File opened for reading\n");
     size_t char_read = 256;
-    char *temp_string = malloc(sizeof(char) * (char_read + 1));
-    while(fgets(temp_string, char_read, achievements_file)) {
-        fprintf(stderr, "%s", temp_string);
+    char *line = malloc(sizeof(char) * (char_read + 1));
+    while(fgets(line, char_read, achievements_file)) {
+        fprintf(stderr, "%s", line);
+        line[strcspn(line, "\n")] = '\0';
+        char *token = strtok(line, "|");
+        if (token != NULL) {
+            // TODO: need strdup?
+            achievements->achievement->name = strdup(token);
+            assert(achievements->achievement->name);
+        }
+        token = strtok(NULL, "|");
+        if (token != NULL) {
+            achievements->achievement->progress = atoi(token);
+        }
+        token = strtok(NULL, "|");
+        if (token != NULL) {
+            achievements->achievement->target = atoi(token);
+        }
+        token = strtok(NULL, "|");
+        if (token != NULL) {
+            bool unlocked = strcmp(token, "true") == 0;
+            achievements->achievement->unlocked = unlocked;
+        }
     }
     fprintf(stderr, "Read all lines\n");
+    fprintf(stderr, "%s\n", achievements->achievement->name);
+    fprintf(stderr, "%zu\n", achievements->achievement->progress);
+    fprintf(stderr, "%zu\n", achievements->achievement->target);
     int close_result = fclose(achievements_file);  // using int from Adam's example
     assert(close_result == 0);
-    free(temp_string);
+    free(line);
 }
 
 void write_achievements(achievements_t *achievements) {
     FILE *achievements_file = fopen(ACHIEVEMENTS_FILENAME, "w");
     assert(achievements_file != NULL);
     fprintf(stderr, "File opened for writing\n");
-    fprintf(achievements_file, "Player Name: %s\n", "Bobby");
+    fprintf(achievements_file, "Dodge 10 Zappers|1|10|false\n");
     fflush(achievements_file);
     fprintf(stderr, "File written to\n");
 
