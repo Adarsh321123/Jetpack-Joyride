@@ -4,7 +4,24 @@
 #include <stdbool.h>
 #include <emscripten.h>
 
+// TODO: add header for this to replicate achievmeents later
+
+typedef struct achievement {
+    char *name;
+    size_t progress;
+    size_t target;
+    bool unlocked;
+} achievement_t;
+
+// TODO: add observer and list
+typedef struct achievements {
+    achievement_t *achievement;
+} achievements_t;
+
+const size_t INITIAL_ACHIEVEMENTS = 5;
 static bool mounted = false;
+
+const char *ACHIEVEMENTS_FILENAME = "/persistent/achievements.txt";
 
 void init_achievements_file(const char *achievements_filename) {
   FILE *achievements_file = fopen(achievements_filename, "w");
@@ -16,12 +33,12 @@ void init_achievements_file(const char *achievements_filename) {
   fprintf(stderr, "Initialized new achievements file\n");
 }
 
-void read_achievements(const char *achievements_filename) {
-    FILE *achievements_file = fopen(achievements_filename, "r");
+void read_achievements(achievements_t *achievements) {
+    FILE *achievements_file = fopen(ACHIEVEMENTS_FILENAME, "r");
     if (achievements_file == NULL) {
         fprintf(stderr, "Achievements file not found. Creating a new one.\n");
-        init_achievements_file(achievements_filename);
-        achievements_file = fopen(achievements_filename, "r");
+        init_achievements_file(ACHIEVEMENTS_FILENAME);
+        achievements_file = fopen(ACHIEVEMENTS_FILENAME, "r");
         assert(achievements_file != NULL);
     }
     // TODO: create file if nonexistent
@@ -70,13 +87,13 @@ void sync_to_persistent_storage() {
 //     );
 // }
 
-void sync_from_persistent_storage_and_read() {
+void sync_from_persistent_storage_and_read(achievements_t *achievements) {
     EM_ASM(
         FS.syncfs(true, function (err) {
             assert(!err);
             console.log("Filesystem synchronized from persistent storage for reading.");
-            ccall('read_achievements', 'void', ['string'], ['/persistent/achievements.txt']);
-        });
+            ccall('read_achievements', 'void', ['number'], [$0]);
+        }), achievements
     );
 }
 
@@ -109,12 +126,16 @@ void mount_persistent_fs() {
 // TODO: figure out the issue with extra work only if needed
 int main() {
     fprintf(stderr, "Inside persistence.c main()\n");
+
+    achievements_t *achievements = malloc(sizeof(achievements_t));
+    assert(achievements != NULL);
+
     // mount the persistent filesystem
     mount_persistent_fs();
 
     // sync the filesystem from IndexedDB to the in-memory filesystem
     // then, write and sync back to persistent storage
-    sync_from_persistent_storage_and_read();
+    sync_from_persistent_storage_and_read(achievements);
     sync_from_persistent_storage_and_write();
 
     return 0;
