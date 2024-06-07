@@ -54,11 +54,11 @@ void read_achievements(achievements_t *achievements) {
     free(temp_string);
 }
 
-void write_achievements(const char *achievements_filename) {
-    FILE *achievements_file = fopen(achievements_filename, "w");
+void write_achievements(achievements_t *achievements) {
+    FILE *achievements_file = fopen(ACHIEVEMENTS_FILENAME, "w");
     assert(achievements_file != NULL);
     fprintf(stderr, "File opened for writing\n");
-    fprintf(achievements_file, "Player Name: %s\n", "Rayhan");
+    fprintf(achievements_file, "Player Name: %s\n", "Grace");
     fflush(achievements_file);
     fprintf(stderr, "File written to\n");
 
@@ -97,14 +97,14 @@ void sync_from_persistent_storage_and_read(achievements_t *achievements) {
     );
 }
 
-void sync_from_persistent_storage_and_write() {
+void sync_from_persistent_storage_and_write(achievements_t *achievements) {
     EM_ASM(
         FS.syncfs(true, function (err) {
             assert(!err);
             console.log("Filesystem synchronized from persistent storage for writing.");
-            ccall('write_achievements', 'void', ['string'], ['/persistent/achievements.txt']);
+            ccall('write_achievements', 'void', ['number'], [$0]);
             ccall('sync_to_persistent_storage', 'void', []);
-        });
+        }), achievements
     );
 }
 
@@ -136,7 +136,7 @@ int main() {
     // sync the filesystem from IndexedDB to the in-memory filesystem
     // then, write and sync back to persistent storage
     sync_from_persistent_storage_and_read(achievements);
-    sync_from_persistent_storage_and_write();
+    sync_from_persistent_storage_and_write(achievements);
 
     return 0;
 }
