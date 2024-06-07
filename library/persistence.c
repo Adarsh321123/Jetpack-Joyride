@@ -20,13 +20,17 @@ typedef struct achievements {
 
 const size_t INITIAL_ACHIEVEMENTS = 5;
 static bool mounted = false;
-
 const char *ACHIEVEMENTS_FILENAME = "/persistent/achievements.txt";
+const char *FIRST_ACHIEVEMENT = "Collect 50 Coins|0|50|false";
+const char *SECOND_ACHIEVEMENT = "Travel 1000 meters|0|1000|false";
+const char *THIRD_ACHIEVEMENT = "Dodge 10 Zappers|0|10|false";
 
-void init_achievements_file(const char *achievements_filename) {
-  FILE *achievements_file = fopen(achievements_filename, "w");
+void init_achievements_file(achievements_t *achievements) {
+  FILE *achievements_file = fopen(ACHIEVEMENTS_FILENAME, "w");
   assert(achievements_file != NULL);
-  fprintf(achievements_file, "%s\n", "Adarsh");
+  fprintf(achievements_file, "%s\n", FIRST_ACHIEVEMENT);
+  fprintf(achievements_file, "%s\n", SECOND_ACHIEVEMENT);
+  fprintf(achievements_file, "%s\n", THIRD_ACHIEVEMENT);
   fflush(achievements_file);
   int close_result = fclose(achievements_file);  // using int from Adam's example
   assert(close_result == 0);
@@ -37,18 +41,17 @@ void read_achievements(achievements_t *achievements) {
     FILE *achievements_file = fopen(ACHIEVEMENTS_FILENAME, "r");
     if (achievements_file == NULL) {
         fprintf(stderr, "Achievements file not found. Creating a new one.\n");
-        init_achievements_file(ACHIEVEMENTS_FILENAME);
+        init_achievements_file(achievements);
         achievements_file = fopen(ACHIEVEMENTS_FILENAME, "r");
         assert(achievements_file != NULL);
     }
-    // TODO: create file if nonexistent
-    // TODO: if first time ever playing will need to init the storage
     fprintf(stderr, "File opened for reading\n");
-    size_t char_read = 100;
+    size_t char_read = 256;
     char *temp_string = malloc(sizeof(char) * (char_read + 1));
     while(fgets(temp_string, char_read, achievements_file)) {
         fprintf(stderr, "%s", temp_string);
     }
+    fprintf(stderr, "Read all lines\n");
     int close_result = fclose(achievements_file);  // using int from Adam's example
     assert(close_result == 0);
     free(temp_string);
@@ -58,7 +61,7 @@ void write_achievements(achievements_t *achievements) {
     FILE *achievements_file = fopen(ACHIEVEMENTS_FILENAME, "w");
     assert(achievements_file != NULL);
     fprintf(stderr, "File opened for writing\n");
-    fprintf(achievements_file, "Player Name: %s\n", "Grace");
+    fprintf(achievements_file, "Player Name: %s\n", "Bobby");
     fflush(achievements_file);
     fprintf(stderr, "File written to\n");
 
