@@ -1,15 +1,10 @@
 #include "achievement.h"
-// TODO: is the include error why persistence does not work?
-#include <emscripten.h>  // TODO: this is also in emscripten.c, is that fine?
 
-// TODO: should we use the observer subject pattern for game over and switching screens?
 // TODO: inconsistent tabs
-// TODO: go to OH to ask about this pattern
 // TODO: figure out how to add and remove achievements if necessary
-// TODO: add init file for ach
 
 const size_t INITIAL_ACHIEVEMENTS = 5;
-static bool mounted = false;
+static bool mounted = false;  // TODO: bad practice
 const char *ACHIEVEMENTS_FILENAME = "/persistent/achievements.txt";
 const char *FIRST_ACHIEVEMENT = "Collect 50 Coins|0|50|false";
 const char *SECOND_ACHIEVEMENT = "Travel 1000 meters|0|1000|false";
@@ -144,11 +139,12 @@ void mount_persistent_fs() {
   if (!mounted) {
     EM_ASM(
       if (!FS.analyzePath('/persistent').exists) {
+        console.log("/persistent does not exist");
         FS.mkdir('/persistent');
       }
       FS.mount(IDBFS, {}, '/persistent');
     );
-  mounted = true;
+    mounted = true;
   }
 }
 
@@ -182,6 +178,7 @@ void achievements_on_notify(observer_t *observer, event_t event) {
                 }
             }
             // TODO: maybe write only at end?
+            // write and sync back to persistent storage
             // sync_from_persistent_storage_and_write(achievements);
             break;
         // TODO: add other cases
@@ -212,10 +209,11 @@ achievements_t *achievements_init() {
     // list_add(achievements->achievements_list, achievement);
 
     // mount_persistent_fs();
+    // fprintf(stderr, "Mounted persistent file storage\n");
     // // sync the filesystem from IndexedDB to the in-memory filesystem
-    // // then, write and sync back to persistent storage
     // // TODO: func names too long like this one
     // sync_from_persistent_storage_and_read(achievements);
+    // fprintf(stderr, "synced and read\n");
     // fprintf(stderr, "Read achievements file into the list\n");
     return achievements;
 }
