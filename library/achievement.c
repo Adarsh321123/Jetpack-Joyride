@@ -158,13 +158,15 @@ void achievements_on_notify(observer_t *observer, event_t event, void *aux) {
                 if (strcmp(cur_achievement->name, "Collect 50 Coins") == 0) {
                     // TODO: update encapsulation later with an "edit" or "put" func to avoid this direct change
                     // TODO: save instead of casting each time?
-                    ((achievement_t *)(achievements->achievements_list->elements[i]))->progress++;
-                    fprintf(stderr, "Progress on collecting coins: %zu / 50\n", ((achievement_t *)(achievements->achievements_list->elements[i]))->progress);
-                    if (!((achievement_t *)(achievements->achievements_list->elements[i]))->unlocked &&
-                        ((achievement_t *)(achievements->achievements_list->elements[i]))->progress >=
-                        ((achievement_t *)(achievements->achievements_list->elements[i]))->target) {
-                        ((achievement_t *)(achievements->achievements_list->elements[i]))->unlocked = true;
-                        fprintf(stderr, "Achievement Unlocked: %s\n", ((achievement_t *)(achievements->achievements_list->elements[i]))->name);
+                    if (!((achievement_t *)(achievements->achievements_list->elements[i]))->unlocked) {
+                      ((achievement_t *)(achievements->achievements_list->elements[i]))->progress++;
+                      fprintf(stderr, "Progress on collecting coins: %zu / 50\n", ((achievement_t *)(achievements->achievements_list->elements[i]))->progress);
+                      if (((achievement_t *)(achievements->achievements_list->elements[i]))->progress >=
+                          ((achievement_t *)(achievements->achievements_list->elements[i]))->target) {
+                          ((achievement_t *)(achievements->achievements_list->elements[i]))->unlocked = true;
+                          fprintf(stderr, "Achievement Unlocked: %s\n", ((achievement_t *)(achievements->achievements_list->elements[i]))->name);
+                          ((achievement_t *)(achievements->achievements_list->elements[i]))->progress = ((achievement_t *)(achievements->achievements_list->elements[i]))->target;  // looks better in settings
+                      }
                     }
                     break;
                 }
@@ -181,13 +183,15 @@ void achievements_on_notify(observer_t *observer, event_t event, void *aux) {
                   // TODO: update encapsulation later with an "edit" or "put" func to avoid this direct change
                   // TODO: save instead of casting each time?
                   // TODO: only update progress if not unlocked sicne then easier to show in settings
-                  ((achievement_t *)(achievements->achievements_list->elements[i]))->progress = dist_traveled_num;
-                  fprintf(stderr, "Progress on distance traveled: %zu / 1000\n", ((achievement_t *)(achievements->achievements_list->elements[i]))->progress);
-                  if (!((achievement_t *)(achievements->achievements_list->elements[i]))->unlocked &&
-                      ((achievement_t *)(achievements->achievements_list->elements[i]))->progress >=
-                      ((achievement_t *)(achievements->achievements_list->elements[i]))->target) {
-                      ((achievement_t *)(achievements->achievements_list->elements[i]))->unlocked = true;
-                      fprintf(stderr, "Achievement Unlocked: %s\n", ((achievement_t *)(achievements->achievements_list->elements[i]))->name);
+                  if (!((achievement_t *)(achievements->achievements_list->elements[i]))->unlocked) {
+                    ((achievement_t *)(achievements->achievements_list->elements[i]))->progress = dist_traveled_num;
+                    fprintf(stderr, "Progress on distance traveled: %zu / 1000\n", ((achievement_t *)(achievements->achievements_list->elements[i]))->progress);
+                    if (((achievement_t *)(achievements->achievements_list->elements[i]))->progress >=
+                        ((achievement_t *)(achievements->achievements_list->elements[i]))->target) {
+                        ((achievement_t *)(achievements->achievements_list->elements[i]))->unlocked = true;
+                        fprintf(stderr, "Achievement Unlocked: %s\n", ((achievement_t *)(achievements->achievements_list->elements[i]))->name);
+                        ((achievement_t *)(achievements->achievements_list->elements[i]))->progress = ((achievement_t *)(achievements->achievements_list->elements[i]))->target;  // looks better in settings
+                    }
                   }
                   break;
               }
@@ -201,13 +205,15 @@ void achievements_on_notify(observer_t *observer, event_t event, void *aux) {
               if (strcmp(cur_achievement->name, "Avoid 5 Lasers") == 0) {
                   // TODO: update encapsulation later with an "edit" or "put" func to avoid this direct change
                   // TODO: save instead of casting each time?
-                  ((achievement_t *)(achievements->achievements_list->elements[i]))->progress++;
-                  fprintf(stderr, "Progress on lasers avoided: %zu / 5\n", ((achievement_t *)(achievements->achievements_list->elements[i]))->progress);
-                  if (!((achievement_t *)(achievements->achievements_list->elements[i]))->unlocked &&
-                      ((achievement_t *)(achievements->achievements_list->elements[i]))->progress >=
-                      ((achievement_t *)(achievements->achievements_list->elements[i]))->target) {
-                      ((achievement_t *)(achievements->achievements_list->elements[i]))->unlocked = true;
-                      fprintf(stderr, "Achievement Unlocked: %s\n", ((achievement_t *)(achievements->achievements_list->elements[i]))->name);
+                  if (!((achievement_t *)(achievements->achievements_list->elements[i]))->unlocked) {
+                    ((achievement_t *)(achievements->achievements_list->elements[i]))->progress++;
+                    fprintf(stderr, "Progress on lasers avoided: %zu / 5\n", ((achievement_t *)(achievements->achievements_list->elements[i]))->progress);
+                    if (((achievement_t *)(achievements->achievements_list->elements[i]))->progress >=
+                        ((achievement_t *)(achievements->achievements_list->elements[i]))->target) {
+                        ((achievement_t *)(achievements->achievements_list->elements[i]))->unlocked = true;
+                        fprintf(stderr, "Achievement Unlocked: %s\n", ((achievement_t *)(achievements->achievements_list->elements[i]))->name);
+                        ((achievement_t *)(achievements->achievements_list->elements[i]))->progress = ((achievement_t *)(achievements->achievements_list->elements[i]))->target;  // looks better in settings
+                    }
                   }
                   break;
               }
