@@ -10,6 +10,7 @@ void init_achievements_file(const char *achievements_filename) {
   FILE *achievements_file = fopen(achievements_filename, "w");
   assert(achievements_file != NULL);
   fprintf(achievements_file, "%s\n", "Adarsh");
+  fflush(achievements_file);
   int close_result = fclose(achievements_file);  // using int from Adam's example
   assert(close_result == 0);
   fprintf(stderr, "Initialized new achievements file\n");
@@ -40,7 +41,8 @@ void write_achievements(const char *achievements_filename) {
     FILE *achievements_file = fopen(achievements_filename, "w");
     assert(achievements_file != NULL);
     fprintf(stderr, "File opened for writing\n");
-    fprintf(achievements_file, "Player Name: %s\n", "Adarsh");
+    fprintf(achievements_file, "Player Name: %s\n", "Rayhan");
+    fflush(achievements_file);
     fprintf(stderr, "File written to\n");
 
     int close_result = fclose(achievements_file);
