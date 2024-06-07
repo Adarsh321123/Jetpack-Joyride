@@ -41,7 +41,7 @@ static void set_difficulty_medium(settings_state_t *settings_state);
 static void set_difficulty_hard(settings_state_t *settings_state);
 
 static background_info_t background_templates[] = {
-     {.bg_path = "assets/jetpack_joyride_home.jpg",
+     {.bg_path = "assets/BackdropMain.png",
      .bg_box = (SDL_Rect){0, 0, 1000, 500}}
      };
 
