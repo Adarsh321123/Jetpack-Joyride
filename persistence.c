@@ -106,6 +106,7 @@ void mount_persistent_fs() {
 
 // TODO: clean up later such as constants for strings
 // TODO: can we use these macros?
+// TODO: figure out the issue with extra work only if needed
 int main() {
     fprintf(stderr, "Inside persistence.c main()\n");
     // mount the persistent filesystem
