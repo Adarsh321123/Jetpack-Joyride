@@ -11,7 +11,6 @@ const size_t TEXT_SIZE = 50;
 const size_t FONT_SIZE = 50;
 const size_t TEXT_HEIGHT_SCALE = 2;
 const size_t NUM_TEXT_HOME = 1;
-const size_t NUM_TEXT_SETTINGS = 3;  // TODO: why is this a constant instead of getting the size of text list
 const size_t NUM_TEXT_GAME_OVER = 1;
 const size_t NUM_BACKGROUNDS = 1;
 const size_t NUM_BUTTONS_HOME = 2;
@@ -29,5 +28,6 @@ const rgb_color_t blue = (rgb_color_t){0, 0, 255};
 const rgb_color_t yellow = (rgb_color_t){255, 255, 0};
 
 const char *FONT_PATH = "assets/New Athletic M54.ttf";
+const char *ACHIEVEMENTS_FONT_PATH = "assets/Roboto-Regular.ttf";
 
 const double INTERVAL = 1;

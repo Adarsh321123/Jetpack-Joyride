@@ -17,6 +17,7 @@ typedef struct settings_state {
   state_type_t curr_state;
   difficulty_type_t difficulty_level;
   TTF_Font *difficulty_font;
+  TTF_Font *achievements_font;
 } settings_state_t;
 
 /**
