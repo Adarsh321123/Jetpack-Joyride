@@ -206,7 +206,8 @@ void achievements_on_notify(observer_t *observer, event_t event, void *aux) {
               if (strcmp(cur_achievement->name, "Travel 1000 Meters") == 0) {
                   // TODO: update encapsulation later with an "edit" or "put" func to avoid this direct change
                   // TODO: save instead of casting each time?
-                  ((achievement_t *)(achievements->achievements_list->elements[i]))->progress += dist_traveled_num;
+                  // TODO: only update progress if not unlocked sicne then easier to show in settings
+                  ((achievement_t *)(achievements->achievements_list->elements[i]))->progress = dist_traveled_num;
                   fprintf(stderr, "Progress on distance traveled: %zu / 1000\n", ((achievement_t *)(achievements->achievements_list->elements[i]))->progress);
                   if (!((achievement_t *)(achievements->achievements_list->elements[i]))->unlocked &&
                       ((achievement_t *)(achievements->achievements_list->elements[i]))->progress >=
