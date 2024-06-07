@@ -35,6 +35,6 @@ void sync_from_persistent_storage_and_write(achievements_t *achievements);
 void mount_persistent_fs();
 void achievements_on_notify(observer_t *observer, event_t event);
 achievements_t *achievements_init();
-void achievements_free(achievements_t *achievements);
+void achievements_free(void *observer);
 
 #endif // #ifndef __ACHIEVEMENT_H__

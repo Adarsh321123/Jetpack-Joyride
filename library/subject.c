@@ -9,7 +9,7 @@ struct subject {
 subject_t *subject_init() {
     subject_t *subject = malloc(sizeof(subject_t));
     assert(subject != NULL);
-    subject->observers = list_init(INITIAL_NUM_OBSERVERS, (free_func_t) list_free);
+    subject->observers = list_init(INITIAL_NUM_OBSERVERS, (free_func_t) free);
     fprintf(stderr, "Subject initialized at %p\n", (void*)subject);
     return subject;
 }
@@ -56,7 +56,15 @@ void subject_notify(subject_t *subject, event_t event) {
 }
 
 void subject_free(subject_t *subject) {
-    fprintf(stderr, "Freeing subject at %p \n", (void*)subject);
-    list_free(subject->observers);
+    fprintf(stderr, "Freeing subject at %p\n", (void*)subject);
+    if (subject->observers != 0 && subject->observers != NULL) {
+        size_t num_observers = list_size(subject->observers);
+        for (size_t i = 0; i < num_observers; i++) {
+            observer_t *observer = list_get(subject->observers, i);
+            if (observer != NULL && observer->freer != NULL) {
+                observer->freer(observer);
+            }
+        }
+    }
     free(subject);
 }

@@ -3,6 +3,7 @@
 
 // TODO: inconsistent tabs
 // TODO: figure out how to add and remove achievements if necessary
+// TODO: occasional weird output in unicode other lang?
 
 const size_t INITIAL_ACHIEVEMENTS = 5;
 static bool mounted = false;  // TODO: bad practice
@@ -92,8 +93,8 @@ void write_achievements(achievements_t *achievements) {
     }
     fprintf(achievements_file, "%s|%zu|%zu|%s\n",
             achievement->name,
-            achievement->progress + 1,  // TODO: remove
-            achievement->target + 1,  // TODO: remove
+            achievement->progress,
+            achievement->target,
             unlocked);
   }
   fflush(achievements_file);
@@ -111,18 +112,6 @@ void sync_to_persistent_storage() {
     });
   );
 }
-
-// void sync_from_persistent_storage_and_write(achievements_t *achievements) {
-//   EM_ASM(
-//     FS.syncfs(true, function (err) {
-//       assert(!err);
-//       console.log("Filesystem synchronized from persistent storage.");
-//       ccall('read_achievements', 'void', ['number'], [$0]);
-//       ccall('write_achievements', 'void', ['number'], [$0]);
-//       ccall('sync_to_persistent_storage', 'void', []);
-//     }), achievements
-//   );
-// }
 
 // TODO: remove console logs
 void sync_from_persistent_storage_and_read(achievements_t *achievements) {
@@ -188,9 +177,10 @@ void achievements_on_notify(observer_t *observer, event_t event) {
                     break;
                 }
             }
-            // TODO: maybe write only at end?
             // write and sync back to persistent storage
-            // sync_from_persistent_storage_and_write(achievements);
+            // TODO: since this is async, is it possible that the last one is not recorded before free, resulting in heap use after free?
+            sync_from_persistent_storage_and_write(achievements);
+            fprintf(stderr, "wrote and synced\n");
             break;
         // TODO: add other cases
         default:
@@ -205,10 +195,9 @@ achievements_t *achievements_init() {
     achievements_t *achievements = malloc(sizeof(achievements_t));
     assert(achievements != NULL);
     achievements->observer.on_notify = achievements_on_notify;
+    achievements->observer.freer = achievements_free;
     fprintf(stderr, "Achievements initialized at %p, observer at %p\n", (void*)achievements, (void*)(&(achievements->observer)));
-    // TODO: maybe change to achievements free, same with subject and observer
-    // TODO: is it double free to free these thigns in this file and then also set list_free as freer?
-    achievements->achievements_list = list_init(INITIAL_ACHIEVEMENTS, (free_func_t)list_free);
+    achievements->achievements_list = list_init(INITIAL_ACHIEVEMENTS, (free_func_t)free);
     fprintf(stderr, "Initialized achievements list\n");
 
     // TODO: remove after testing
@@ -226,11 +215,12 @@ achievements_t *achievements_init() {
     sync_from_persistent_storage_and_read(achievements);
     fprintf(stderr, "synced and read\n");
     fprintf(stderr, "Read achievements file into the list\n");
-    sync_from_persistent_storage_and_write(achievements); // TODO: remove
     return achievements;
 }
 
-void achievements_free(achievements_t *achievements) {
+void achievements_free(void *observer) {
+    achievements_t *achievements = (achievements_t *)observer;
+    fprintf(stderr, "Inside achievements_free\n");
     list_free(achievements->achievements_list);
     free(achievements);
 }

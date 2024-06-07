@@ -26,11 +26,13 @@ typedef enum {
 typedef struct observer observer_t;
 
 typedef void (*on_notify_t)(observer_t *observer, event_t event);
+typedef void (*freer_t)(void *observer);
 
 // TODO: do we need this struct then?
 // TODO: move back to c?
 struct observer {
     on_notify_t on_notify;
+    freer_t freer;
 };
 
 /**

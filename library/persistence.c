@@ -128,19 +128,8 @@ void sync_to_persistent_storage() {
         });
     );
 }
-// // TODO: remove console logs
-// void sync_from_persistent_storage_and_write() {
-//     EM_ASM(
-//         FS.syncfs(true, function (err) {
-//             assert(!err);
-//             console.log("Filesystem synchronized from persistent storage.");
-//             ccall('read_achievements', 'void', ['string'], ['/persistent/achievements.txt']);
-//             ccall('write_achievements', 'void', ['string'], ['/persistent/achievements.txt']);
-//             ccall('sync_to_persistent_storage', 'void', []);
-//         });
-//     );
-// }
 
+// TODO: remove console logs
 void sync_from_persistent_storage_and_read(achievements_t *achievements) {
     EM_ASM(
         FS.syncfs(true, function (err) {

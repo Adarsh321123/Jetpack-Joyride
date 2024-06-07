@@ -934,6 +934,7 @@ void game_play_free(game_play_state_t *game_play_state) {
   free(game_play_state->laser);
   // list_free(game_play_state->laser_spawn_positions);
   free(state->background_state);  
+  subject_free(game_play_state->subject);
   // TODO: why is this failing
   // TODO: make sure the entire zapper is on the scren and below ceiling and above ground
   // scene_free(state->scene);
