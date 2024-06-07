@@ -78,9 +78,11 @@ Priority 2 Features
 
 Priority 3 Features
 
-- Add achievements of the player playing the game (Adarsh)
-    - Store the current stats of the player for achievements
-    - Show the stats in the setting menu
+- Implement an event structure to be used by achievements in Priority 4 (Adarsh)
+    - There will be an observer and a subject
+    - The game play state has a subject which has observers watching it
+    - An achievement is an observer
+    - So the subject can notify that an event happened, and the observers can do as they wish
 - Add coins to the game. We must generate multiple coins in a cluster. We can also update the shape of the coins to be different sizes of blocks probabilistically. Add text to screen to track distance traveled and coins collected. (Rayhan)
 - Adding rockets to the game ensures that the levels are still passable with rockets and zappers implemented and we must iterate upon the logic from passability. Add animation to rockets and lasers which allows changing from inactive to active state for lasers and from warning state to rocket being deployed for rockets. Ensure that the velocity of the rockets and the time for display for lasers depend on the difficulty of the level. (Dhruv)
 
@@ -88,10 +90,10 @@ Priority 4 Features
 - Adding power ups to the game. We will be adding the basic powerup to disable all the obstacles for a specific amount of time. Implement the framework for the powerups to activate it using collision_handlers centrally. Additionally, add powerup to generate more coins for the given time frame of powerup. (Dhruv)
     - This can also depend on the difficulty of game
     - So harder difficulties might mean the power up lasts for less time.
-- Implementation of custom sound effects and background music. (Adarsh)
-    - Have a sound effect with hitting the coins
-    - Have a sound effect for hitting the obstacles like zappers, lasers, and rockets
-    - We can use background music for the game
+- Add achievements of the player (Adarsh)
+    - Implement persistent file storage, so the file should be saved even if the server is closed
+    - Use the event structure from Priority 3 to communicate that an event happened and act on it in the function pointer that the achievements use
+    - Show the achievements in the setting menu
 - Additional Powerups (Rayhan)
     - Gravity swap: Power-up that can switch gravity of Jetpack character
     - Add a magnet powerup to the game and associate a gravitational force with all the coin objects relative to the coin powerup collected. Attribute time period for the existence of the magnetic powerup in the game.
