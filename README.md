@@ -90,7 +90,7 @@ Priority 4 Features
     - This can also depend on the difficulty of game
     - So harder difficulties might mean the power up lasts for less time.
 - Add achievements of the player (Adarsh)
-    - Implement file storage, so the file should be saved even for the current game session while the tab is still open and the server is running.
+    - Implement file storage, so the file should be saved for the current game
     - Use the event structure from Priority 3 to communicate that an event happened and act on it in the function pointer that the achievements use
     - Show the achievements in the setting menu
 - Additional Powerups (Rayhan)
