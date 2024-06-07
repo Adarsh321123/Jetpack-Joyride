@@ -18,7 +18,6 @@ struct achievement {
     bool unlocked;
 };
 
-// TODO: need filename?
 struct achievements {
     observer_t observer;
     list_t *achievements_list;

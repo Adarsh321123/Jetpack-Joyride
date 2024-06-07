@@ -2,10 +2,10 @@
 #include <emscripten.h>
 
 // TODO: inconsistent tabs
-// TODO: figure out how to add and remove achievements if necessary
 // TODO: occasional weird output in unicode other lang?
 // TODO: keep testing and make sure no async write and read problems
 // TODO: if possible, make this async stuff sync so we can write right before end and not interfere with reading
+// TODO: figure out the issue with extra work only if needed
 
 const size_t INITIAL_ACHIEVEMENTS = 3;
 static bool mounted = false;  // TODO: bad practice
@@ -179,7 +179,6 @@ void achievements_on_notify(observer_t *observer, event_t event, void *aux) {
             for (size_t i = 0; i < num_achievements; i++) {
                 achievement_t *cur_achievement = list_get(achievements->achievements_list, i);
                 fprintf(stderr, "Got achievement %zu\n", i);
-                // TODO: remove magic string, how can we make this scalable?
                 if (strcmp(cur_achievement->name, "Collect 50 Coins") == 0) {
                     // TODO: update encapsulation later with an "edit" or "put" func to avoid this direct change
                     // TODO: save instead of casting each time?
@@ -202,7 +201,6 @@ void achievements_on_notify(observer_t *observer, event_t event, void *aux) {
           for (size_t i = 0; i < num_achievements; i++) {
               achievement_t *cur_achievement = list_get(achievements->achievements_list, i);
               fprintf(stderr, "Got achievement %zu\n", i);
-              // TODO: remove magic string, how can we make this scalable?
               if (strcmp(cur_achievement->name, "Travel 1000 Meters") == 0) {
                   // TODO: update encapsulation later with an "edit" or "put" func to avoid this direct change
                   // TODO: save instead of casting each time?
@@ -224,7 +222,6 @@ void achievements_on_notify(observer_t *observer, event_t event, void *aux) {
           for (size_t i = 0; i < num_achievements; i++) {
               achievement_t *cur_achievement = list_get(achievements->achievements_list, i);
               fprintf(stderr, "Got achievement %zu\n", i);
-              // TODO: remove magic string, how can we make this scalable?
               if (strcmp(cur_achievement->name, "Avoid 5 Lasers") == 0) {
                   // TODO: update encapsulation later with an "edit" or "put" func to avoid this direct change
                   // TODO: save instead of casting each time?
@@ -260,7 +257,6 @@ achievements_t *achievements_init() {
     achievements->achievements_list = list_init(INITIAL_ACHIEVEMENTS, (free_func_t)free);
     fprintf(stderr, "Initialized achievements list\n");
 
-    // TODO: remove after testing
     // achievement_t *achievement = malloc(sizeof(achievement_t));
     // achievement->name = "Collect 50 Coins";
     // achievement->progress = 0;

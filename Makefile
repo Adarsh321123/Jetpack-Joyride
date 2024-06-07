@@ -16,7 +16,6 @@ ifndef NO_ASAN
   ifeq ($(wildcard .debug),)
     $(shell $(CLEAN_COMMAND))
     $(shell touch .debug)
-    $(shell ulimit -n 4096)
   endif
 # Compiling without asan (run 'make NO_ASAN=true all')
 else
@@ -24,7 +23,6 @@ else
   ifneq ($(wildcard .debug),)
     $(shell $(CLEAN_COMMAND))
     $(shell rm -f .debug)
-    $(shell ulimit -n 4096)
   endif
 endif
 

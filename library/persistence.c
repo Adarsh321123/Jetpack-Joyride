@@ -7,8 +7,6 @@
 
 #include "list.h"
 
-// TODO: add header for this to replicate achievmeents later
-
 typedef struct achievement {
     char *name;
     size_t progress;
@@ -16,7 +14,6 @@ typedef struct achievement {
     bool unlocked;
 } achievement_t;
 
-// TODO: add observer
 typedef struct achievements {
     list_t *achievements_list;
 } achievements_t;
@@ -165,7 +162,6 @@ void mount_persistent_fs() {
 }
 
 // TODO: clean up later such as constants for strings
-// TODO: can we use these macros?
 // TODO: figure out the issue with extra work only if needed
 int main() {
     fprintf(stderr, "Inside persistence.c main()\n");

@@ -749,7 +749,6 @@ void add_rocket(game_play_state_t *game_play_state, double dt) {
 
     game_play_state->rocket->time_rocket_spawn = game_play_state->time;
     game_play_state->rocket->rocket_active = false;                        
-    // TODO: ensure that positions are reasonable
     double y_pos = fmod(rand(), (MAX.y - MIN.y) - 100) + 50;
     double x_pos = MAX.x - 50;
     vector_t center = {.x = x_pos, .y = y_pos};
@@ -929,7 +928,6 @@ state_type_t game_play_main(game_play_state_t *game_play_state) {
 }
 
 void game_play_free(game_play_state_t *game_play_state) {
-  // TODO: free ach stuff
   state_temp_t *state = game_play_state->state;
   // TODO: if time, change to jetpack sprite + have bullets show up
   //asset_destroy(state->background_state->bg1);
@@ -948,7 +946,6 @@ void game_play_free(game_play_state_t *game_play_state) {
   free(state->background_state);  
   subject_free(game_play_state->subject);
   // TODO: why is this failing
-  // TODO: make sure the entire zapper is on the scren and below ceiling and above ground
   // scene_free(state->scene);
   asset_cache_destroy();
   free(state);

@@ -29,7 +29,6 @@ void subject_notify(subject_t *subject, event_t event, void *aux) {
     for (size_t i = 0; i < num_observers; i++) {
         observer_t *cur_observer = list_get(subject->observers, i);
         fprintf(stderr, "Observer %zu at %p, notify function %p\n", i, (void*)cur_observer, (void*)cur_observer->on_notify);
-        // TODO: remove
         if (cur_observer == NULL) {
             fprintf(stderr, "Observer %zu is null\n", i);
             continue;
