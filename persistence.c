@@ -40,7 +40,7 @@ void write_achievements(const char *achievements_filename) {
     FILE *achievements_file = fopen(achievements_filename, "w");
     assert(achievements_file != NULL);
     fprintf(stderr, "File opened for writing\n");
-    fprintf(achievements_file, "Player Name: %s\n", "Rayhan");
+    fprintf(achievements_file, "Player Name: %s\n", "Adarsh");
     fprintf(stderr, "File written to\n");
 
     int close_result = fclose(achievements_file);
@@ -55,13 +55,34 @@ void sync_to_persistent_storage() {
         });
     );
 }
-// TODO: remove console logs
+// // TODO: remove console logs
+// void sync_from_persistent_storage_and_write() {
+//     EM_ASM(
+//         FS.syncfs(true, function (err) {
+//             assert(!err);
+//             console.log("Filesystem synchronized from persistent storage.");
+//             ccall('read_achievements', 'void', ['string'], ['/persistent/achievements.txt']);
+//             ccall('write_achievements', 'void', ['string'], ['/persistent/achievements.txt']);
+//             ccall('sync_to_persistent_storage', 'void', []);
+//         });
+//     );
+// }
+
+void sync_from_persistent_storage_and_read() {
+    EM_ASM(
+        FS.syncfs(true, function (err) {
+            assert(!err);
+            console.log("Filesystem synchronized from persistent storage for reading.");
+            ccall('read_achievements', 'void', ['string'], ['/persistent/achievements.txt']);
+        });
+    );
+}
+
 void sync_from_persistent_storage_and_write() {
     EM_ASM(
         FS.syncfs(true, function (err) {
             assert(!err);
-            console.log("Filesystem synchronized from persistent storage.");
-            ccall('read_achievements', 'void', ['string'], ['/persistent/achievements.txt']);
+            console.log("Filesystem synchronized from persistent storage for writing.");
             ccall('write_achievements', 'void', ['string'], ['/persistent/achievements.txt']);
             ccall('sync_to_persistent_storage', 'void', []);
         });
@@ -90,6 +111,7 @@ int main() {
 
     // sync the filesystem from IndexedDB to the in-memory filesystem
     // then, write and sync back to persistent storage
+    sync_from_persistent_storage_and_read();
     sync_from_persistent_storage_and_write();
 
     return 0;
