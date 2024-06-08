@@ -27,6 +27,13 @@ typedef enum {
     HARD
 } difficulty_type_t;
 
+typedef enum {
+    OBSTACLE,
+    MORE_COIN,
+    MAGNETIC,
+    GRAVITY
+} powerup_type_t;
+
 /**
  * Initializes sdl as well as the variables needed
  * Creates and stores all necessary variables for the demo in a created state

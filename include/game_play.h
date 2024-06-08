@@ -5,7 +5,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-typedef enum { USER, CEILING, GROUND, ZAPPER, LASER, LASER_ACTIVE, ROCKET_WARNING, ROCKET, COIN } body_type_t;
+typedef enum { USER, CEILING, GROUND, ZAPPER, LASER, LASER_ACTIVE, 
+ROCKET_WARNING, ROCKET, COIN, POWERUP } body_type_t;
 
 typedef struct background_state background_state_t;
 
@@ -18,6 +19,8 @@ typedef struct laser_state laser_state_t;
 typedef struct rocket_state rocket_state_t;
 
 typedef struct coin_state coin_state_t;
+
+typedef struct powerup_state powerup_state_t;
 
 /**
  * Gets the type of the given body.
