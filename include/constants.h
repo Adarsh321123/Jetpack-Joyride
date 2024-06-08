@@ -35,6 +35,7 @@ extern const rgb_color_t blue;
 extern const rgb_color_t yellow;
 
 extern const char *FONT_PATH;
+extern const char *ACHIEVEMENTS_FONT_PATH;
 
 extern const double INTERVAL;
 

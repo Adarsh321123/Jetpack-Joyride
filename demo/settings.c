@@ -9,9 +9,11 @@
 #include "constants.h"
 #include "asset_cache.h"
 #include "sdl_wrapper.h"
+#include "achievement.h"
 
 const size_t DIFFICULTY_TEXT_SIZE = 50;
 const size_t DIFFICULTY_FONT_SIZE = 50;
+const size_t ACHIEVEMENTS_FONT_SIZE = 25;
 const SDL_Rect DIFFICULTY_BOX = (SDL_Rect){600, 325, 0, 0};
 
 /**
@@ -35,7 +37,7 @@ static void set_difficulty_medium(settings_state_t *settings_state);
 static void set_difficulty_hard(settings_state_t *settings_state);
 
 static background_info_t background_templates[] = {
-     {.bg_path = "assets/jetpack_joyride_home.jpg",
+     {.bg_path = "assets/BackdropMain.png",
      .bg_box = (SDL_Rect){0, 0, 1000, 500}}
      };
 
@@ -49,6 +51,25 @@ static text_info_t text_templates[] = {
      .text_color = (rgb_color_t){0, 0, 0},
      .text = "Current Difficulty Level : "}
      };
+
+static text_info_t achievements_templates[] = {
+      {.font_path = "assets/Roboto-Regular.ttf",
+     .text_box = (SDL_Rect){525, 125, 150, 50},
+     .text_color = (rgb_color_t){255, 255, 255},
+     .text = "Achievements"},
+     {.font_path = "assets/Roboto-Regular.ttf",
+     .text_box = (SDL_Rect){525, 175, 150, 50},
+     .text_color = (rgb_color_t){255, 255, 255},
+     .text = ""},
+     {.font_path = "assets/Roboto-Regular.ttf",
+     .text_box = (SDL_Rect){525, 225, 150, 50},
+     .text_color = (rgb_color_t){255, 255, 255},
+     .text = ""},
+     {.font_path = "assets/Roboto-Regular.ttf",
+     .text_box = (SDL_Rect){525, 275, 150, 50},
+     .text_color = (rgb_color_t){255, 255, 255},
+     .text = ""}
+};
 
 static button_info_t button_templates[] = {
     {.image_path = "assets/button.png",
@@ -108,11 +129,21 @@ static void create_backgrounds(settings_state_t *settings_state) {
   }
 }
 
+size_t get_num_text() {
+  return sizeof(text_templates) / sizeof(text_templates[0]);
+}
+
+size_t get_num_achievements() {
+  return sizeof(achievements_templates) / sizeof(achievements_templates[0]);
+}
+
 /**
  * Initializes and stores the text assets in the settings_state.
  */
 static void create_text(settings_state_t *settings_state) {
-  for (size_t i = 0; i < NUM_TEXT_SETTINGS; i++) {
+  size_t num_elements = get_num_text();
+  fprintf(stderr, "num elements: %zu\n", num_elements);
+  for (size_t i = 0; i < num_elements; i++) {
     text_info_t info = text_templates[i];
     asset_t *text = create_text_from_info(info);
     list_add(settings_state->text, text);
@@ -158,6 +189,16 @@ static void display_difficulty_level(settings_state_t *settings_state){
     render_text(difficulty_text, font, black, bounding_box);
 }
 
+static void display_achievements(settings_state_t *settings_state) {
+  size_t num_achievements = get_num_achievements();
+  TTF_Font *font = settings_state->achievements_font;
+  for (size_t i = 0; i < num_achievements; i++) {
+    text_info_t info = achievements_templates[i];
+    TTF_SizeText(font, info.text, &info.text_box.w, &info.text_box.h);
+    render_text(info.text, font, info.text_color, info.text_box);
+  }
+}
+
 static void on_mouse(char key, void *settings_state, SDL_Event event) {
   if (key == MOUSE_RIGHT || key == MOUSE_LEFT) {
     asset_cache_handle_buttons(settings_state, event.button.x, event.button.y);
@@ -177,7 +218,8 @@ settings_state_t *settings_init() {
   settings_state->backgrounds = list_init(NUM_BACKGROUNDS, NULL);
   create_backgrounds(settings_state);
 
-  settings_state->text = list_init(NUM_TEXT_SETTINGS, NULL);
+  size_t num_elements = get_num_text();
+  settings_state->text = list_init(num_elements, NULL);
   create_text(settings_state);
 
   settings_state->manual_buttons = list_init(NUM_BUTTONS_SETTINGS, NULL);
@@ -188,6 +230,13 @@ settings_state_t *settings_init() {
   settings_state->curr_state = SETTINGS;
   settings_state->difficulty_level = EASY;
   settings_state->difficulty_font = init_font(FONT_PATH, DIFFICULTY_FONT_SIZE);
+  settings_state->achievements_font = init_font(ACHIEVEMENTS_FONT_PATH, ACHIEVEMENTS_FONT_SIZE);
+  list_t *results = read_achievements_settings();
+  fprintf(stderr, "received results");
+  size_t num_results = list_size(results);
+  for (size_t i = 0; i < num_results; i++) {
+    achievements_templates[i + 1].text = list_get(results, i);
+  }
   return settings_state;
 }
 
@@ -203,11 +252,13 @@ state_type_t settings_main(settings_state_t *settings_state) {
 
   // render the text
   list_t *text = settings_state->text;
-  for (size_t i = 0; i < NUM_TEXT_SETTINGS; i++){
+  size_t num_elements = get_num_text();
+  for (size_t i = 0; i < num_elements; i++){
     asset_render(list_get(text, i));
   }
 
   display_difficulty_level(settings_state);
+  display_achievements(settings_state);
 
   // render the buttons
   list_t *buttons = settings_state->manual_buttons;

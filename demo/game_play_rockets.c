@@ -617,7 +617,6 @@ void add_rocket(game_play_state_t *game_play_state, double dt) {
 
     game_play_state->rocket->time_rocket_spawn = game_play_state->time;
     game_play_state->rocket->rocket_active = false;                        
-    // TODO: ensure that positions are reasonable
     double y_pos = fmod(rand(), (MAX.y - MIN.y) - 100) + 50;
     double x_pos = MAX.x - 50;
     vector_t center = {.x = x_pos, .y = y_pos};

@@ -13,6 +13,13 @@
 #include "constants.h"
 #include "asset_cache.h"
 #include "sdl_wrapper.h"
+#include "subject.h"
+#include "observer.h"
+#include "achievement.h"
+
+// TODO: rockets laggy
+// TODO: lasers appear randomly
+// TODO: delay for saying removed active lasers
 
 const double WEDGE_ANGLE = 3.6 * M_PI / 3;
 const double INCREMENT_ANGLE = 0.1;
@@ -73,6 +80,7 @@ const SDL_Rect COIN_BOX = (SDL_Rect){25, 75, 0, 0};
 const size_t DISTANCE_TEXT_SIZE = 50;
 const size_t DISTANCE_FONT_SIZE = 30;
 const SDL_Rect DISTANCE_BOX = (SDL_Rect){25, 25, 0, 0};
+const double UPDATE_INTERVAL = 0.5;
 
 vector_t LASER1 = {.x = 500, .y = 80};
 vector_t LASER2 = {.x = 500, .y = 101.25};
@@ -193,6 +201,7 @@ struct rocket_state {
 
 struct game_play_state {
   double time;
+  double last_update_time;
   double distance_traveled;
   double time_until_zapper;
   double min_zapper_generation_time;
@@ -204,6 +213,7 @@ struct game_play_state {
   coin_state_t *coin;
   rocket_state_t *rocket;
   state_type_t curr_state;
+  subject_t *subject;
   state_temp_t *state;
 };
 
@@ -378,9 +388,6 @@ void on_key(char key, key_event_type_t type, double held_time, game_play_state_t
   }
 }
 
-
-
-
 static background_state_t *background_init(const char *bg_path) {
   background_state_t *state = malloc(sizeof(background_state_t));
   assert(state != NULL);
@@ -404,8 +411,13 @@ static void background_update(background_state_t *state, double dt) {
   state->bg2->bounding_box.x = state->bg_offset + WINDOW_WIDTH;
 }
 
-
-
+void init_observers(game_play_state_t *game_play_state) {  
+  game_play_state->subject = subject_init();
+  achievements_t *achievements = achievements_init();
+  fprintf(stderr, "Observer created notify function is %p\n", (void*)achievements->observer.on_notify);
+  subject_add_observer(game_play_state->subject, &(achievements->observer));
+  fprintf(stderr, "End of init_observers in game_play.c\n");
+}
 
 game_play_state_t *game_play_init(difficulty_type_t difficulty_level) {
   game_play_state_t *game_play_state = malloc(sizeof(game_play_state_t));
@@ -461,6 +473,7 @@ game_play_state_t *game_play_init(difficulty_type_t difficulty_level) {
   game_play_state->laser->laser_active = false;
   game_play_state->state = state;
   game_play_state->time = 0;
+  game_play_state->last_update_time = 0;
   game_play_state->distance_font = init_font(FONT_PATH, DISTANCE_FONT_SIZE);
   game_play_state->coins_collected_font = init_font(FONT_PATH, COIN_FONT_SIZE);
   game_play_state->distance_traveled = 0;
@@ -546,6 +559,9 @@ game_play_state_t *game_play_init(difficulty_type_t difficulty_level) {
           break;
       }
   }
+
+  init_observers(game_play_state);
+
   return game_play_state;
 }
 
@@ -565,9 +581,11 @@ void collect_coin(body_t *body1, body_t *body2, vector_t axis, void *aux1,
 
   game_play_state_t *game_play_state = (game_play_state_t *) aux2;
   game_play_state->coin->coin_count++;
+  subject_notify(game_play_state->subject, EVENT_COIN_COLLECTED, NULL);
 }
 
 void remove_zappers(game_play_state_t *game_play_state) {
+  // TODO: remove from body assets once deleted so the image is not re-rendered each time
   size_t num_bodies = scene_bodies(game_play_state->state->scene);
   for (size_t i = 0; i < num_bodies; i++) {
     body_t *body = scene_get_body(game_play_state->state->scene, i);
@@ -617,6 +635,7 @@ void remove_lasers(game_play_state_t *game_play_state) {
         // asset_update_bounding_box_x(game_play_state->laser_active_asset, 2 * 1000);
         scene_remove_body(game_play_state->state->scene, i);
         fprintf(stderr, "removed laser!\n");
+        subject_notify(game_play_state->subject, EVENT_LASERS_AVOIDED, NULL);
       }
     }
 
@@ -730,7 +749,6 @@ void add_rocket(game_play_state_t *game_play_state, double dt) {
 
     game_play_state->rocket->time_rocket_spawn = game_play_state->time;
     game_play_state->rocket->rocket_active = false;                        
-    // TODO: ensure that positions are reasonable
     double y_pos = fmod(rand(), (MAX.y - MIN.y) - 100) + 50;
     double x_pos = MAX.x - 50;
     vector_t center = {.x = x_pos, .y = y_pos};
@@ -838,6 +856,10 @@ void render_distance(game_play_state_t *game_play_state) {
   TTF_Font *font = game_play_state->distance_font;
   TTF_SizeText(font, distance_text, &bounding_box.w, &bounding_box.h);
   render_text(distance_text, font, green, bounding_box);
+  if (game_play_state->time - game_play_state->last_update_time > UPDATE_INTERVAL) {
+    game_play_state->last_update_time = game_play_state->time;
+    subject_notify(game_play_state->subject, EVENT_DISTANCE_TRAVELED, distance_text);
+  }
 }
 
 void render_coins_collected(game_play_state_t *game_play_state) {
@@ -907,6 +929,7 @@ state_type_t game_play_main(game_play_state_t *game_play_state) {
 
 void game_play_free(game_play_state_t *game_play_state) {
   state_temp_t *state = game_play_state->state;
+  // TODO: if time, change to jetpack sprite + have bullets show up
   //asset_destroy(state->background_state->bg1);
   //asset_destroy(state->background_state->bg2);
   body_free(state->user);
@@ -921,8 +944,9 @@ void game_play_free(game_play_state_t *game_play_state) {
   free(game_play_state->laser);
   // list_free(game_play_state->laser_spawn_positions);
   free(state->background_state);  
+  subject_free(game_play_state->subject);
   // TODO: why is this failing
-  //scene_free(state->scene);
+  // scene_free(state->scene);
   asset_cache_destroy();
   free(state);
   free(game_play_state);

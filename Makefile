@@ -1,7 +1,7 @@
 # List of C files in "libraries" and "demo" that you have written. Any additional files
 # should be added here.
 GAMES = game home settings game_play game_over
-STUDENT_LIBS = asset_cache asset body collision color emscripten forces list polygon scene sdl_wrapper vector constants asset_helper
+STUDENT_LIBS = asset_cache asset body collision color emscripten forces list polygon scene sdl_wrapper vector constants asset_helper observer subject achievement
 
 # find <dir> is the command to find files in a directory
 # ! -name .gitignore tells find to ignore the .gitignore
@@ -48,7 +48,7 @@ CFLAGS += -Iinclude $(shell sdl2-config --cflags) -Wall -g -fno-omit-frame-point
 # -g enables DWARF support, for debugging purposes
 # -gsource-map --source-map-base http://localhost:8000/bin/ creates a source map from the C file for debugging
 EMCC = emcc
-EMCC_FLAGS = -s EXIT_RUNTIME=1 -s ALLOW_MEMORY_GROWTH=1 -s INITIAL_MEMORY=655360000 -s USE_SDL=2 -s USE_SDL_GFX=2 -s USE_SDL_IMAGE=2 -s SDL2_IMAGE_FORMATS='["png"]' -s USE_SDL_TTF=2 -s USE_SDL_MIXER=2 -s ASSERTIONS=1 -O2 -g -gsource-map --use-preload-plugins --preload-file assets --source-map-base http://labradoodle.caltech.edu:$(shell cs3-port)/bin/
+EMCC_FLAGS = -s EXIT_RUNTIME=1 -s ALLOW_MEMORY_GROWTH=1 -s INITIAL_MEMORY=655360000 -s USE_SDL=2 -s USE_SDL_GFX=2 -s USE_SDL_IMAGE=2 -s SDL2_IMAGE_FORMATS='["png"]' -s USE_SDL_TTF=2 -s USE_SDL_MIXER=2 -s ASSERTIONS=1 -O2 -g -gsource-map --use-preload-plugins --preload-file assets --source-map-base http://labradoodle.caltech.edu:$(shell cs3-port)/bin/ -s FORCE_FILESYSTEM=1 -sEXPORTED_FUNCTIONS='["_main"]' -sEXPORTED_RUNTIME_METHODS='["ccall"]' -lidbfs.js
 
 # Compiler flag that links the program with the math library
 LIB_MATH = -lm
