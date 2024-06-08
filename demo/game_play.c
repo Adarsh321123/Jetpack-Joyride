@@ -509,7 +509,7 @@ game_play_state_t *game_play_init(difficulty_type_t difficulty_level) {
   game_play_state->time_until_zapper = 0;
   game_play_state->coin->time_until_coin = 0;
   game_play_state->zapper_time = 0;
-  game_play_state->coin->coin_time = 0;  
+  game_play_state->coin->coin_time = 0;
   game_play_state->laser->time_laser = 0;
   game_play_state->laser->time_laser_spawn = 0;
   game_play_state->laser->time_laser_activate = 0;
