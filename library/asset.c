@@ -15,12 +15,6 @@ struct text_asset {
   rgb_color_t color;
 };
 
-struct image_asset {
-  asset_t base;
-  SDL_Texture *texture;
-  body_t *body;
-};
-
 struct button_asset {
   asset_t base;
   image_asset_t *image_asset;
@@ -97,6 +91,13 @@ asset_t *asset_make_image_with_body(const char *filepath, body_t *body) {
   image_asset_t *image_asset =
       asset_encapsulate_image(filepath, bounding_box, body);
   return (asset_t *)image_asset;
+}
+
+image_asset_t *asset_image_make_image_with_body(const char *filepath, body_t *body) {
+  SDL_Rect bounding_box = make_texr(0, 0, 0, 0);
+  image_asset_t *image_asset =
+      asset_encapsulate_image(filepath, bounding_box, body);
+  return image_asset;
 }
 
 void asset_update_bounding_box(asset_t *image, body_t *body) {  
