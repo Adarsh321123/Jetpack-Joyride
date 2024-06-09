@@ -1,5 +1,9 @@
+#ifndef __SETTINGS_H__
+#define __SETTINGS_H__
+
 #include "math.h"
 #include "sdl_wrapper.h"
+#include "screen_helper.h"
 #include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -9,11 +13,8 @@
  * Use this to store any variable needed every 'tick' of your game
  */
 typedef struct settings_state {
+  screen_state_t screen_state;
   double time;
-  list_t *text;
-  list_t *backgrounds;
-  list_t *manual_buttons;
-  list_t *button_assets;
   state_type_t curr_state;
   difficulty_type_t difficulty_level;
   TTF_Font *difficulty_font;
@@ -45,3 +46,5 @@ state_type_t settings_main(settings_state_t *settings_state);
  * @param settings_state pointer to a settings state object
  */
 void settings_free(settings_state_t *settings_state);
+
+#endif // #ifndef __SETTINGS_H__

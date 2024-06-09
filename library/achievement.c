@@ -233,6 +233,7 @@ void achievements_on_notify(observer_t *observer, event_t event, void *aux) {
 achievements_t *achievements_init() {
     achievements_t *achievements = malloc(sizeof(achievements_t));
     assert(achievements != NULL);
+    // TODO:can still use init but not take pointer similar to screen
     achievements->observer.on_notify = achievements_on_notify;
     achievements->observer.freer = achievements_free;
     // fprintf(stderr, "Achievements initialized at %p, observer at %p\n", (void*)achievements, (void*)(&(achievements->observer)));

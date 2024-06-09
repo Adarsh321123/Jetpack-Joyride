@@ -1,5 +1,9 @@
+#ifndef __HOME_H__
+#define __HOME_H__
+
 #include "math.h"
 #include "sdl_wrapper.h"
+#include "screen_helper.h"
 #include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -9,11 +13,8 @@
  * Use this to store any variable needed every 'tick' of your game
  */
 typedef struct home_state {
+  screen_state_t screen_state;
   double time;
-  list_t *text;
-  list_t *backgrounds;
-  list_t *manual_buttons;
-  list_t *button_assets;
   state_type_t curr_state;
 } home_state_t;
 
@@ -42,3 +43,5 @@ state_type_t home_main(home_state_t *home_state);
  * @param home_state pointer to a home state object
  */
 void home_free(home_state_t *home_state);
+
+#endif // #ifndef __HOME_H__

@@ -1,3 +1,6 @@
+#ifndef __ASSET_HELPER_H__
+#define __ASSET_HELPER_H__
+
 #include <assert.h>
 #include <state.h>
 #include <stdio.h>
@@ -51,3 +54,4 @@ asset_t *create_text_from_info(text_info_t info);
  */
 asset_t *create_button_from_info(button_info_t info);
 
+#endif // #ifndef __ASSET_HELPER_H__

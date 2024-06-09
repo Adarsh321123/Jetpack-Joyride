@@ -29,4 +29,3 @@ asset_t *create_button_from_info(button_info_t info) {
   asset_cache_register_button(button_asset);
   return button_asset;
 }
-

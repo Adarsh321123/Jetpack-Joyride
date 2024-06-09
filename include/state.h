@@ -1,11 +1,11 @@
+#ifndef __STATE_H__
+#define __STATE_H__
+
 #include "math.h"
 #include "sdl_wrapper.h"
 #include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
-
-#ifndef STATE_H
-#define STATE_H
 
 /**
  * Stores the demo state
@@ -13,6 +13,7 @@
  */
 typedef struct state state_t;
 
+// TODO :move
 typedef enum {
     HOME,
     SETTINGS,
@@ -61,5 +62,4 @@ bool emscripten_main(state_t *state);
  */
 void emscripten_free(state_t *state);
 
-
-#endif // STATE_H
+#endif // #ifndef __STATE_H__

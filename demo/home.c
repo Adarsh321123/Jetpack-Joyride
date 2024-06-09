@@ -53,105 +53,35 @@ static button_info_t button_templates[] = {
      .handler = (void *)play}
      };
 
-/**
- * Initializes and stores the background assets in the home_state.
- */
-static void create_backgrounds(home_state_t *home_state) {
-  for (size_t i = 0; i < NUM_BACKGROUNDS; i++) {
-    background_info_t info = background_templates[i];
-    asset_t *background = create_background_from_info(info);
-    list_add(home_state->backgrounds, background);
-  }
-}
-
-/**
- * Initializes and stores the text assets in the home_state.
- */
-static void create_text(home_state_t *home_state) {
-  for (size_t i = 0; i < NUM_TEXT_HOME; i++) {
-    text_info_t info = text_templates[i];
-    asset_t *text = create_text_from_info(info);
-    list_add(home_state->text, text);
-  }
-}
-
-/**
- * Initializes and stores the button assets in the home_state.
- */
-static void create_buttons(home_state_t *home_state) {
-  for (size_t i = 0; i < NUM_BUTTONS_HOME; i++) {
-    button_info_t info = button_templates[i];
-    asset_t *button = create_button_from_info(info);
-    list_add(home_state->manual_buttons, button);
-  }
-}
-
-static void on_mouse(char key, void *home_state, SDL_Event event) {
-  if (key == MOUSE_RIGHT || key == MOUSE_LEFT) {
-    asset_cache_handle_buttons(home_state, event.button.x, event.button.y);
-  }
-}
-
-
 home_state_t *home_init() {
   home_state_t *home_state = malloc(sizeof(home_state_t));
   assert(home_state);
+  TTF_Init();
   sdl_on_mouse(on_mouse);
   sdl_init(MIN, MAX);
-  TTF_Init();
   asset_cache_init();
+  size_t num_backgrounds = sizeof(background_templates) / sizeof(background_templates[0]);
+  size_t num_text = sizeof(text_templates) / sizeof(text_templates[0]);
+  size_t num_buttons = sizeof(button_templates) / sizeof(button_templates[0]);
+  home_state->screen_state = screen_init(home_state->screen_state, background_templates,
+                                          text_templates, button_templates,
+                                          num_backgrounds, num_text, num_buttons);
   home_state->time = 0;
-  // Note that `free_func` is NULL because `asset_cache` is reponsible for
-  // freeing the button assets.
-  home_state->backgrounds = list_init(NUM_BACKGROUNDS, (free_func_t)asset_destroy);
-  create_backgrounds(home_state);
-
-  home_state->text = list_init(NUM_TEXT_HOME, (free_func_t)asset_destroy);
-  create_text(home_state);
-
-  // TODO: remove one?
-  home_state->manual_buttons = list_init(NUM_BUTTONS_HOME, NULL);
-  // We store the assets used for buttons to be freed at the end.
-  home_state->button_assets = list_init(NUM_BUTTONS_HOME, NULL);
-  create_buttons(home_state);
-
   home_state->curr_state = HOME;
-
   return home_state;
 }
 
 state_type_t home_main(home_state_t *home_state) {
   sdl_clear();
   home_state->time += time_since_last_tick();
-
-  // render the backgrounds
-  list_t *backgrounds = home_state->backgrounds;
-  for (size_t i = 0; i < NUM_BACKGROUNDS; i++){
-    asset_render(list_get(backgrounds, i));
-  }
-
-  // render the text
-  list_t *text = home_state->text;
-  for (size_t i = 0; i < NUM_TEXT_HOME; i++){
-    asset_render(list_get(text, i));
-  }
-
-  // render the buttons
-  list_t *buttons = home_state->manual_buttons;
-  for (size_t i = 0; i < NUM_BUTTONS_HOME; i++) {
-    asset_render(list_get(buttons, i));
-  }
-
+  render_items(home_state->screen_state);
   handle_mouse_events(home_state);
   sdl_show();
   return home_state->curr_state;
 }
 
 void home_free(home_state_t *home_state) {
-  list_free(home_state->backgrounds);
-  list_free(home_state->text);
-  list_free(home_state->manual_buttons);
-  list_free(home_state->button_assets);
+  screen_free(home_state->screen_state);
   asset_cache_destroy();
   free(home_state);
   TTF_Quit();
