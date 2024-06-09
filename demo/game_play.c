@@ -33,6 +33,7 @@ const double G_CONSTANT = 2500.0;
 const vector_t START_POS = {500, 30};
 const vector_t INVADER_BULLET_VEL = {0, -200};
 const vector_t USER_VEL = {0, 200};
+const double ACC_FACTOR = 75;
 const vector_t BASE_OBJ_VEL = {30, 0};
 const vector_t ZAPPER_VEL = {-100, 0};
 const vector_t POWERUP_VEL = {-100, 0};
@@ -132,8 +133,8 @@ const double WALL_DIM = 1;
 const double ZAPPER_GENERATION_TIME = 5;
 const double MIN_COIN_GENERATION_TIME = 3;
 const double MAX_COIN_GENERATION_TIME = 6;
-const double MIN_COIN_GENERATION_TIME_POWERUP = 1;
-const double MAX_COIN_GENERATION_TIME_POWERUP = 3;
+const double MIN_COIN_GENERATION_TIME_POWERUP = 0;
+const double MAX_COIN_GENERATION_TIME_POWERUP = 1;
 const double MIN_POWERUP_GENERATION_TIME = 16;
 const double MAX_POWERUP_GENERATION_TIME = 12;
 const double LASER_GENERATION_TIME = 8;
@@ -409,13 +410,21 @@ void on_key(char key, key_event_type_t type, double held_time, game_play_state_t
   // fprintf(stderr, "after getting user\n");
   // TODO: use (void)held_time to say unused??
   if (key == SPACE_BAR) {
+    vector_t vel = USER_VEL;
     if (type == KEY_PRESSED) {
-      body_set_velocity(game_play_state->state->user, USER_VEL);
+      //acc.y += ACC_FACTOR * held_time;
+      vel.y += vel.y * held_time;
+      body_set_velocity(game_play_state->state->user, vel);
       // fprintf(stderr, "space bar hit\n");
     } else if (type == KEY_RELEASED) {
-      body_set_velocity(game_play_state->state->user, vec_negate(USER_VEL));
+      //acc.y += -(ACC_FACTOR * held_time);
+      vel.y += vel.y * held_time;
+      body_set_velocity(game_play_state->state->user, vec_negate(vel));
       // fprintf(stderr, "no space bar hit\n");
     }
+    //vector_t vel = body_get_velocity(game_play_state->state->user);
+    //vector_t new_vel = vec_add(vel, acc);
+    //body_set_velocity(game_play_state->state->user, new_vel);
   }
 }
 
@@ -495,6 +504,7 @@ game_play_state_t *game_play_init(difficulty_type_t difficulty_level) {
 
   // game_play_state->rocket->rocket_active_asset = asset_make_image(ROCKET_PATH, bounding_box_rocket);
   game_play_state->rocket->rocket_inactive_asset = asset_make_image(ROCKET_WARNING_PATH, bounding_box_rocket_warning);
+  list_add(game_play_state->state->body_assets, game_play_state->rocket->rocket_inactive_asset);
 
   // LASER
   game_play_state->laser->laser_inactive = false;
@@ -541,9 +551,11 @@ game_play_state_t *game_play_init(difficulty_type_t difficulty_level) {
 
 
   // list_add(game_play_state->laser->laser_centers, &LASER1);
-  // for (size_t i = 0; i < 8; i++){
-  //   vector_t center = {.x = 500, .y = 101.25 + 42.5 * i};
-  //   list_add(game_play_state->laser->laser_centers, &center);
+  // for (size_t i = 0; i < 8; i++) {
+  //   double y = (101.25 + (42.5 * i)); 
+  //   vector_t *center = &{.x = 500, .y = y};
+  //   fprintf(stdout, "center of laser %zu is x = %f and y = %f\n", i, center->x, center->y);
+  //   list_add(game_play_state->laser->laser_centers, center);
   // }
   // list_add(game_play_state->laser->laser_centers, &LASER10);  
 
@@ -652,6 +664,12 @@ void activate_powerup(body_t *body1, body_t *body2, vector_t axis, void *aux1,
     }
     case MORE_COIN: {
       make_individual_powerup(game_play_state, MORE_COIN_PATH);
+      if (game_play_state->powerup->powerup_active && 
+          game_play_state->powerup->powerup_type == MORE_COIN) {
+        game_play_state->coin->time_until_coin = fmod(rand(), 
+        MAX_COIN_GENERATION_TIME_POWERUP - MIN_COIN_GENERATION_TIME_POWERUP) + 
+        MIN_COIN_GENERATION_TIME_POWERUP;
+      }       
       break;
     }
     default: {
@@ -782,8 +800,8 @@ void add_zapper(game_play_state_t *game_play_state, double dt) {
     asset_t *img = asset_make_image_with_body(ZAPPER_PATH, zapper);
     list_add(game_play_state->state->body_assets, img);
     // fprintf(stderr, "before collision\n");
-    if (!game_play_state->powerup->powerup_active && 
-        game_play_state->powerup->powerup_type == SHIELD) {
+    if (!game_play_state->powerup->powerup_active || 
+        game_play_state->powerup->powerup_type != SHIELD) {
           create_collision(game_play_state->state->scene, zapper, game_play_state->state->user, 
             game_over, game_play_state, NULL, 0);
         }
@@ -800,13 +818,13 @@ void add_coins(game_play_state_t *game_play_state, double dt) {
     game_play_state->coin->coin_time = 0;
     game_play_state->coin->time_until_coin = fmod(rand(), 
     MAX_COIN_GENERATION_TIME - MIN_COIN_GENERATION_TIME) + 
-    MIN_COIN_GENERATION_TIME;
+    MIN_COIN_GENERATION_TIME;      
     if (game_play_state->powerup->powerup_active && 
         game_play_state->powerup->powerup_type == MORE_COIN) {
       game_play_state->coin->time_until_coin = fmod(rand(), 
       MAX_COIN_GENERATION_TIME_POWERUP - MIN_COIN_GENERATION_TIME_POWERUP) + 
       MIN_COIN_GENERATION_TIME_POWERUP;
-    }     
+    }        
     double y_pos = fmod(rand(), (MAX.y - 50) - (MIN.y + 50));
     double x_pos = MAX.x + 15;
     double y_shift = 40;
@@ -881,9 +899,9 @@ void add_rocket(game_play_state_t *game_play_state, double dt) {
     scene_add_body(game_play_state->state->scene, warning);
 
     asset_update_bounding_box(game_play_state->rocket->rocket_inactive_asset, warning);
-    asset_t *img = game_play_state->rocket->rocket_inactive_asset;
+    // asset_t *img = game_play_state->rocket->rocket_inactive_asset;
 
-    list_add(game_play_state->state->body_assets, img);
+    // list_add(game_play_state->state->body_assets, img);
     game_play_state->rocket->rocket_inactive = true;
   }
 
@@ -904,8 +922,8 @@ void add_rocket(game_play_state_t *game_play_state, double dt) {
     list_add(game_play_state->state->body_assets, img);
     body_t *user = scene_get_body(game_play_state->state->scene, 0);
     assert(user);
-    if (!game_play_state->powerup->powerup_active && 
-        game_play_state->powerup->powerup_type == SHIELD) {    
+    if (!game_play_state->powerup->powerup_active || 
+        game_play_state->powerup->powerup_type != SHIELD) {    
       create_collision(game_play_state->state->scene, rocket, user, game_over, 
         game_play_state, NULL, 0);
       }    
@@ -962,8 +980,8 @@ void add_laser(game_play_state_t *game_play_state, double dt) {
           asset_update_bounding_box(list_get(game_play_state->laser->laser_active_assets, i), laser);
           body_t *user = scene_get_body(game_play_state->state->scene, 0);
           assert(user);
-          if (!game_play_state->powerup->powerup_active && 
-              game_play_state->powerup->powerup_type == SHIELD) {              
+          if (!game_play_state->powerup->powerup_active || 
+              game_play_state->powerup->powerup_type != SHIELD) {              
             create_collision(game_play_state->state->scene, laser, user, game_over, 
             game_play_state, NULL, 0);
               }  
