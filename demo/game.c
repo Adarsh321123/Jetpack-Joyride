@@ -136,5 +136,17 @@ bool emscripten_main(state_t *state) {
 }
 
 void emscripten_free(state_t *state) {
+  if (state->home_state != NULL) {
+    home_free(state->home_state);
+  }
+  if (state->settings_state != NULL) {
+    settings_free(state->settings_state);
+  }
+  if (state->game_play_state != NULL) {
+    game_play_free(state->game_play_state);
+  }
+  if (state->game_over_state != NULL) {
+    game_over_free(state->game_over_state);
+  }
   free(state);
 }

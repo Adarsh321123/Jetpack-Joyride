@@ -172,6 +172,13 @@ struct state_temp {
   int16_t points;
 };
 
+struct zapper_state {
+  double time_until_zapper;
+  double min_zapper_generation_time;
+  double max_zapper_generation_time;
+  double zapper_time;
+};
+
 struct laser_state {
   // This is to use algorithm of random spawning
   double time_laser;
@@ -225,12 +232,9 @@ struct game_play_state {
   double time;
   double last_update_time;
   double distance_traveled;
-  double time_until_zapper;
-  double min_zapper_generation_time;
-  double max_zapper_generation_time;
-  double zapper_time;
   TTF_Font *distance_font;
   TTF_Font *coins_collected_font;
+  zapper_state_t *zapper;
   laser_state_t *laser;
   coin_state_t *coin;
   powerup_state_t *powerup;
@@ -479,6 +483,7 @@ game_play_state_t *game_play_init(difficulty_type_t difficulty_level) {
   add_walls(game_play_state->state);
   game_play_state->curr_state = GAME_PLAY;
 
+  game_play_state->zapper = malloc(sizeof(zapper_state_t));
   game_play_state->laser = malloc(sizeof(laser_state_t));
   game_play_state->rocket = malloc(sizeof(rocket_state_t));
   game_play_state->coin = malloc(sizeof(coin_state_t));
@@ -505,9 +510,9 @@ game_play_state_t *game_play_init(difficulty_type_t difficulty_level) {
   game_play_state->distance_font = init_font(FONT_PATH, DISTANCE_FONT_SIZE);
   game_play_state->coins_collected_font = init_font(FONT_PATH, COIN_FONT_SIZE);
   game_play_state->distance_traveled = 0;
-  game_play_state->time_until_zapper = 0;
+  game_play_state->zapper->time_until_zapper = 0;
   game_play_state->coin->time_until_coin = 0;
-  game_play_state->zapper_time = 0;
+  game_play_state->zapper->zapper_time = 0;
   game_play_state->coin->coin_time = 0;
   game_play_state->laser->time_laser = 0;
   game_play_state->laser->time_laser_spawn = 0;
@@ -568,23 +573,23 @@ game_play_state_t *game_play_init(difficulty_type_t difficulty_level) {
   }
   switch (difficulty_level) {
       case EASY: {
-          game_play_state->min_zapper_generation_time = 
+          game_play_state->zapper->min_zapper_generation_time = 
                                               MIN_ZAPPER_GENERATION_TIME_EASY;
-          game_play_state->max_zapper_generation_time = 
+          game_play_state->zapper->max_zapper_generation_time = 
                                               MAX_ZAPPER_GENERATION_TIME_EASY;
           break;
       }
       case MEDIUM: {
-          game_play_state->min_zapper_generation_time = 
+          game_play_state->zapper->min_zapper_generation_time = 
                                               MIN_ZAPPER_GENERATION_TIME_MEDIUM;
-          game_play_state->max_zapper_generation_time = 
+          game_play_state->zapper->max_zapper_generation_time = 
                                               MAX_ZAPPER_GENERATION_TIME_MEDIUM;
           break;
       }
       case HARD: {
-          game_play_state->min_zapper_generation_time = 
+          game_play_state->zapper->min_zapper_generation_time = 
                                               MIN_ZAPPER_GENERATION_TIME_HARD;
-          game_play_state->max_zapper_generation_time = 
+          game_play_state->zapper->max_zapper_generation_time = 
                                               MAX_ZAPPER_GENERATION_TIME_HARD;
           break;
       }
@@ -737,15 +742,15 @@ void remove_rockets(game_play_state_t *game_play_state) {
 
 
 void add_zapper(game_play_state_t *game_play_state, double dt) {
-  game_play_state->zapper_time += dt;
+  game_play_state->zapper->zapper_time += dt;
   bool laser_state = !game_play_state->laser->laser_active && !game_play_state->laser->laser_inactive;
-  if (laser_state && game_play_state->zapper_time >= game_play_state->time_until_zapper) {
+  if (laser_state && game_play_state->zapper->zapper_time >= game_play_state->zapper->time_until_zapper) {
     fprintf(stderr, "added zapper!\n");
-    game_play_state->zapper_time = 0;
-    game_play_state->time_until_zapper = fmod(rand(), 
-    game_play_state->max_zapper_generation_time - 
-    game_play_state->min_zapper_generation_time) + 
-    game_play_state->min_zapper_generation_time;
+    game_play_state->zapper->zapper_time = 0;
+    game_play_state->zapper->time_until_zapper = fmod(rand(), 
+    game_play_state->zapper->max_zapper_generation_time - 
+    game_play_state->zapper->min_zapper_generation_time) + 
+    game_play_state->zapper->min_zapper_generation_time;
     double y_pos = fmod(rand(), (MAX.y - 50) - (MIN.y + 50));
     double x_pos = MAX.x + 15;
     vector_t center = {.x = x_pos, .y = y_pos};
@@ -1027,27 +1032,49 @@ state_type_t game_play_main(game_play_state_t *game_play_state) {
   return game_play_state->curr_state;
 }
 
-void game_play_free(game_play_state_t *game_play_state) {
+void state_free(game_play_state_t *game_play_state) {
   state_temp_t *state = game_play_state->state;
   // TODO: if time, change to jetpack sprite + have bullets show up
-  //asset_destroy(state->background_state->bg1);
-  //asset_destroy(state->background_state->bg2);
+  // asset_destroy(state->background_state->bg1);
+  // asset_destroy(state->background_state->bg2);
   body_free(state->user);
   body_free(state->ceiling);
   body_free(state->ground);
-  //asset_destroy(game_play_state->laser_active_asset);
-  //asset_destroy(game_play_state->laser_inactive_asset);
 
   // TODO: add int main and link and compile to find memory leaks
   list_free(state->body_assets);
-  list_free(game_play_state->laser->laser_centers);
-  free(game_play_state->laser);
-  // list_free(game_play_state->laser_spawn_positions);
-  free(state->background_state);  
-  subject_free(game_play_state->subject);
+  free(state->background_state);
   // TODO: why is this failing
-  // scene_free(state->scene);
-  asset_cache_destroy();
+  scene_free(state->scene);
   free(state);
+}
+
+void laser_free(game_play_state_t *game_play_state) {
+  laser_state_t *state = game_play_state->laser;
+  list_free(state->laser_inactive_assets);
+  list_free(state->laser_active_assets);
+  list_free(state->laser_centers);
+  list_free(state->laser_spawn_positions);
+  free(state);
+}
+
+void rocket_free(game_play_state_t *game_play_state) {
+  rocket_state_t *state = game_play_state->rocket;
+  asset_destroy(state->rocket_inactive_asset);
+  free(state);
+}
+
+void game_play_free(game_play_state_t *game_play_state) {
+
+  state_free(game_play_state);
+  // laser_free(game_play_state);
+  // rocket_free(game_play_state);
+  free(game_play_state->zapper);
+  free(game_play_state->coin);
+  free(game_play_state->powerup);
+  subject_free(game_play_state->subject);
+  asset_cache_destroy();
+  TTF_CloseFont(game_play_state->distance_font);
+  TTF_CloseFont(game_play_state->coins_collected_font);
   free(game_play_state);
 }

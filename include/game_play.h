@@ -14,6 +14,8 @@ typedef struct state_temp state_temp_t;
 
 typedef struct game_play_state game_play_state_t;
 
+typedef struct zapper_state zapper_state_t;
+
 typedef struct laser_state laser_state_t;
 
 typedef struct rocket_state rocket_state_t;
