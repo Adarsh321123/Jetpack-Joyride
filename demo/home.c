@@ -13,17 +13,16 @@
 /**
  * Handler for entering settings page
  */
-static void settings(home_state_t *home_state);
-
-/**
- * Handler for entering settings page
- */
-static void settings(home_state_t *home_state);
+static void settings(home_state_t *home_state){
+  home_state->curr_state = SETTINGS;
+}
 
 /**
  * Handler for entering game play
  */
-static void play(home_state_t *home_state);
+static void play(home_state_t *home_state){
+  home_state->curr_state = GAME_PLAY;
+}
 
 static background_info_t background_templates[] = {
      {.bg_path = "assets/jetpack_joyride_home.jpg",
@@ -53,14 +52,6 @@ static button_info_t button_templates[] = {
      .text = "Play",
      .handler = (void *)play}
      };
-
-static void settings(home_state_t *home_state){
-  home_state->curr_state = SETTINGS;
-}
-
-static void play(home_state_t *home_state){
-  home_state->curr_state = GAME_PLAY;
-}
 
 /**
  * Initializes and stores the background assets in the home_state.
@@ -112,136 +103,19 @@ home_state_t *home_init() {
   home_state->time = 0;
   // Note that `free_func` is NULL because `asset_cache` is reponsible for
   // freeing the button assets.
-  home_state->backgrounds = list_init(NUM_BACKGROUNDS, NULL);
+  home_state->backgrounds = list_init(NUM_BACKGROUNDS, (free_func_t)asset_destroy);
   create_backgrounds(home_state);
 
-  home_state->text = list_init(NUM_TEXT_HOME, NULL);
+  home_state->text = list_init(NUM_TEXT_HOME, (free_func_t)asset_destroy);
   create_text(home_state);
 
-  home_state->manual_buttons = list_init(NUM_BUTTONS_HOME, NULL);
+  // TODO: remove one?
+  home_state->manual_buttons = list_init(NUM_BUTTONS_HOME, (free_func_t)asset_destroy);
   // We store the assets used for buttons to be freed at the end.
   home_state->button_assets = list_init(NUM_BUTTONS_HOME, (free_func_t)asset_destroy);
   create_buttons(home_state);
 
   home_state->curr_state = HOME;
-
-  // if (SDL_Init(SDL_INIT_AUDIO) < 0) {
-  //   fprintf(stderr, "Unable to initialize SDL: %s\n", SDL_GetError());
-  //   return NULL;
-  // }
-
-  // if (Mix_OpenAudio( 22050, MIX_DEFAULT_FORMAT, 2, 4096 ) == -1) {
-  //   fprintf(stderr, "Mix_OpenAudio: %s\n", Mix_GetError());
-  //   SDL_Quit();
-  //   return NULL;
-  // }
-
-  // char *path = "assets/avengers.mp3";
-  // FILE *file = fopen(path, "r");
-  // if (!file) {
-  //   fprintf(stderr, "Error: Unable to find '%s'\n", path);
-  // } else {
-  //   fclose(file);
-  //   // Mix_Music *music = Mix_LoadMUS(path);
-  //   fprintf(stderr, "Loaded 1\n");
-  // }
-
-  // Mix_Music *music = Mix_LoadMUS(path);
-  // fprintf(stderr, "Loaded 2\n");
-  // if (music == NULL) {
-  //   fprintf(stderr, "Mix_LoadMUS(\"%s\"): %s\n", path, Mix_GetError());
-  //   Mix_CloseAudio();
-  //   SDL_Quit();
-  //   return NULL;
-  // }
-
-  // if ( Mix_PlayMusic( music, -1) == -1 ) {
-  //   return NULL;
-  // }
-
-  // SDL_Window* window = SDL_CreateWindow("SDL Music Player",
-  //                                       SDL_WINDOWPOS_CENTERED,
-  //                                       SDL_WINDOWPOS_CENTERED,
-  //                                       640, 480,
-  //                                       SDL_WINDOW_SHOWN);
-  // if (!window) {
-  //   fprintf(stderr, "SDL_CreateWindow Error: %s\n", SDL_GetError());
-  //   Mix_FreeMusic(music);
-  //   Mix_CloseAudio();
-  //   SDL_Quit();
-  //   return NULL;
-  // }
-
-  // SDL_bool done = SDL_FALSE;
-  // while (!done) {
-  //   SDL_Event event;
-  //   while (SDL_PollEvent(&event)) {
-  //     if (event.type == SDL_QUIT || 
-  //       (event.type == SDL_KEYDOWN && event.key.keysym.sym == SDLK_ESCAPE)) {
-  //       done = SDL_TRUE;
-  //     }
-  //   }
-  // }
-
-  // SDL_DestroyWindow(window);
-  // Mix_FreeMusic(music);
-  // Mix_CloseAudio();
-  // SDL_Quit();
-
-  // return 0;
-
-  // if (SDL_Init(SDL_INIT_AUDIO) < 0) {
-  //   fprintf(stderr, "Unable to initialize SDL: %s\n", SDL_GetError());
-  //   return NULL;
-  // }
-
-  // if (Mix_OpenAudio( 22050, MIX_DEFAULT_FORMAT, 2, 4096 ) == -1) {
-  //   fprintf(stderr, "Mix_OpenAudio: %s\n", Mix_GetError());
-  //   SDL_Quit();
-  //   return NULL;
-  // }
-
-  // char *path = "assets/BabyElephantWalk60.wav";
-  // FILE *file = fopen(path, "r");
-  // if (!file) {
-  //   fprintf(stderr, "Error: Unable to find '%s'\n", path);
-  // } else {
-  //   fclose(file);
-  //   // Mix_Music *music = Mix_LoadMUS(path);
-  //   fprintf(stderr, "Loaded 1\n");
-  // }
-
-  // Mix_Chunk *wave = Mix_LoadWAV(path);
-  // fprintf(stderr, "Loaded 2\n");
-  // if (wave == NULL) {
-  //   fprintf(stderr, "Mix_LoadWAV(\"%s\"): %s\n", path, Mix_GetError());
-  //   Mix_CloseAudio();
-  //   SDL_Quit();
-  //   return NULL;
-  // }
-
-  // int channel = Mix_PlayChannel(-1, wave, 0);
-  // fprintf(stderr, "here 3\n");
-  // if ( channel == -1 ) {
-  //   fprintf(stderr, "SDL_CreateWindow Error: %s\n", SDL_GetError());
-  //   Mix_FreeChunk(wave);
-  //   Mix_CloseAudio();
-  //   SDL_Quit();
-  //   return NULL;
-  // }
-
-  // fprintf(stderr, "here 4\n");
-  // while (Mix_Playing(channel) != 0) {
-  //   fprintf(stderr, "here\n");
-  //   SDL_Delay(100);
-  // }
-
-  // fprintf(stderr, "here 6\n");
-  // Mix_FreeChunk(wave);
-  // Mix_CloseAudio();
-  // SDL_Quit();
-
-  // return 0;
 
   return home_state;
 }
@@ -274,11 +148,9 @@ state_type_t home_main(home_state_t *home_state) {
 }
 
 void home_free(home_state_t *home_state) {
-  TTF_Quit();
   list_free(home_state->backgrounds);
   list_free(home_state->text);
-  list_free(home_state->manual_buttons);
-  list_free(home_state->button_assets);
   asset_cache_destroy();
   free(home_state);
+  TTF_Quit();
 }

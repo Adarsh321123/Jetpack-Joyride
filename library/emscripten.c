@@ -20,15 +20,16 @@ void loop() {
 
   bool game_over = emscripten_main(state);
 
-  if (count >= 1000) {
-    emscripten_free(state);  
-    emscripten_cancel_main_loop();
-    emscripten_force_exit(0);
-    // SDL_Quit();
-    // exit(0);
-    return;
-  }
-  count++;
+  // if (count >= 0) {
+  //   fprintf(stderr, "RUNNING IF STATEMENT OF COUNT\n");
+  //   emscripten_free(state);
+  //   emscripten_cancel_main_loop();
+  //   emscripten_force_exit(0);
+  //   // SDL_Quit();
+  //   // exit(0);
+  //   return;
+  // }
+  // count++;
 
   if (sdl_is_done((void *)state)) { // Once our demo exits...
     emscripten_free(state);         // Free any state variables we've been using
@@ -59,7 +60,6 @@ int main() {
   //   loop();
   // }
 #else
-  fprintf(stderr, "hello\n");
   while (true) {
     loop();
   }

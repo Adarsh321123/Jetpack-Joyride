@@ -181,21 +181,13 @@ struct zapper_state {
 };
 
 struct laser_state {
-  // This is to use algorithm of random spawning
   double time_laser;
-  // This is to track times when event happens
   double time_laser_spawn;
   double time_laser_activate;
   bool laser_inactive;
   bool laser_active;
-  
-  // // REMOVE LATER
-  // asset_t *laser_inactive_asset;
-  // asset_t *laser_active_asset;
-
   list_t *laser_inactive_assets;
   list_t *laser_active_assets;
-
   list_t *laser_centers;
   list_t *laser_spawn_positions;
 };
@@ -216,16 +208,12 @@ struct powerup_state {
 };
 
 struct rocket_state {
-  // This is to use algorithm of random spawning
   double time_rocket;
-  // This is to track times when event happens
   double time_rocket_spawn;
   double time_rocket_activate;
   bool rocket_inactive;
   bool rocket_active;    
-  
   asset_t *rocket_inactive_asset;
-  // asset_t *rocket_active_asset;
   vector_t rocket_spawn_position;
 };
 
@@ -308,6 +296,7 @@ list_t *make_rectangle(vector_t center, double width, double height) {
   return points;
 }
 
+// TODO: idenitcal code
 body_t *make_zapper(vector_t center, double width, double height) {
   list_t *zapper_shape = make_rectangle(center, width, height);
   body_t *zapper = body_init_with_info(zapper_shape, INFINITY, black,
@@ -451,9 +440,9 @@ static void background_update(background_state_t *state, double dt) {
 void init_observers(game_play_state_t *game_play_state) {  
   game_play_state->subject = subject_init();
   achievements_t *achievements = achievements_init();
-  fprintf(stderr, "Observer created notify function is %p\n", (void*)achievements->observer.on_notify);
+  // fprintf(stderr, "Observer created notify function is %p\n", (void*)achievements->observer.on_notify);
   subject_add_observer(game_play_state->subject, &(achievements->observer));
-  fprintf(stderr, "End of init_observers in game_play.c\n");
+  // fprintf(stderr, "End of init_observers in game_play.c\n");
 }
 
 game_play_state_t *game_play_init(difficulty_type_t difficulty_level) {
@@ -501,6 +490,7 @@ game_play_state_t *game_play_init(difficulty_type_t difficulty_level) {
 
   // game_play_state->rocket->rocket_active_asset = asset_make_image(ROCKET_PATH, bounding_box_rocket);
   game_play_state->rocket->rocket_inactive_asset = asset_make_image(ROCKET_WARNING_PATH, bounding_box_rocket_warning);
+  list_add(game_play_state->state->body_assets, game_play_state->rocket->rocket_inactive_asset);
 
   // LASER
   game_play_state->laser->laser_inactive = false;
@@ -526,11 +516,8 @@ game_play_state_t *game_play_init(difficulty_type_t difficulty_level) {
   game_play_state->powerup->powerup_type = OBSTACLE;
 
   SDL_Rect bounding_box_laser = make_texr(-2000, 0, LASER_WIDTH_ACTIVE, LASER_HEIGHT_ACTIVE);
-  // asset_t *active_laser = asset_make_image(LASER_PATH_ACTIVE, bounding_box);
-  // asset_t *inactive_laser = asset_make_image(LASER_PATH_INACTIVE, bounding_box);
-
-  game_play_state->laser->laser_active_assets = list_init(10, NULL);
-  game_play_state->laser->laser_inactive_assets = list_init(10, NULL);
+  game_play_state->laser->laser_active_assets = list_init(10, (free_func_t)asset_destroy);
+  game_play_state->laser->laser_inactive_assets = list_init(10, (free_func_t)asset_destroy);
 
   for (size_t i = 0; i < 10; i++) {
     asset_t *laser_active = asset_make_image(LASER_PATH_ACTIVE, bounding_box_laser);
@@ -542,16 +529,8 @@ game_play_state_t *game_play_init(difficulty_type_t difficulty_level) {
   }
 
   game_play_state->laser->laser_centers = list_init(10, NULL);
-  game_play_state->laser->laser_spawn_positions = list_init(10, (free_func_t) free);
-
-
-  // list_add(game_play_state->laser->laser_centers, &LASER1);
-  // for (size_t i = 0; i < 8; i++){
-  //   vector_t center = {.x = 500, .y = 101.25 + 42.5 * i};
-  //   list_add(game_play_state->laser->laser_centers, &center);
-  // }
-  // list_add(game_play_state->laser->laser_centers, &LASER10);  
-
+  game_play_state->laser->laser_spawn_positions = list_init(10, NULL);
+  
   list_add(game_play_state->laser->laser_centers, &LASER1);
   list_add(game_play_state->laser->laser_centers, &LASER2);
   list_add(game_play_state->laser->laser_centers, &LASER3);
@@ -564,13 +543,13 @@ game_play_state_t *game_play_init(difficulty_type_t difficulty_level) {
   list_add(game_play_state->laser->laser_centers, &LASER10);
   
   if (difficulty_level == EASY) {
-    fprintf(stdout, "easy\n");
+    // fprintf(stdout, "easy\n");
   }
   if (difficulty_level == MEDIUM) {
-    fprintf(stdout, "medium\n");
+    // fprintf(stdout, "medium\n");
   }
   if (difficulty_level == HARD) {
-    fprintf(stdout, "hard\n");
+    // fprintf(stdout, "hard\n");
   }
   switch (difficulty_level) {
       case EASY: {
@@ -606,14 +585,14 @@ game_play_state_t *game_play_init(difficulty_type_t difficulty_level) {
 
 void game_over(body_t *body1, body_t *body2, vector_t axis, void *aux1,
                         void *aux2, double force_const) {
-  fprintf(stderr, "game over!\n");
+  // fprintf(stderr, "game over!\n");
   game_play_state_t *game_play_state = (game_play_state_t *) aux1;
   game_play_state->curr_state = GAME_OVER;
 }
 
 void collect_coin(body_t *body1, body_t *body2, vector_t axis, void *aux1,
                         void *aux2, double force_const) {
-  fprintf(stderr, "collected coin!\n");
+  // fprintf(stderr, "collected coin!\n");
   asset_t *asset = (asset_t *) aux1;
   body_remove(body1);
   asset_update_bounding_box_x(asset, -1000);
@@ -625,12 +604,10 @@ void collect_coin(body_t *body1, body_t *body2, vector_t axis, void *aux1,
 
 void activate_powerup(body_t *body1, body_t *body2, vector_t axis, void *aux1,
                         void *aux2, double force_const) {
-  fprintf(stderr, "activating powerup!\n");
+  // fprintf(stderr, "activating powerup!\n");
   asset_t *asset = (asset_t *) aux1;
   body_remove(body1);
   asset_update_bounding_box_x(asset, -1000);
-
-  size_t powerup_type = (size_t) fmod(rand(), NUM_POWERUPS);
 
   game_play_state_t *game_play_state = (game_play_state_t *) aux2;
   if (!game_play_state->powerup->powerup_active) {
@@ -642,6 +619,7 @@ void activate_powerup(body_t *body1, body_t *body2, vector_t axis, void *aux1,
   }
 }
 
+// TODO: same code, can we use inheritance here also for add?
 void remove_zappers(game_play_state_t *game_play_state) {
   // TODO: remove from body assets once deleted so the image is not re-rendered each time
   size_t num_bodies = scene_bodies(game_play_state->state->scene);
@@ -649,7 +627,7 @@ void remove_zappers(game_play_state_t *game_play_state) {
     body_t *body = scene_get_body(game_play_state->state->scene, i);
     if (get_type(body) == ZAPPER && body_get_centroid(body).x + 50 < MIN.x) {
       scene_remove_body(game_play_state->state->scene, i);
-      fprintf(stderr, "removed zapper!\n");
+      // fprintf(stderr, "removed zapper!\n");
     }
   }
 }
@@ -660,7 +638,7 @@ void remove_coins(game_play_state_t *game_play_state) {
     body_t *body = scene_get_body(game_play_state->state->scene, i);
     if (get_type(body) == COIN && body_get_centroid(body).x + 50 < MIN.x) {
       scene_remove_body(game_play_state->state->scene, i);
-      fprintf(stderr, "removed coin!\n");
+      // fprintf(stderr, "removed coin!\n");
     }
   }
 }
@@ -671,7 +649,7 @@ void remove_powerups(game_play_state_t *game_play_state) {
     body_t *body = scene_get_body(game_play_state->state->scene, i);
     if (get_type(body) == POWERUP && body_get_centroid(body).x + 50 < MIN.x) {
       scene_remove_body(game_play_state->state->scene, i);
-      fprintf(stderr, "removed powerup!\n");
+      // fprintf(stderr, "removed powerup!\n");
     }
   }
 }
@@ -684,7 +662,7 @@ void remove_lasers_inactive(game_play_state_t *game_play_state) {
     if (get_type(body) == LASER) {
       // asset_update_bounding_box_x(game_play_state->laser_inactive_asset, 2 * 1000);
       scene_remove_body(game_play_state->state->scene, i);
-      fprintf(stderr, "removed inactive laser!\n");
+      // fprintf(stderr, "removed inactive laser!\n");
     }
   }
 
@@ -703,7 +681,7 @@ void remove_lasers(game_play_state_t *game_play_state) {
       if (get_type(body) == LASER_ACTIVE) {
         // asset_update_bounding_box_x(game_play_state->laser_active_asset, 2 * 1000);
         scene_remove_body(game_play_state->state->scene, i);
-        fprintf(stderr, "removed laser!\n");
+        // fprintf(stderr, "removed laser!\n");
         subject_notify(game_play_state->subject, EVENT_LASERS_AVOIDED, NULL);
       }
     }
@@ -722,7 +700,7 @@ void remove_warnings(game_play_state_t *game_play_state) {
     if (get_type(body) == ROCKET_WARNING) {
       asset_update_bounding_box_x(game_play_state->rocket->rocket_inactive_asset, 2 * 1000);
       scene_remove_body(game_play_state->state->scene, i);
-      fprintf(stderr, "removed warning!\n");
+      // fprintf(stderr, "removed warning!\n");
     }
   }
 }
@@ -735,7 +713,7 @@ void remove_rockets(game_play_state_t *game_play_state) {
     if (get_type(body) == ROCKET && body_get_centroid(body).x + 50 < MIN.x) {
       // asset_update_bounding_box_x(game_play_state->rocket->rocket_active_asset, 2 * 1000);
       scene_remove_body(game_play_state->state->scene, i);
-      fprintf(stderr, "removed rocket!\n");
+      // fprintf(stderr, "removed rocket!\n");
     }
   }
 }
@@ -746,7 +724,7 @@ void add_zapper(game_play_state_t *game_play_state, double dt) {
   game_play_state->zapper->zapper_time += dt;
   bool laser_state = !game_play_state->laser->laser_active && !game_play_state->laser->laser_inactive;
   if (laser_state && game_play_state->zapper->zapper_time >= game_play_state->zapper->time_until_zapper) {
-    fprintf(stderr, "added zapper!\n");
+    // fprintf(stderr, "added zapper!\n");
     game_play_state->zapper->zapper_time = 0;
     game_play_state->zapper->time_until_zapper = fmod(rand(), 
     game_play_state->zapper->max_zapper_generation_time - 
@@ -771,7 +749,7 @@ void add_coins(game_play_state_t *game_play_state, double dt) {
   game_play_state->coin->coin_time += dt;
   bool laser_state = !game_play_state->laser->laser_active && !game_play_state->laser->laser_inactive;
   if (laser_state && game_play_state->coin->coin_time >= game_play_state->coin->time_until_coin) {
-    fprintf(stderr, "added coins!\n");
+    // fprintf(stderr, "added coins!\n");
     game_play_state->coin->coin_time = 0;
     game_play_state->coin->time_until_coin = fmod(rand(), 
     MAX_COIN_GENERATION_TIME - MIN_COIN_GENERATION_TIME) + 
@@ -787,7 +765,7 @@ void add_coins(game_play_state_t *game_play_state, double dt) {
         vector_t center = {.x = x_pos + (i * x_shift), .y = y_pos + (j * y_shift)};
         body_t *coin = make_coin(COIN_OUTER_RADIUS, COIN_INNER_RADIUS, center);
         scene_add_body(game_play_state->state->scene, coin);
-        body_t *user = scene_get_body(game_play_state->state->scene, 0);
+        body_t *user = scene_get_body(game_play_state->state->scene, 0);  // TODO: get from state itself
         if (game_play_state->powerup->powerup_active && 
         game_play_state->powerup->powerup_type == MAGNETIC) {
           create_newtonian_gravity(game_play_state->state->scene, G_CONSTANT, 
@@ -816,7 +794,7 @@ void add_powerup(game_play_state_t *game_play_state, double dt) {
   game_play_state->powerup->powerup_time += dt;
   bool laser_state = !game_play_state->laser->laser_active && !game_play_state->laser->laser_inactive;
   if (laser_state && game_play_state->powerup->powerup_time >= game_play_state->powerup->time_until_powerup) {
-    fprintf(stderr, "added powerup!\n");
+    // fprintf(stderr, "added powerup!\n");
     game_play_state->powerup->powerup_time = 0;
     game_play_state->powerup->time_until_powerup = fmod(rand(), 
     MAX_POWERUP_GENERATION_TIME - MIN_POWERUP_GENERATION_TIME) + 
@@ -848,7 +826,7 @@ void add_rocket(game_play_state_t *game_play_state, double dt) {
   // TODO: lots of duplicated and overcomplicted control flow
   bool laser_state = !game_play_state->laser->laser_active && !game_play_state->laser->laser_inactive;
   if (laser_state && !game_play_state->rocket->rocket_inactive && game_play_state->rocket->time_rocket >= ROCKET_GENERATION_TIME) {
-    fprintf(stderr, "added rocket warning!\n");
+    // fprintf(stderr, "added rocket warning!\n");
     game_play_state->rocket->time_rocket = 0;
 
     game_play_state->rocket->time_rocket_spawn = game_play_state->time;
@@ -861,9 +839,7 @@ void add_rocket(game_play_state_t *game_play_state, double dt) {
     scene_add_body(game_play_state->state->scene, warning);
 
     asset_update_bounding_box(game_play_state->rocket->rocket_inactive_asset, warning);
-    asset_t *img = game_play_state->rocket->rocket_inactive_asset;
 
-    list_add(game_play_state->state->body_assets, img);
     game_play_state->rocket->rocket_inactive = true;
     // fprintf(stderr, "before collision\n");
     // We dont want collision in non-active state
@@ -875,7 +851,7 @@ void add_rocket(game_play_state_t *game_play_state, double dt) {
     game_play_state->rocket->time_rocket_spawn = INFINITY;
     
     remove_warnings(game_play_state);
-    fprintf(stderr, "added active rocket!\n");
+    // fprintf(stderr, "added active rocket!\n");
     game_play_state->rocket->rocket_spawn_position.x += 50;
     body_t *rocket = make_rocket(&game_play_state->rocket->rocket_spawn_position);
     scene_add_body(game_play_state->state->scene, rocket);
@@ -885,7 +861,7 @@ void add_rocket(game_play_state_t *game_play_state, double dt) {
     asset_t *img = asset_make_image_with_body(ROCKET_PATH, rocket);
 
     list_add(game_play_state->state->body_assets, img);
-    body_t *user = scene_get_body(game_play_state->state->scene, 0);
+    body_t *user = scene_get_body(game_play_state->state->scene, 0);  // TODO: get from state
     assert(user);
     create_collision(game_play_state->state->scene, rocket, user, game_over, 
     game_play_state, NULL, 0);
@@ -915,7 +891,7 @@ void add_laser(game_play_state_t *game_play_state, double dt) {
     size_t start_laser_position = (size_t) round(fmod(rand(), 10.0 - num_laser_initialize)); 
 
     for (size_t i = start_laser_position; i < start_laser_position + num_laser_initialize; i++) {
-      fprintf(stderr, "added inactive laser!\n");
+      // fprintf(stderr, "added inactive laser!\n");
       vector_t *center = list_get(game_play_state->laser->laser_centers, i);
       list_add(game_play_state->laser->laser_spawn_positions, center);
       body_t *laser = make_laser(center);
@@ -933,11 +909,11 @@ void add_laser(game_play_state_t *game_play_state, double dt) {
     remove_lasers_inactive(game_play_state);
 
     for (size_t i = 0; i < list_size(game_play_state->laser->laser_spawn_positions); i++) {
-      fprintf(stderr, "added active laser!\n");
+      // fprintf(stderr, "added active laser!\n");
       body_t *laser = make_laser_active(list_get(game_play_state->laser->laser_spawn_positions, i));
       scene_add_body(game_play_state->state->scene, laser);
       asset_update_bounding_box(list_get(game_play_state->laser->laser_active_assets, i), laser);
-      body_t *user = scene_get_body(game_play_state->state->scene, 0);
+      body_t *user = scene_get_body(game_play_state->state->scene, 0);  // TODO: get from state
       assert(user);    
       create_collision(game_play_state->state->scene, laser, user, game_over, 
       game_play_state, NULL, 0);
@@ -1035,14 +1011,11 @@ state_type_t game_play_main(game_play_state_t *game_play_state) {
 
 void state_free(game_play_state_t *game_play_state) {
   state_temp_t *state = game_play_state->state;
-  // TODO: if time, change to jetpack sprite + have bullets show up
-  // asset_destroy(state->background_state->bg1);
-  // asset_destroy(state->background_state->bg2);
-  body_free(state->user);
-  body_free(state->ceiling);
-  body_free(state->ground);
+  asset_destroy(state->background_state->bg1);
+  asset_destroy(state->background_state->bg2);
 
   // TODO: add int main and link and compile to find memory leaks
+  // fprintf(stderr, "ENTERING STATE FREE\n");
   list_free(state->body_assets);
   free(state->background_state);
   // TODO: why is this failing
@@ -1052,8 +1025,6 @@ void state_free(game_play_state_t *game_play_state) {
 
 void laser_free(game_play_state_t *game_play_state) {
   laser_state_t *state = game_play_state->laser;
-  list_free(state->laser_inactive_assets);
-  list_free(state->laser_active_assets);
   list_free(state->laser_centers);
   list_free(state->laser_spawn_positions);
   free(state);
@@ -1061,15 +1032,12 @@ void laser_free(game_play_state_t *game_play_state) {
 
 void rocket_free(game_play_state_t *game_play_state) {
   rocket_state_t *state = game_play_state->rocket;
-  asset_destroy(state->rocket_inactive_asset);
   free(state);
 }
 
 void game_play_free(game_play_state_t *game_play_state) {
-
-  state_free(game_play_state);
-  // laser_free(game_play_state);
-  // rocket_free(game_play_state);
+  laser_free(game_play_state);
+  rocket_free(game_play_state);
   free(game_play_state->zapper);
   free(game_play_state->coin);
   free(game_play_state->powerup);
@@ -1077,5 +1045,6 @@ void game_play_free(game_play_state_t *game_play_state) {
   asset_cache_destroy();
   TTF_CloseFont(game_play_state->distance_font);
   TTF_CloseFont(game_play_state->coins_collected_font);
+  state_free(game_play_state);
   free(game_play_state);
 }

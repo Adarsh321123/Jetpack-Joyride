@@ -63,8 +63,9 @@ force_creator_info_t *force_creator_init(force_creator_t force_creator,
                                          void *aux, list_t *bodies) {
   force_creator_info_t *fc = malloc(sizeof(force_creator_info_t));
   assert(fc);
-  fc->force_bodies = list_init(list_size(bodies), (free_func_t)body_free);
-  for (size_t i = 0; i < list_size(bodies); i++) {
+  size_t num_bodies = list_size(bodies);
+  fc->force_bodies = list_init(num_bodies, (free_func_t)body_free);
+  for (size_t i = 0; i < num_bodies; i++) {
     list_add(fc->force_bodies, list_get(bodies, i));
   }
   free(bodies->elements);

@@ -13,12 +13,16 @@
 /**
  * Handler for exiting the game
  */
-static void exit_game(game_over_state_t *game_over_state);
+static void exit_game(game_over_state_t *game_over_state){
+  game_over_state->curr_state = EXIT;
+}
 
 /**
  * Handler for going to homescreen
  */
-static void home(game_over_state_t *game_over_state);
+static void home(game_over_state_t *game_over_state){
+  game_over_state->curr_state = HOME;
+}
 
 static background_info_t background_templates[] = {
      {.bg_path = "assets/jetpack_joyride_game_over.jpg",
@@ -48,14 +52,7 @@ static button_info_t button_templates[] = {
      .text = "Play Again",
      .handler = (void *)home}};
 
-static void exit_game(game_over_state_t *game_over_state){
-  game_over_state->curr_state = EXIT;
-}
-
-static void home(game_over_state_t *game_over_state){
-  game_over_state->curr_state = HOME;
-}
-
+// TODO: to reduce duplication with home, can use inheritance
 /**
  * Initializes and stores the background assets in the game_over_state.
  */
@@ -84,7 +81,7 @@ static void create_text(game_over_state_t *game_over_state) {
 static void create_buttons(game_over_state_t *game_over_state) {
   for (size_t i = 0; i < NUM_BUTTONS_GAME_OVER; i++) {
     button_info_t info = button_templates[i];
-    asset_t *button = create_button_from_info(info);
+    asset_t *button = create_button_from_info(info);  // TODO: says this is not freed but it is?
     list_add(game_over_state->manual_buttons, button);
   }
 }
@@ -105,13 +102,13 @@ game_over_state_t *game_over_init() {
   game_over_state->time = 0;
   // Note that `free_func` is NULL because `asset_cache` is reponsible for
   // freeing the button assets.
-  game_over_state->backgrounds = list_init(NUM_BACKGROUNDS, NULL);
+  game_over_state->backgrounds = list_init(NUM_BACKGROUNDS, (free_func_t)asset_destroy);
   create_backgrounds(game_over_state);
 
-  game_over_state->text = list_init(NUM_TEXT_GAME_OVER, NULL);
+  game_over_state->text = list_init(NUM_TEXT_GAME_OVER, (free_func_t)asset_destroy);
   create_text(game_over_state);
 
-  game_over_state->manual_buttons = list_init(NUM_BUTTONS_GAME_OVER, NULL);
+  game_over_state->manual_buttons = list_init(NUM_BUTTONS_GAME_OVER, (free_func_t)asset_destroy);
   // We store the assets used for buttons to be freed at the end.
   game_over_state->button_assets = list_init(NUM_BUTTONS_GAME_OVER, (free_func_t)asset_destroy);
   create_buttons(game_over_state);
@@ -148,11 +145,9 @@ state_type_t game_over_main(game_over_state_t *game_over_state) {
 }
 
 void game_over_free(game_over_state_t *game_over_state) {
-  TTF_Quit();
   list_free(game_over_state->backgrounds);
   list_free(game_over_state->text);
-  list_free(game_over_state->manual_buttons);
-  list_free(game_over_state->button_assets);
   asset_cache_destroy();
   free(game_over_state);
+  TTF_Quit();  // TODO: why if no font?
 }

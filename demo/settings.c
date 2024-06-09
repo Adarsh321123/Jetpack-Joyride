@@ -19,22 +19,30 @@ const SDL_Rect DIFFICULTY_BOX = (SDL_Rect){600, 325, 0, 0};
 /**
  * Handler for going back to home screen
  */
-static void home(settings_state_t *settings_state);
+static void home(settings_state_t *settings_state){
+  settings_state->curr_state = HOME;
+}
 
 /**
  * Handler for setting the difficulty of game to easy
  */
-static void set_difficulty_easy(settings_state_t *settings_state);
+static void set_difficulty_easy(settings_state_t *settings_state){
+  settings_state->difficulty_level = EASY;
+}
 
 /**
  * Handler for setting the difficulty of game to medium
  */
-static void set_difficulty_medium(settings_state_t *settings_state);
+static void set_difficulty_medium(settings_state_t *settings_state){
+  settings_state->difficulty_level = MEDIUM;
+}
 
 /**
  * Handler for setting the difficulty of game to hard
  */
-static void set_difficulty_hard(settings_state_t *settings_state);
+static void set_difficulty_hard(settings_state_t *settings_state){
+  settings_state->difficulty_level = HARD;
+}
 
 static background_info_t background_templates[] = {
      {.bg_path = "assets/BackdropMain.png",
@@ -102,22 +110,6 @@ static button_info_t button_templates[] = {
      .handler = (void *)set_difficulty_hard}
      };
 
-static void home(settings_state_t *settings_state){
-  settings_state->curr_state = HOME;
-}
-
-static void set_difficulty_easy(settings_state_t *settings_state){
-  settings_state->difficulty_level = EASY;
-}
-
-static void set_difficulty_medium(settings_state_t *settings_state){
-  settings_state->difficulty_level = MEDIUM;
-}
-
-static void set_difficulty_hard(settings_state_t *settings_state){
-  settings_state->difficulty_level = HARD;
-}
-
 /**
  * Initializes and stores the background assets in the settings_state.
  */
@@ -142,7 +134,7 @@ size_t get_num_achievements() {
  */
 static void create_text(settings_state_t *settings_state) {
   size_t num_elements = get_num_text();
-  fprintf(stderr, "num elements: %zu\n", num_elements);
+  // fprintf(stderr, "num elements: %zu\n", num_elements);
   for (size_t i = 0; i < num_elements; i++) {
     text_info_t info = text_templates[i];
     asset_t *text = create_text_from_info(info);
@@ -215,14 +207,14 @@ settings_state_t *settings_init() {
   settings_state->time = 0;
   // Note that `free_func` is NULL because `asset_cache` is reponsible for
   // freeing the button assets.
-  settings_state->backgrounds = list_init(NUM_BACKGROUNDS, NULL);
+  settings_state->backgrounds = list_init(NUM_BACKGROUNDS, (free_func_t)asset_destroy);
   create_backgrounds(settings_state);
 
   size_t num_elements = get_num_text();
-  settings_state->text = list_init(num_elements, NULL);
+  settings_state->text = list_init(num_elements, (free_func_t)asset_destroy);
   create_text(settings_state);
 
-  settings_state->manual_buttons = list_init(NUM_BUTTONS_SETTINGS, NULL);
+  settings_state->manual_buttons = list_init(NUM_BUTTONS_SETTINGS, (free_func_t)asset_destroy);
   // We store the assets used for buttons to be freed at the end.
   settings_state->button_assets = list_init(NUM_BUTTONS_SETTINGS, (free_func_t)asset_destroy);
   create_buttons(settings_state);
@@ -232,7 +224,7 @@ settings_state_t *settings_init() {
   settings_state->difficulty_font = init_font(FONT_PATH, DIFFICULTY_FONT_SIZE);
   settings_state->achievements_font = init_font(ACHIEVEMENTS_FONT_PATH, ACHIEVEMENTS_FONT_SIZE);
   list_t *results = read_achievements_settings();
-  fprintf(stderr, "received results");
+  // fprintf(stderr, "received results");
   size_t num_results = list_size(results);
   for (size_t i = 0; i < num_results; i++) {
     achievements_templates[i + 1].text = list_get(results, i);
@@ -272,11 +264,11 @@ state_type_t settings_main(settings_state_t *settings_state) {
 }
 
 void settings_free(settings_state_t *settings_state) {
-  TTF_Quit();
   list_free(settings_state->backgrounds);
   list_free(settings_state->text);
-  list_free(settings_state->manual_buttons);
-  list_free(settings_state->button_assets);
+  TTF_CloseFont(settings_state->difficulty_font);
+  TTF_CloseFont(settings_state->achievements_font);
   asset_cache_destroy();
   free(settings_state);
+  TTF_Quit();
 }

@@ -255,6 +255,7 @@ SDL_Rect find_bounding_box(body_t *body) {
     }
   }
 
+  list_free(points);
   // TODO: make_texr takes as int and we pass double. 
   if (get_type(body) == USER) {
     return make_texr(min_x - 15, (max_y - (max_y - min_y)) - 10, 2 * (max_x - min_x), 2 * (max_y - min_y));
