@@ -17,10 +17,7 @@
 #include "observer.h"
 #include "achievement.h"
 
-// TODO: rockets laggy
-// TODO: lasers appear randomly
 // TODO: delay for saying removed active lasers
-// TODO: spacebar laggy, i let go and it moved up still, sometimes this happens
 // TODO: too much code in here, can we make an abstraction for obstacles
 // TODO: move all constants to constants.h
 
