@@ -26,7 +26,7 @@ const double INCREMENT_ANGLE = 0.1;
 const double RADIUS = 40;
 const double BULLET_RADIUS = 10;
 const double ELASTICITY = 0;
-const double G_CONSTANT = 500.0;
+const double G_CONSTANT = 2500.0;
 
 const vector_t START_POS = {500, 30};
 const vector_t INVADER_BULLET_VEL = {0, -200};
