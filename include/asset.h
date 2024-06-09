@@ -14,6 +14,12 @@ typedef struct asset {
   SDL_Rect bounding_box;
 } asset_t;
 
+struct image_asset {
+  asset_t base;
+  SDL_Texture *texture;
+  body_t *body;
+};
+
 typedef struct text_asset text_asset_t;
 typedef struct image_asset image_asset_t;
 typedef struct button_asset button_asset_t;
@@ -57,6 +63,9 @@ void asset_update_bounding_box_x(asset_t *image, int x);
  * @return a pointer to the newly allocated image asset
  */
 asset_t *asset_make_image_with_body(const char *filepath, body_t *body);
+
+image_asset_t *asset_image_make_image_with_body(const char *filepath, body_t *body);
+
 
 /**
  * Allocates memory for a text asset with the given parameters.

@@ -29,11 +29,15 @@ typedef enum {
 } difficulty_type_t;
 
 typedef enum {
-    OBSTACLE,
-    MORE_COIN,
+    SHIELD,
     MAGNETIC,
-    GRAVITY
+    MORE_COIN
 } powerup_type_t;
+
+typedef enum {
+    LASER_INACTIVE_STATE,
+    LASER_ACTIVE_STATE
+} laser_spawn_t;
 
 /**
  * Initializes sdl as well as the variables needed

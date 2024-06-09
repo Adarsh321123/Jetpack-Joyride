@@ -20,9 +20,8 @@ void loop() {
 
   bool game_over = emscripten_main(state);
 
-  // if (count >= 0) {
-  //   fprintf(stderr, "RUNNING IF STATEMENT OF COUNT\n");
-  //   emscripten_free(state);
+  // if (count >= 1000) {
+  //   emscripten_free(state);  
   //   emscripten_cancel_main_loop();
   //   emscripten_force_exit(0);
   //   // SDL_Quit();
