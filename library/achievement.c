@@ -38,7 +38,7 @@ list_t *read_achievements_settings() {
   // fprintf(stderr, "File opened for reading\n");
   size_t char_read = 256;
   char *line = malloc(sizeof(char) * (char_read + 1));
-  list_t *results = list_init(INITIAL_ACHIEVEMENTS, free);
+  list_t *results = list_init(INITIAL_ACHIEVEMENTS, NULL);
   while(fgets(line, char_read + 1, achievements_file)) {
     // fprintf(stderr, "%s", line);
     char *result = malloc(sizeof(char) * (char_read + 1));

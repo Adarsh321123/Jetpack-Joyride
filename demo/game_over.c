@@ -108,9 +108,9 @@ game_over_state_t *game_over_init() {
   game_over_state->text = list_init(NUM_TEXT_GAME_OVER, (free_func_t)asset_destroy);
   create_text(game_over_state);
 
-  game_over_state->manual_buttons = list_init(NUM_BUTTONS_GAME_OVER, (free_func_t)asset_destroy);
+  game_over_state->manual_buttons = list_init(NUM_BUTTONS_GAME_OVER, NULL);
   // We store the assets used for buttons to be freed at the end.
-  game_over_state->button_assets = list_init(NUM_BUTTONS_GAME_OVER, (free_func_t)asset_destroy);
+  game_over_state->button_assets = list_init(NUM_BUTTONS_GAME_OVER, NULL);
   create_buttons(game_over_state);
 
   game_over_state->curr_state = GAME_OVER;
@@ -147,6 +147,8 @@ state_type_t game_over_main(game_over_state_t *game_over_state) {
 void game_over_free(game_over_state_t *game_over_state) {
   list_free(game_over_state->backgrounds);
   list_free(game_over_state->text);
+  list_free(game_over_state->manual_buttons);
+  list_free(game_over_state->button_assets);
   asset_cache_destroy();
   free(game_over_state);
   TTF_Quit();  // TODO: why if no font?

@@ -516,8 +516,8 @@ game_play_state_t *game_play_init(difficulty_type_t difficulty_level) {
   game_play_state->powerup->powerup_type = OBSTACLE;
 
   SDL_Rect bounding_box_laser = make_texr(-2000, 0, LASER_WIDTH_ACTIVE, LASER_HEIGHT_ACTIVE);
-  game_play_state->laser->laser_active_assets = list_init(10, (free_func_t)asset_destroy);
-  game_play_state->laser->laser_inactive_assets = list_init(10, (free_func_t)asset_destroy);
+  game_play_state->laser->laser_active_assets = list_init(10, NULL);
+  game_play_state->laser->laser_inactive_assets = list_init(10, NULL);
 
   for (size_t i = 0; i < 10; i++) {
     asset_t *laser_active = asset_make_image(LASER_PATH_ACTIVE, bounding_box_laser);
@@ -1027,6 +1027,8 @@ void laser_free(game_play_state_t *game_play_state) {
   laser_state_t *state = game_play_state->laser;
   list_free(state->laser_centers);
   list_free(state->laser_spawn_positions);
+  list_free(state->laser_active_assets);
+  list_free(state->laser_inactive_assets);
   free(state);
 }
 

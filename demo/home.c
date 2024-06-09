@@ -110,9 +110,9 @@ home_state_t *home_init() {
   create_text(home_state);
 
   // TODO: remove one?
-  home_state->manual_buttons = list_init(NUM_BUTTONS_HOME, (free_func_t)asset_destroy);
+  home_state->manual_buttons = list_init(NUM_BUTTONS_HOME, NULL);
   // We store the assets used for buttons to be freed at the end.
-  home_state->button_assets = list_init(NUM_BUTTONS_HOME, (free_func_t)asset_destroy);
+  home_state->button_assets = list_init(NUM_BUTTONS_HOME, NULL);
   create_buttons(home_state);
 
   home_state->curr_state = HOME;
@@ -150,6 +150,8 @@ state_type_t home_main(home_state_t *home_state) {
 void home_free(home_state_t *home_state) {
   list_free(home_state->backgrounds);
   list_free(home_state->text);
+  list_free(home_state->manual_buttons);
+  list_free(home_state->button_assets);
   asset_cache_destroy();
   free(home_state);
   TTF_Quit();

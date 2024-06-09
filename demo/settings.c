@@ -214,9 +214,9 @@ settings_state_t *settings_init() {
   settings_state->text = list_init(num_elements, (free_func_t)asset_destroy);
   create_text(settings_state);
 
-  settings_state->manual_buttons = list_init(NUM_BUTTONS_SETTINGS, (free_func_t)asset_destroy);
+  settings_state->manual_buttons = list_init(NUM_BUTTONS_SETTINGS, NULL);
   // We store the assets used for buttons to be freed at the end.
-  settings_state->button_assets = list_init(NUM_BUTTONS_SETTINGS, (free_func_t)asset_destroy);
+  settings_state->button_assets = list_init(NUM_BUTTONS_SETTINGS, NULL);
   create_buttons(settings_state);
 
   settings_state->curr_state = SETTINGS;
@@ -229,6 +229,7 @@ settings_state_t *settings_init() {
   for (size_t i = 0; i < num_results; i++) {
     achievements_templates[i + 1].text = list_get(results, i);
   }
+  list_free(results);
   return settings_state;
 }
 
@@ -266,6 +267,8 @@ state_type_t settings_main(settings_state_t *settings_state) {
 void settings_free(settings_state_t *settings_state) {
   list_free(settings_state->backgrounds);
   list_free(settings_state->text);
+  list_free(settings_state->manual_buttons);
+  list_free(settings_state->button_assets);
   TTF_CloseFont(settings_state->difficulty_font);
   TTF_CloseFont(settings_state->achievements_font);
   asset_cache_destroy();
