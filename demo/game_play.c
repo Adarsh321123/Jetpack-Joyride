@@ -1083,7 +1083,7 @@ void state_free(game_play_state_t *game_play_state) {
   asset_destroy(state->background_state->bg2);
 
   // TODO: add int main and link and compile to find memory leaks
-  fprintf(stderr, "ENTERING STATE FREE\n");
+  // fprintf(stderr, "ENTERING STATE FREE\n");
   list_free(state->body_assets);
   free(state->background_state);
   // TODO: why is this failing
