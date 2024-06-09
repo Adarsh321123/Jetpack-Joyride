@@ -408,21 +408,13 @@ void on_key(char key, key_event_type_t type, double held_time, game_play_state_t
   // fprintf(stderr, "after getting user\n");
   // TODO: use (void)held_time to say unused??
   if (key == SPACE_BAR) {
-    vector_t vel = USER_VEL;
     if (type == KEY_PRESSED) {
-      //acc.y += ACC_FACTOR * held_time;
-      vel.y += vel.y * held_time;
-      body_set_velocity(game_play_state->state->user, vel);
+      body_set_velocity(game_play_state->state->user, USER_VEL);
       // fprintf(stderr, "space bar hit\n");
     } else if (type == KEY_RELEASED) {
-      //acc.y += -(ACC_FACTOR * held_time);
-      vel.y += vel.y * held_time;
-      body_set_velocity(game_play_state->state->user, vec_negate(vel));
+      body_set_velocity(game_play_state->state->user, vec_negate(USER_VEL));
       // fprintf(stderr, "no space bar hit\n");
     }
-    //vector_t vel = body_get_velocity(game_play_state->state->user);
-    //vector_t new_vel = vec_add(vel, acc);
-    //body_set_velocity(game_play_state->state->user, new_vel);
   }
 }
 
@@ -895,8 +887,6 @@ void add_rocket(game_play_state_t *game_play_state, double dt) {
     scene_add_body(game_play_state->state->scene, warning);
 
     asset_update_bounding_box(game_play_state->rocket->rocket_inactive_asset, warning);
-    asset_t *img = game_play_state->rocket->rocket_inactive_asset;
-
     game_play_state->rocket->rocket_inactive = true;
   }
 
@@ -1040,9 +1030,9 @@ state_type_t game_play_main(game_play_state_t *game_play_state) {
   sdl_clear();
 
   background_update(state->background_state, dt);
-  sdl_render_scene(state->scene, NULL);
-  // asset_render(state->background_state->bg1);
-  // asset_render(state->background_state->bg2);
+  // sdl_render_scene(state->scene, NULL);
+  asset_render(state->background_state->bg1);
+  asset_render(state->background_state->bg2);
 
   size_t num_assets = list_size(state->body_assets);
   for (size_t i = 0; i < num_assets; i++) {
