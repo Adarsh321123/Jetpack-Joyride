@@ -20,6 +20,8 @@
 // TODO: rockets laggy
 // TODO: lasers appear randomly
 // TODO: delay for saying removed active lasers
+// TODO: spacebar laggy, i let go and it moved up still, sometimes this happens
+// TODO: too much code in here, can we make an abstraction for obstacles
 
 const double WEDGE_ANGLE = 3.6 * M_PI / 3;
 const double INCREMENT_ANGLE = 0.1;
@@ -48,8 +50,8 @@ const double resting_speed = 300;
 const double ACCEL = 100;
 
 // USER: 
-const double USER_OUTER_RADIUS = 15;
-const double USER_INNER_RADIUS = 15;
+const double USER_RADIUS = 15;
+// TODO: add more here and other sections
 
 // ZAPPER:
 const double ZAPPER_WIDTH = 46;
@@ -90,6 +92,7 @@ const size_t DISTANCE_FONT_SIZE = 30;
 const SDL_Rect DISTANCE_BOX = (SDL_Rect){25, 25, 0, 0};
 const double UPDATE_INTERVAL = 0.5;
 
+// TODO: can we just add to the y to make it work
 vector_t LASER1 = {.x = 500, .y = 80};
 vector_t LASER2 = {.x = 500, .y = 101.25};
 vector_t LASER3 = {.x = 500, .y = 143.75};
@@ -233,7 +236,7 @@ struct game_play_state {
   powerup_state_t *powerup;
   rocket_state_t *rocket;
   state_type_t curr_state;
-  subject_t *subject;
+  subject_t *subject;  // this is useful for achievements
   state_temp_t *state;
 };
 
@@ -245,14 +248,14 @@ body_type_t *make_type_info(body_type_t type) {
   return info;
 }
 
-body_t *make_user(double outer_radius, double inner_radius, vector_t center) {
-  center.y += inner_radius;
+body_t *make_user(double radius, vector_t center) {
+  center.y += radius;
   list_t *c = list_init(USER_NUM_POINTS, free);
   for (size_t i = 0; i < USER_NUM_POINTS; i++) {
     double angle = 2 * M_PI * i / USER_NUM_POINTS;
     vector_t *v = malloc(sizeof(*v));
-    *v = (vector_t){center.x + inner_radius * cos(angle),
-                    center.y + outer_radius * sin(angle)};
+    *v = (vector_t){center.x + radius * cos(angle),
+                    center.y + radius * sin(angle)};
     list_add(c, v);
   }
   body_type_t *user_type = make_type_info(USER);
@@ -308,7 +311,7 @@ body_t *make_zapper(vector_t center, double width, double height) {
   body_set_centroid(zapper, center);
   return zapper;
 }
-
+// TODO: why do this take pointers?
 body_t *make_laser(vector_t *center) {
   list_t *laser_shape = make_rectangle(*center, LASER_WIDTH_ACTIVE, LASER_HEIGHT_ACTIVE);
   body_t *laser = body_init_with_info(laser_shape, INFINITY, black,
@@ -317,7 +320,7 @@ body_t *make_laser(vector_t *center) {
   body_set_centroid(laser, *center);
   return laser;
 }
-
+// TODO: why do this take pointers?
 body_t *make_laser_active(vector_t *center) {
   list_t *laser_shape = make_rectangle(*center, LASER_WIDTH_ACTIVE, LASER_HEIGHT_ACTIVE);
   body_t *laser = body_init_with_info(laser_shape, INFINITY, red,
@@ -327,7 +330,7 @@ body_t *make_laser_active(vector_t *center) {
   return laser;
 }
 
-
+// TODO: change to just radiu
 body_t *make_coin(double outer_radius, double inner_radius, vector_t center) {
   center.y += inner_radius;
   list_t *coin_shape = list_init(USER_NUM_POINTS, free);
@@ -372,7 +375,6 @@ body_t *make_rocket(vector_t *center) {
   return rocket;
 }
 
-
 /**
  * Adds walls as bodies to the scene.
  *
@@ -406,6 +408,7 @@ void on_key(char key, key_event_type_t type, double held_time, game_play_state_t
   // fprintf(stderr, "before getting user\n");
   // fprintf(stderr, "scene_bodies inside: %zu\n", scene_bodies(game_play_state->state->scene));
   // fprintf(stderr, "after getting user\n");
+  // TODO: use (void)held_time to say unused??
   if (key == SPACE_BAR) {
     if (type == KEY_PRESSED) {
       body_set_velocity(game_play_state->state->user, USER_VEL);
@@ -432,7 +435,7 @@ static background_state_t *background_init(const char *bg_path) {
 
 static void background_update(background_state_t *state, double dt) {
   state->bg_offset -= state->scroll_speed * dt;
-  double WINDOW_WIDTH = MAX.x - MIN.x;
+  double WINDOW_WIDTH = MAX.x - MIN.x;  // TODO: is this recomputed elsewhere?
   if (state->bg_offset <= - WINDOW_WIDTH) {
     state->bg_offset += WINDOW_WIDTH;
   }
@@ -455,26 +458,21 @@ game_play_state_t *game_play_init(difficulty_type_t difficulty_level) {
   asset_cache_init();
   sdl_init(MIN, MAX);
   srand(time(NULL));
-  // state is defined here
   state_temp_t *state = malloc(sizeof(state_temp_t));
-  
   assert(state != NULL);
   sdl_on_key((key_handler_t)on_key);
 
   state->scene = scene_init();
-  state->body_assets = list_init(1, (free_func_t)asset_destroy);
+  state->body_assets = list_init(1, (free_func_t)asset_destroy);  // TODO: why 1?
 
   // SET everything for the user
-  state->user = make_user(USER_OUTER_RADIUS, USER_INNER_RADIUS, VEC_ZERO);
-  vector_t start_pos = {MAX.x / 2, MIN.y + USER_OUTER_RADIUS + 50};
+  state->user = make_user(USER_RADIUS, VEC_ZERO);
+  vector_t start_pos = {MAX.x / 2, MIN.y + USER_RADIUS + 50};
   body_set_centroid(state->user, start_pos);
   scene_add_body(state->scene, state->user);
   asset_t *img = asset_make_image_with_body(USER_IMG_PATH, state->user);
   list_add(state->body_assets, img);
 
-
-
-  // fprintf(stderr, "scene_bodies: %zu\n", scene_bodies(state->scene));
   // Walls and Backgrounds:
   state->background_state = background_init(BACKGROUND_PATH);
   game_play_state->state = state;
@@ -841,6 +839,7 @@ void add_powerup(game_play_state_t *game_play_state, double dt) {
 
 void add_rocket(game_play_state_t *game_play_state, double dt) {
   game_play_state->rocket->time_rocket += dt;
+  // TODO: lots of duplicated and overcomplicted control flow
   bool laser_state = !game_play_state->laser->laser_active && !game_play_state->laser->laser_inactive;
   if (laser_state && !game_play_state->rocket->rocket_inactive && game_play_state->rocket->time_rocket >= ROCKET_GENERATION_TIME) {
     fprintf(stderr, "added rocket warning!\n");
@@ -848,7 +847,7 @@ void add_rocket(game_play_state_t *game_play_state, double dt) {
 
     game_play_state->rocket->time_rocket_spawn = game_play_state->time;
     game_play_state->rocket->rocket_active = false;                        
-    double y_pos = fmod(rand(), (MAX.y - MIN.y) - 100) + 50;
+    double y_pos = fmod(rand(), (MAX.y - MIN.y) - 100) + 50;  // TODO: rand() returns int but fmod takes double, check throughout
     double x_pos = MAX.x - 50;
     vector_t center = {.x = x_pos, .y = y_pos};
     game_play_state->rocket->rocket_spawn_position = center;
@@ -1007,11 +1006,11 @@ state_type_t game_play_main(game_play_state_t *game_play_state) {
   vector_t user_vel = body_get_velocity(game_play_state->state->user);
   vector_t ground_centroid = body_get_centroid(game_play_state->state->ground);
   vector_t ceiling_centroid = body_get_centroid(game_play_state->state->ceiling);
-  if (user_vel.y < 0 && user_centroid.y - ground_centroid.y < USER_OUTER_RADIUS) {
-    vector_t new_centroid = {.x = ground_centroid.x, .y = ground_centroid.y + USER_OUTER_RADIUS};
+  if (user_vel.y < 0 && user_centroid.y - ground_centroid.y < USER_RADIUS) {
+    vector_t new_centroid = {.x = ground_centroid.x, .y = ground_centroid.y + USER_RADIUS};
     body_set_centroid(game_play_state->state->user, new_centroid);
-  } else if (user_vel.y > 0 && ceiling_centroid.y - user_centroid.y < USER_OUTER_RADIUS) {
-    vector_t new_centroid = {.x = ceiling_centroid.x, .y = ceiling_centroid.y - USER_OUTER_RADIUS};
+  } else if (user_vel.y > 0 && ceiling_centroid.y - user_centroid.y < USER_RADIUS) {
+    vector_t new_centroid = {.x = ceiling_centroid.x, .y = ceiling_centroid.y - USER_RADIUS};
     body_set_centroid(game_play_state->state->user, new_centroid);
   }
 

@@ -9,11 +9,7 @@
 #include "constants.h"
 #include "asset_cache.h"
 #include "sdl_wrapper.h"
-
-// TODO: print some texts
-// TODO: read from file
-// TODO: init file
-// TODO: use code from other file
+#include "achievement.h"
 
 const size_t DIFFICULTY_TEXT_SIZE = 50;
 const size_t DIFFICULTY_FONT_SIZE = 50;
@@ -64,15 +60,15 @@ static text_info_t achievements_templates[] = {
      {.font_path = "assets/Roboto-Regular.ttf",
      .text_box = (SDL_Rect){525, 175, 150, 50},
      .text_color = (rgb_color_t){255, 255, 255},
-     .text = "Collect 50 Coins 50/50"},
+     .text = ""},
      {.font_path = "assets/Roboto-Regular.ttf",
      .text_box = (SDL_Rect){525, 225, 150, 50},
      .text_color = (rgb_color_t){255, 255, 255},
-     .text = "Travel 1000 Meters In A Game 1000/1000"},
+     .text = ""},
      {.font_path = "assets/Roboto-Regular.ttf",
      .text_box = (SDL_Rect){525, 275, 150, 50},
      .text_color = (rgb_color_t){255, 255, 255},
-     .text = "Avoid 5 Lasers 5/5"}
+     .text = ""}
 };
 
 static button_info_t button_templates[] = {
@@ -235,6 +231,12 @@ settings_state_t *settings_init() {
   settings_state->difficulty_level = EASY;
   settings_state->difficulty_font = init_font(FONT_PATH, DIFFICULTY_FONT_SIZE);
   settings_state->achievements_font = init_font(ACHIEVEMENTS_FONT_PATH, ACHIEVEMENTS_FONT_SIZE);
+  list_t *results = read_achievements_settings();
+  fprintf(stderr, "received results");
+  size_t num_results = list_size(results);
+  for (size_t i = 0; i < num_results; i++) {
+    achievements_templates[i + 1].text = list_get(results, i);
+  }
   return settings_state;
 }
 

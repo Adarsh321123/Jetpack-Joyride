@@ -25,7 +25,8 @@ struct achievements {
 
 // TODO: add docstrings
 size_t achievements_size(achievements_t *achievements);
-void init_achievements_file(achievements_t *achievements);
+void init_achievements_file();
+list_t *read_achievements_settings();
 void read_achievements(achievements_t *achievements);
 void write_achievements(achievements_t *achievements);
 void sync_to_persistent_storage();

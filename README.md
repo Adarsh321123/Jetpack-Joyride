@@ -1,5 +1,10 @@
 # Game Design Document
 
+# Instructions
+- Please don't use incognito. Otherwise, the achievements won't be saved.
+- Please try on Chrome for best results.
+- Please run without asan when testing achievements. Since Asan is so slow, the events may not be received and acted upon before the game ends.
+
 ## Section 0: Summary
 This section should tell the reader what to expect in the future sections.  In particular, it should contain at least:
 - a working title for your game
