@@ -5,11 +5,27 @@
 // TODO: occasional weird output in unicode other lang?
 // TODO: harder achievements
 
+struct achievement {
+    char *name;
+    size_t progress;
+    size_t target;
+    bool unlocked;
+};
+
+struct achievements {
+    observer_t observer;
+    list_t *achievements_list;
+};
+
 const size_t INITIAL_ACHIEVEMENTS = 3;
 const char *ACHIEVEMENTS_FILENAME = "/achievements.txt";
 const char *FIRST_ACHIEVEMENT = "Collect 50 Coins|0|50|false";
 const char *SECOND_ACHIEVEMENT = "Travel 1000 Meters In A Game|0|1000|false";
 const char *THIRD_ACHIEVEMENT = "Avoid 5 Lasers|0|5|false";
+
+observer_t *achievements_get_observer(achievements_t *achievements) {
+  return &(achievements->observer);
+}
 
 size_t achievements_size(achievements_t *achievements) {
     return list_size(achievements->achievements_list);
