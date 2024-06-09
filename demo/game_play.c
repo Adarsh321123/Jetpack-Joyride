@@ -81,6 +81,7 @@ const SDL_Rect COIN_BOX = (SDL_Rect){25, 75, 0, 0};
 // POWERUPS:
 const double POWERUP_WIDTH = 60;
 const double POWERUP_HEIGHT = 60;
+const double POWERUP_DURATION = 10;
 const size_t NUM_POWERUPS = 4;
 
 // DISTANCE:
@@ -104,7 +105,7 @@ vector_t LASER10 = {.x = 500, .y = 420};
 // TODO: First make a basic laser appear on the screen with some frequency
 // Then, make the laser appear with a frequency based on a specific algorithm
 // Then, fix the positions of the laser based on the closest location
-// Then add, animation to the laser. 
+// Then add, animation to the laser.
 
 
 const size_t SHIP_NUM_POINTS = 20;
@@ -618,49 +619,23 @@ void collect_coin(body_t *body1, body_t *body2, vector_t axis, void *aux1,
   subject_notify(game_play_state->subject, EVENT_COIN_COLLECTED, NULL);
 }
 
-void disable_obstacles_powerup(body_t *body1, body_t *body2, vector_t axis, void *aux1,
+void activate_powerup(body_t *body1, body_t *body2, vector_t axis, void *aux1,
                         void *aux2, double force_const) {
-  fprintf(stderr, "disable obstacles powerup!\n");
+  fprintf(stderr, "activating powerup!\n");
   asset_t *asset = (asset_t *) aux1;
   body_remove(body1);
   asset_update_bounding_box_x(asset, -1000);
 
-  game_play_state_t *game_play_state = (game_play_state_t *) aux2;
-}
-
-void increase_coin_freq_powerup(body_t *body1, body_t *body2, vector_t axis, void *aux1,
-                        void *aux2, double force_const) {
-  fprintf(stderr, "increase coin generation powerup!\n");
-  asset_t *asset = (asset_t *) aux1;
-  body_remove(body1);
-  asset_update_bounding_box_x(asset, -1000);
-
-  game_play_state_t *game_play_state = (game_play_state_t *) aux2;
-}
-
-void magnetic_coin_powerup(body_t *body1, body_t *body2, vector_t axis, void *aux1,
-                        void *aux2, double force_const) {
-  fprintf(stderr, "magnetic coin powerup!\n");
-  asset_t *asset = (asset_t *) aux1;
-  body_remove(body1);
-  asset_update_bounding_box_x(asset, -1000);
+  size_t powerup_type = (size_t) fmod(rand(), NUM_POWERUPS);
 
   game_play_state_t *game_play_state = (game_play_state_t *) aux2;
   if (!game_play_state->powerup->powerup_active) {
     game_play_state->powerup->powerup_active = true;
     game_play_state->powerup->powerup_start_time = game_play_state->time;
+    // game_play_state->powerup->powerup_type = powerup_type;
+    // for now we test magnetic coin
     game_play_state->powerup->powerup_type = MAGNETIC;
   }
-}
-
-void gravity_swap_powerup(body_t *body1, body_t *body2, vector_t axis, void *aux1,
-                        void *aux2, double force_const) {
-  fprintf(stderr, "gravity swap powerup!\n");
-  asset_t *asset = (asset_t *) aux1;
-  body_remove(body1);
-  asset_update_bounding_box_x(asset, -1000);
-
-  game_play_state_t *game_play_state = (game_play_state_t *) aux2;
 }
 
 void remove_zappers(game_play_state_t *game_play_state) {
@@ -809,8 +784,11 @@ void add_coins(game_play_state_t *game_play_state, double dt) {
         body_t *coin = make_coin(COIN_OUTER_RADIUS, COIN_INNER_RADIUS, center);
         scene_add_body(game_play_state->state->scene, coin);
         body_t *user = scene_get_body(game_play_state->state->scene, 0);
-        create_newtonian_gravity(game_play_state->state->scene, G_CONSTANT, 
-        user, coin);
+        if (game_play_state->powerup->powerup_active && 
+        game_play_state->powerup->powerup_type == MAGNETIC) {
+          create_newtonian_gravity(game_play_state->state->scene, G_CONSTANT, 
+          user, coin);
+        }
         asset_t *img = asset_make_image_with_body(COIN_PATH, coin);
         list_add(game_play_state->state->body_assets, img);
         // fprintf(stderr, "before collision\n");
@@ -847,45 +825,14 @@ void add_powerup(game_play_state_t *game_play_state, double dt) {
     asset_t *img = asset_make_image_with_body(POWERUP_PATH, powerup);
     list_add(game_play_state->state->body_assets, img);
     // fprintf(stderr, "before collision\n");
-    size_t powerup_type = (size_t) fmod(rand(), NUM_POWERUPS);
-    // fprintf(stderr, "lebron;%zu\n", powerup_type);
-    switch (powerup_type) {
-          case OBSTACLE: {
-              // fprintf(stderr, "lebron\n");
-              create_collision(game_play_state->state->scene, powerup, 
-              game_play_state->state->user, magnetic_coin_powerup, img, 
+    create_collision(game_play_state->state->scene, powerup, 
+              game_play_state->state->user, activate_powerup, img, 
               game_play_state, 0);
-              break;
-          }
-          case MORE_COIN: {
-              // fprintf(stderr, "lebron1\n");
-              create_collision(game_play_state->state->scene, powerup, 
-              game_play_state->state->user, magnetic_coin_powerup, img, 
-              game_play_state, 0);
-              break;
-          }
-          case MAGNETIC: {
-              // fprintf(stderr, "lebron2\n");
-              create_collision(game_play_state->state->scene, powerup, 
-              game_play_state->state->user, magnetic_coin_powerup, img, 
-              game_play_state, 0);
-              break;
-          }
-          case GRAVITY: {
-              // fprintf(stderr, "lebron3\n");
-              create_collision(game_play_state->state->scene, powerup, 
-              game_play_state->state->user, magnetic_coin_powerup, img, 
-              game_play_state, 0);
-              break;
-          }
-          default: {
-              fprintf(stderr, "lebron4\n");
-              break;
-          }
-      }
-    // create_collision(game_play_state->state->scene, powerup, game_play_state->state->user, 
-    // magnetic_coin_powerup, img, game_play_state, 0);
     // fprintf(stderr, "after collision\n");
+  }
+  if (game_play_state->powerup->powerup_active && game_play_state->time >= 
+    game_play_state->powerup->powerup_start_time + POWERUP_DURATION) {
+      game_play_state->powerup->powerup_active = false;
   }
 }
 
