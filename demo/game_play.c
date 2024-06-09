@@ -22,6 +22,7 @@
 // TODO: delay for saying removed active lasers
 // TODO: spacebar laggy, i let go and it moved up still, sometimes this happens
 // TODO: too much code in here, can we make an abstraction for obstacles
+// TODO: move all constants to constants.h
 
 const double WEDGE_ANGLE = 3.6 * M_PI / 3;
 const double INCREMENT_ANGLE = 0.1;
