@@ -20,7 +20,6 @@ typedef enum
  * @param state object passed in to retrieve and update idx
  * @param event event SDL_Event to retrieve position of mouse clicks
  */
-
 typedef struct observer observer_t;
 
 typedef void (*on_notify_t)(observer_t *observer, event_t event, void *aux);

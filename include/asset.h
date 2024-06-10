@@ -136,12 +136,6 @@ void asset_on_button_click(asset_t *button, state_t *state, double x, double y);
  */
 void asset_render(asset_t *asset);
 
-// /**
-//  * Given a body that is marked for removal, finds the body's associated image.
-//  * Then, removes that image from the asset cache and destorys it.
-// */
-// void asset_remove_image(body_t *body, list_t *body_assets, size_t num_assets);
-
 /**
  * Frees the memory allocated for the asset.
  * @param asset the asset to free

@@ -146,7 +146,8 @@ static void display_difficulty_level(settings_state_t *settings_state)
  */
 static void display_achievements(settings_state_t *settings_state)
 {
-  size_t num_achievements = sizeof(achievements_templates) / sizeof(achievements_templates[0]);
+  size_t num_achievements = sizeof(achievements_templates) / 
+                            sizeof(achievements_templates[0]);
   TTF_Font *font = settings_state->achievements_font;
   for (size_t i = 0; i < num_achievements; i++)
   {
@@ -164,22 +165,26 @@ settings_state_t *settings_init()
   sdl_on_mouse(on_mouse);
   sdl_init(MIN, MAX);
   asset_cache_init();
-  size_t num_backgrounds = sizeof(background_templates) / sizeof(background_templates[0]);
+  size_t num_backgrounds = sizeof(background_templates) / 
+                            sizeof(background_templates[0]);
   size_t num_text = sizeof(text_templates) / sizeof(text_templates[0]);
   size_t num_buttons = sizeof(button_templates) / sizeof(button_templates[0]);
-  settings_state->screen_state = screen_init(settings_state->screen_state, background_templates,
+  settings_state->screen_state = screen_init(settings_state->screen_state,
+                                             background_templates,
                                              text_templates, button_templates,
                                              num_backgrounds, num_text, num_buttons);
   settings_state->time = ZERO;
   settings_state->curr_state = SETTINGS;
   settings_state->difficulty_level = EASY;
   settings_state->difficulty_font = init_font(FONT_PATH, DIFFICULTY_FONT_SIZE);
-  settings_state->achievements_font = init_font(ACHIEVEMENTS_FONT_PATH, ACHIEVEMENTS_FONT_SIZE);
+  settings_state->achievements_font = init_font(ACHIEVEMENTS_FONT_PATH,
+                                                 ACHIEVEMENTS_FONT_SIZE);
   list_t *results = read_achievements_settings();
   size_t num_results = list_size(results);
   for (size_t i = 0; i < num_results; i++)
   {
-    achievements_templates[i + 1].text = list_get(results, i); // + 1 since excluding achievements title
+    // + 1 since excluding achievements title
+    achievements_templates[i + 1].text = list_get(results, i);
   }
   list_free(results);
   return settings_state;

@@ -60,10 +60,12 @@ game_over_state_t *game_over_init()
   sdl_on_mouse(on_mouse);
   sdl_init(MIN, MAX);
   asset_cache_init();
-  size_t num_backgrounds = sizeof(background_templates) / sizeof(background_templates[0]);
+  size_t num_backgrounds = sizeof(background_templates) / 
+                          sizeof(background_templates[0]);
   size_t num_text = sizeof(text_templates) / sizeof(text_templates[0]);
   size_t num_buttons = sizeof(button_templates) / sizeof(button_templates[0]);
-  game_over_state->screen_state = screen_init(game_over_state->screen_state, background_templates,
+  game_over_state->screen_state = screen_init(game_over_state->screen_state,
+                                              background_templates,
                                               text_templates, button_templates,
                                               num_backgrounds, num_text, num_buttons);
   game_over_state->time = 0;

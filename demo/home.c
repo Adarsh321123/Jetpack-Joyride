@@ -60,7 +60,8 @@ home_state_t *home_init()
   sdl_on_mouse(on_mouse);
   sdl_init(MIN, MAX);
   asset_cache_init();
-  size_t num_backgrounds = sizeof(background_templates) / sizeof(background_templates[0]);
+  size_t num_backgrounds = sizeof(background_templates) / 
+                            sizeof(background_templates[0]);
   size_t num_text = sizeof(text_templates) / sizeof(text_templates[0]);
   size_t num_buttons = sizeof(button_templates) / sizeof(button_templates[0]);
   home_state->screen_state = screen_init(home_state->screen_state, background_templates,

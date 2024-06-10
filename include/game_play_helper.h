@@ -56,12 +56,14 @@ body_type_t get_type(body_t *body);
 /**
  * Creates a generic rectangular body for an obstacle
  */
-body_t *make_obstacle_rectangle(vector_t *center, double width, double height, body_type_t info, vector_t velocity);
+body_t *make_obstacle_rectangle(vector_t *center, double width, double height, 
+                                body_type_t info, vector_t velocity);
 
 /**
  * Creates a generic circular body for an obstacle
  */
-body_t *make_obstacle_circle(double radius, vector_t *center, body_type_t info, double mass, vector_t velocity);
+body_t *make_obstacle_circle(double radius, vector_t *center, body_type_t info,
+                            double mass, vector_t velocity);
 
 /**
  * Remove the bodies in the state of the game.
