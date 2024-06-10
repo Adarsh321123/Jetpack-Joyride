@@ -70,7 +70,7 @@ home_state_t *home_init()
   home_state->curr_state = HOME;
   return home_state;
 }
-// TODO: if identical to game over can we furhter simplify
+
 state_type_t home_main(home_state_t *home_state)
 {
   sdl_clear();

@@ -10,8 +10,6 @@
 typedef struct achievement achievement_t;
 typedef struct achievements achievements_t;
 
-// TODO: add docstrings
-// TODO: ensure all h match with
 observer_t *achievements_get_observer(achievements_t *achievements);
 list_t *read_achievements_settings();
 

@@ -132,10 +132,7 @@ void init_observers(game_play_state_t *game_play_state)
   game_play_state->subject = subject_init();
   achievements_t *achievements = achievements_init();
   observer_t *observer = achievements_get_observer(achievements);
-  // fprintf(stderr, "Observer created notify function is %p\n", (void*)observer->on_notify);
-  // fprintf(stderr, "Observer pointer is %p\n", (void*)observer);
   subject_add_observer(game_play_state->subject, observer);
-  // fprintf(stderr, "End of init_observers in game_play.c\n");
 }
 
 game_play_state_t *game_play_init(difficulty_type_t difficulty_level)
@@ -341,10 +338,8 @@ void activate_powerup(body_t *body1, body_t *body2, vector_t axis, void *aux1,
   }
 }
 
-// TODO: same code, can we use inheritance here also for add?
 void remove_zappers(game_play_state_t *game_play_state)
 {
-  // TODO: remove from body assets once deleted so the image is not re-rendered each time
   size_t num_bodies = scene_bodies(game_play_state->state->scene);
   for (size_t i = 0; i < num_bodies; i++)
   {
@@ -585,7 +580,6 @@ void add_powerup(game_play_state_t *game_play_state, double dt)
 void add_rocket(game_play_state_t *game_play_state, double dt)
 {
   game_play_state->rocket->time_rocket += dt;
-  // TODO: lots of duplicated and overcomplicted control flow
   bool laser_state = !game_play_state->laser->laser_active;
   if (laser_state && !game_play_state->rocket->rocket_inactive &&
       game_play_state->rocket->time_rocket >= game_play_state->rocket->rocket_generation_time)

@@ -12,7 +12,6 @@ typedef enum
     EVENT_LASERS_AVOIDED
 } event_t;
 
-// TODO: update all of these docstrings for observer, subject, achievement
 /**
  * A observer handler.
  * When an event occurs, the observer is passed the event
@@ -27,8 +26,6 @@ typedef struct observer observer_t;
 typedef void (*on_notify_t)(observer_t *observer, event_t event, void *aux);
 typedef void (*freer_t)(void *observer);
 
-// TODO: do we need this struct then?
-// TODO: move back to c?
 struct observer
 {
     on_notify_t on_notify;

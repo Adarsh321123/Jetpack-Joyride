@@ -13,7 +13,6 @@
  */
 typedef struct state state_t;
 
-// TODO :move
 typedef enum
 {
     HOME,
