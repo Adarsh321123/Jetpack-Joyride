@@ -116,7 +116,6 @@ static void write_achievements(achievements_t *achievements) {
   assert(close_result == 0);
 }
 
-// TODO: code duplication
 static void handle_coin_collected(achievements_t *achievements) {
   size_t num_achievements = achievements_size(achievements);
   for (size_t i = 0; i < num_achievements; i++) {
@@ -141,14 +140,11 @@ static void handle_distance_traveled(achievements_t *achievements, void *aux) {
   for (size_t i = 0; i < num_achievements; i++) {
       achievement_t *cur_achievement = list_get(achievements->achievements_list, i);
       if (strcmp(cur_achievement->name, SECOND_ACHIEVEMENT_NAME) == 0) {
-          // TODO: update encapsulation later with an "edit" or "put" func to avoid this direct change
-          // TODO: save instead of casting each time?
-          if (!((achievement_t *)(achievements->achievements_list->elements[i]))->unlocked) {
-            ((achievement_t *)(achievements->achievements_list->elements[i]))->progress = dist_traveled_num;
-            if (((achievement_t *)(achievements->achievements_list->elements[i]))->progress >=
-                ((achievement_t *)(achievements->achievements_list->elements[i]))->target) {
-                ((achievement_t *)(achievements->achievements_list->elements[i]))->unlocked = true;
-                ((achievement_t *)(achievements->achievements_list->elements[i]))->progress = ((achievement_t *)(achievements->achievements_list->elements[i]))->target;  // looks better in settings
+          if (!cur_achievement->unlocked) {
+            cur_achievement->progress = dist_traveled_num;
+            if (cur_achievement->progress >= cur_achievement->target) {
+                cur_achievement->unlocked = true;
+                cur_achievement->progress = cur_achievement->target;  // looks better in settings
             }
           }
           break;
@@ -161,14 +157,11 @@ static void handle_lasers_avoided(achievements_t *achievements) {
   for (size_t i = 0; i < num_achievements; i++) {
       achievement_t *cur_achievement = list_get(achievements->achievements_list, i);
       if (strcmp(cur_achievement->name, THIRD_ACHIEVEMENT_NAME) == 0) {
-          // TODO: update encapsulation later with an "edit" or "put" func to avoid this direct change
-          // TODO: save instead of casting each time?
-          if (!((achievement_t *)(achievements->achievements_list->elements[i]))->unlocked) {
-            ((achievement_t *)(achievements->achievements_list->elements[i]))->progress++;
-            if (((achievement_t *)(achievements->achievements_list->elements[i]))->progress >=
-                ((achievement_t *)(achievements->achievements_list->elements[i]))->target) {
-                ((achievement_t *)(achievements->achievements_list->elements[i]))->unlocked = true;
-                ((achievement_t *)(achievements->achievements_list->elements[i]))->progress = ((achievement_t *)(achievements->achievements_list->elements[i]))->target;  // looks better in settings
+          if (!cur_achievement->unlocked) {
+            cur_achievement->progress++;
+            if (cur_achievement->progress >= cur_achievement->target) {
+                cur_achievement->unlocked = true;
+                cur_achievement->progress = cur_achievement->target;  // looks better in settings
             }
           }
           break;
