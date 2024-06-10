@@ -1,6 +1,10 @@
 #ifndef __VECTOR_H__
 #define __VECTOR_H__
 
+#include <stdlib.h>
+#include <stdio.h>
+#include <assert.h>
+
 /**
  * A real-valued 2-dimensional vector.
  * Positive x is towards the right; positive y is towards the top.
@@ -17,6 +21,10 @@ typedef struct {
  * You will need to define "const vector_t VEC_ZERO = ..." in vector.c.
  */
 extern const vector_t VEC_ZERO;
+
+vector_t *vector_init(double x, double y);
+
+void vector_free(vector_t *vector);
 
 /**
  * Adds two vectors.

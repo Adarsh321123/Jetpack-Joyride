@@ -11,11 +11,6 @@
 #include "sdl_wrapper.h"
 #include "achievement.h"
 
-const size_t DIFFICULTY_TEXT_SIZE = 50;
-const size_t DIFFICULTY_FONT_SIZE = 50;
-const size_t ACHIEVEMENTS_FONT_SIZE = 25;
-const SDL_Rect DIFFICULTY_BOX = (SDL_Rect){600, 325, 0, 0};
-
 /**
  * Handler for going back to home screen
  */
@@ -115,19 +110,19 @@ static void display_difficulty_level(settings_state_t *settings_state){
 
     switch (settings_state->difficulty_level) {
         case EASY: {
-            sprintf(difficulty_text, "Easy");
+            sprintf(difficulty_text, "%s", EASY_DIFFICULTY_TEXT);
             break;
         }
         case MEDIUM: {
-            sprintf(difficulty_text, "Medium");
+            sprintf(difficulty_text, "%s", MEDIUM_DIFFICULTY_TEXT);
             break;
         }
         case HARD: {
-            sprintf(difficulty_text, "Hard");
+            sprintf(difficulty_text, "%s", HARD_DIFFICULTY_TEXT);
             break;
         }
         default: {
-            sprintf(difficulty_text, "Unknown");
+            sprintf(difficulty_text, "%s", UNKNOWN_DIFFICULTY_TEXT);
             break;
         }
     }
@@ -135,7 +130,7 @@ static void display_difficulty_level(settings_state_t *settings_state){
     SDL_Rect bounding_box = DIFFICULTY_BOX;
     TTF_Font *font = settings_state->difficulty_font;
     TTF_SizeText(font, difficulty_text, &bounding_box.w, &bounding_box.h);
-    render_text(difficulty_text, font, black, bounding_box);
+    render_text(difficulty_text, font, BLACK, bounding_box);
 }
 
 static void display_achievements(settings_state_t *settings_state) {
@@ -169,7 +164,7 @@ settings_state_t *settings_init() {
   list_t *results = read_achievements_settings();
   size_t num_results = list_size(results);
   for (size_t i = 0; i < num_results; i++) {
-    achievements_templates[i + 1].text = list_get(results, i);
+    achievements_templates[i + 1].text = list_get(results, i);  // + 1 since excluding achievements title
   }
   list_free(results);
   return settings_state;

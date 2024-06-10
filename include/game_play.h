@@ -1,5 +1,3 @@
-#ifndef __GAME_PLAY_H__
-#define __GAME_PLAY_H__
 
 #include "math.h"
 #include "sdl_wrapper.h"
@@ -8,7 +6,7 @@
 #include <stdlib.h>
 
 typedef enum { USER, CEILING, GROUND, ZAPPER, LASER, LASER_ACTIVE, 
-ROCKET_WARNING, ROCKET, COIN, POWERUP } body_type_t;
+ROCKET_WARNING, ROCKET, COIN, POWERUP} body_type_t;
 
 typedef struct background_state background_state_t;
 
@@ -59,5 +57,3 @@ state_type_t game_play_main(game_play_state_t *game_play_state);
  * @param game_play_state pointer to a game_play state object
  */
 void game_play_free(game_play_state_t *game_play_state);
-
-#endif // #ifndef __GAME_PLAY_H__

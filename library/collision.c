@@ -1,11 +1,10 @@
 #include "collision.h"
 #include "body.h"
+#include "constants.h"
 
 #include <assert.h>
 #include <math.h>
 #include <stdlib.h>
-
-const double ANGLE_90 = M_PI * 0.5;
 
 /**
  * Returns a list of vectors representing the edges of a shape.

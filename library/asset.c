@@ -47,7 +47,8 @@ static asset_t *asset_init(asset_type_t ty, SDL_Rect bounding_box) {
     break;
   }
   default: {
-    assert(false && "Unknown asset type");
+    fprintf(stderr, "%s\n", ERROR_MESSAGE_ASSET);
+    assert(false);
   }
   }
   assert(new);
@@ -87,14 +88,14 @@ asset_t *asset_make_image(const char *filepath, SDL_Rect bounding_box) {
 }
 
 asset_t *asset_make_image_with_body(const char *filepath, body_t *body) {
-  SDL_Rect bounding_box = make_texr(0, 0, 0, 0);
+  SDL_Rect bounding_box = make_texr(ZERO, ZERO, ZERO, ZERO);
   image_asset_t *image_asset =
       asset_encapsulate_image(filepath, bounding_box, body);
   return (asset_t *)image_asset;
 }
 
 image_asset_t *asset_image_make_image_with_body(const char *filepath, body_t *body) {
-  SDL_Rect bounding_box = make_texr(0, 0, 0, 0);
+  SDL_Rect bounding_box = make_texr(ZERO, ZERO, ZERO, ZERO);
   image_asset_t *image_asset =
       asset_encapsulate_image(filepath, bounding_box, body);
   return image_asset;
@@ -194,38 +195,11 @@ void asset_render(asset_t *asset) {
     break;
   }
   default: {
-    assert(false && "Asset type not image nor font");
+    fprintf(stderr, "%s\n", ERROR_MESSAGE_ASSET);
+    assert(false);
     break;
   }
   }
 }
-
-// void asset_remove_image(body_t *body, list_t *body_assets, size_t num_assets) {
-//   fprintf(stderr, "num of assets: %zu\n", num_assets);
-//   for (size_t i = 0; i < num_assets; i++) {
-//     image_asset_t *cur_img = (image_asset_t *)list_get(body_assets, i);
-//     if ((image_asset_get_body(cur_img)) == body) {
-//       image_asset_destroy(cur_img);
-//       break;
-//       // fprintf(stderr, "cur img pointer: %p\n", cur_img);
-//       // fprintf(stderr, "found image with body\n");
-//       // list_t *asset_cache = get_asset_cache();
-//       // size_t asset_cache_size = list_size(asset_cache);
-//       // fprintf(stderr, "num of asset cahche: %zu\n", asset_cache_size);
-//       // for (size_t j = 0; j < asset_cache_size; j++) {
-//       //   entry_t *cur_entry = get_entry(j);
-//       //   image_asset_t *obj = (image_asset_t *)get_entry_obj(cur_entry);
-//       //   fprintf(stderr, "before if\n");
-//       //   fprintf(stderr, "obj pointer: %p\n", obj);
-//       //   if (cur_img == obj) {
-//       //     list_remove(asset_cache, i);
-//       //     asset_destroy((asset_t *)cur_img);
-//       //     fprintf(stderr, "removed image from cache and destroyed\n");
-//       //     return;
-//       //   }
-//       // }
-//     }
-//   }
-// }
 
 void asset_destroy(asset_t *asset) { free(asset); }

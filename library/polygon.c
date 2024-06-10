@@ -1,11 +1,9 @@
 #include "polygon.h"
+#include "constants.h"
 #include <assert.h>
 #include <math.h>
 #include <stddef.h>
 #include <stdlib.h>
-
-const size_t INITIAL_SIZE = 10;
-const double GRAVITY = 9.8;
 
 typedef struct polygon {
   list_t *points;

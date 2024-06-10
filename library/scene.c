@@ -4,10 +4,7 @@
 
 #include "forces.h"
 #include "scene.h"
-
-const size_t INITIAL_NUM_BODIES = 0;
-const size_t INITIAL_BODY_CAPACITY = 10;
-const size_t INITIAL_FORCE_CREATOR_CAPACITY = 5;
+#include "constants.h"
 
 struct scene {
   size_t num_bodies;

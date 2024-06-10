@@ -10,8 +10,6 @@
 
 static list_t *ASSET_CACHE;
 
-const size_t INITIAL_CAPACITY = 5;
-
 struct entry {
   asset_type_t type;
   const char *filepath;

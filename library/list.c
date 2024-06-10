@@ -1,9 +1,8 @@
 #include "list.h"
+#include "constants.h"
 #include <assert.h>
 #include <stddef.h>
 #include <stdlib.h>
-
-const size_t SCALE = 2;
 
 list_t *list_init(size_t initial_capacity, free_func_t freer) {
   list_t *v_list = malloc(sizeof(list_t));

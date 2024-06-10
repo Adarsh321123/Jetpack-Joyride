@@ -1,15 +1,8 @@
 #include "achievement.h"
+#include "constants.h"
 #include <emscripten.h>
 
 // TODO: inconsistent tabs
-// TODO: occasional weird output in unicode other lang?
-// TODO: harder achievements
-
-const size_t INITIAL_ACHIEVEMENTS = 3;
-const char *ACHIEVEMENTS_FILENAME = "/achievements.txt";
-const char *FIRST_ACHIEVEMENT = "Collect 50 Coins|0|50|false";
-const char *SECOND_ACHIEVEMENT = "Travel 1000 Meters In A Game|0|1000|false";
-const char *THIRD_ACHIEVEMENT = "Avoid 5 Lasers|0|5|false";
 
 size_t achievements_size(achievements_t *achievements) {
     return list_size(achievements->achievements_list);
@@ -36,24 +29,24 @@ list_t *read_achievements_settings() {
     assert(achievements_file != NULL);
   }
   // fprintf(stderr, "File opened for reading\n");
-  size_t char_read = 256;
-  char *line = malloc(sizeof(char) * (char_read + 1));
+  size_t LINE_WITH_TERMINATOR = CHAR_TO_READ + 1;
+  char *line = malloc(sizeof(char) * LINE_WITH_TERMINATOR);
   list_t *results = list_init(INITIAL_ACHIEVEMENTS, NULL);
-  while(fgets(line, char_read + 1, achievements_file)) {
+  while(fgets(line, LINE_WITH_TERMINATOR, achievements_file)) {
     // fprintf(stderr, "%s", line);
-    char *result = malloc(sizeof(char) * (char_read + 1));
-    line[strcspn(line, "\n")] = '\0';
-    char *token = strtok(line, "|");
+    char *result = malloc(sizeof(char) * LINE_WITH_TERMINATOR);
+    line[strcspn(line, NEWLINE)] = '\0';
+    char *token = strtok(line, PIPE);
     if (token != NULL) {
       strcpy(result, token);
     }
-    strcat(result, " ");
-    token = strtok(NULL, "|");
+    strcat(result, SPACE);
+    token = strtok(NULL, PIPE);
     if (token != NULL) {
       strcat(result, token);
     }
-    strcat(result, "/");
-    token = strtok(NULL, "|");
+    strcat(result, SLASH);
+    token = strtok(NULL, PIPE);
     if (token != NULL) {
       strcat(result, token);
     }
@@ -75,41 +68,32 @@ void read_achievements(achievements_t *achievements) {
     assert(achievements_file != NULL);
   }
   // fprintf(stderr, "File opened for reading\n");
-  size_t char_read = 256;
-  char *line = malloc(sizeof(char) * (char_read + 1));
-  while(fgets(line, char_read + 1, achievements_file)) {
+  size_t LINE_WITH_TERMINATOR = CHAR_TO_READ + 1;
+  char *line = malloc(sizeof(char) * (LINE_WITH_TERMINATOR));
+  while(fgets(line, LINE_WITH_TERMINATOR, achievements_file)) {
     // fprintf(stderr, "%s", line);
     achievement_t *achievement = malloc(sizeof(achievement_t));
-    line[strcspn(line, "\n")] = '\0';
-    char *token = strtok(line, "|");
+    line[strcspn(line, NEWLINE)] = '\0';
+    char *token = strtok(line, PIPE);
     if (token != NULL) {
       achievement->name = strdup(token);
       assert(achievement->name);
     }
-    token = strtok(NULL, "|");
+    token = strtok(NULL, PIPE);
     if (token != NULL) {
       achievement->progress = atoi(token);
     }
-    token = strtok(NULL, "|");
+    token = strtok(NULL, PIPE);
     if (token != NULL) {
       achievement->target = atoi(token);
     }
-    token = strtok(NULL, "|");
+    token = strtok(NULL, PIPE);
     if (token != NULL) {
-      bool unlocked = strcmp(token, "true") == 0;
+      bool unlocked = strcmp(token, TRUE_TEXT) == 0;
       achievement->unlocked = unlocked;
     }
     list_add(achievements->achievements_list, achievement);
   }
-  // fprintf(stderr, "Read all lines\n");
-  // fprintf(stderr, "%s\n", ((achievement_t *)list_get(achievements->achievements_list, 0))->name);
-  // fprintf(stderr, "%zu\n", ((achievement_t *)list_get(achievements->achievements_list, 0))->progress);
-  // fprintf(stderr, "%zu\n", ((achievement_t *)list_get(achievements->achievements_list, 0))->target);
-  // if (((achievement_t *)list_get(achievements->achievements_list, 0))->unlocked) {
-  //     fprintf(stderr, "true\n");
-  // } else {
-  //     fprintf(stderr, "false\n");
-  // }
   int close_result = fclose(achievements_file);
   assert(close_result == 0);
   free(line);
@@ -124,16 +108,18 @@ void write_achievements(achievements_t *achievements) {
     achievement_t *achievement = list_get(achievements->achievements_list, i);
     char *unlocked = NULL;
     if (achievement->unlocked) {
-      unlocked = "true";
+      unlocked = strdup(TRUE_TEXT);
     } else {
-      unlocked = "false";
+      unlocked = strdup(FALSE_TEXT);
     }
+    assert(unlocked != NULL);
 
     fprintf(achievements_file, "%s|%zu|%zu|%s\n",
             achievement->name,
             achievement->progress,
             achievement->target,
             unlocked);
+    free(unlocked);
   }
   fflush(achievements_file);
   // fprintf(stderr, "Wrote all lines\n");
@@ -156,7 +142,7 @@ void achievements_on_notify(observer_t *observer, event_t event, void *aux) {
                 achievement_t *cur_achievement = list_get(achievements->achievements_list, i);
                 // fprintf(stderr, "Got achievement %zu\n", i);
                 // fprintf(stderr, "RIGHT BEFORE GET NAME COINS\n");
-                if (strcmp(cur_achievement->name, "Collect 50 Coins") == 0) {
+                if (strcmp(cur_achievement->name, FIRST_ACHIEVEMENT_NAME) == 0) {
                     // TODO: update encapsulation later with an "edit" or "put" func to avoid this direct change
                     // TODO: save instead of casting each time?
                     if (!((achievement_t *)(achievements->achievements_list->elements[i]))->unlocked) {
@@ -181,7 +167,7 @@ void achievements_on_notify(observer_t *observer, event_t event, void *aux) {
               achievement_t *cur_achievement = list_get(achievements->achievements_list, i);
               // fprintf(stderr, "Got achievement %zu\n", i);
               // fprintf(stderr, "RIGHT BEFORE GET NAME METERS\n");
-              if (strcmp(cur_achievement->name, "Travel 1000 Meters In A Game") == 0) {
+              if (strcmp(cur_achievement->name, SECOND_ACHIEVEMENT_NAME) == 0) {
                   // TODO: update encapsulation later with an "edit" or "put" func to avoid this direct change
                   // TODO: save instead of casting each time?
                   // TODO: only update progress if not unlocked sicne then easier to show in settings
@@ -205,7 +191,7 @@ void achievements_on_notify(observer_t *observer, event_t event, void *aux) {
               achievement_t *cur_achievement = list_get(achievements->achievements_list, i);
               // fprintf(stderr, "Got achievement %zu\n", i);
               // fprintf(stderr, "RIGHT BEFORE GET NAME LASERS\n");
-              if (strcmp(cur_achievement->name, "Avoid 5 Lasers") == 0) {
+              if (strcmp(cur_achievement->name, THIRD_ACHIEVEMENT_NAME) == 0) {
                   // TODO: update encapsulation later with an "edit" or "put" func to avoid this direct change
                   // TODO: save instead of casting each time?
                   if (!((achievement_t *)(achievements->achievements_list->elements[i]))->unlocked) {

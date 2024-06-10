@@ -1,6 +1,7 @@
 #include "sdl_wrapper.h"
 #include "asset_cache.h"
 #include "game_play.h"
+#include "constants.h"
 #include <SDL2/SDL.h>
 #include <SDL2/SDL2_gfxPrimitives.h>
 #include <SDL2/SDL_image.h>
@@ -8,11 +9,6 @@
 #include <math.h>
 #include <stdlib.h>
 #include <time.h>
-
-const char WINDOW_TITLE[] = "CS 3";
-const int WINDOW_WIDTH = 1000;
-const int WINDOW_HEIGHT = 500;
-const double MS_PER_S = 1e3;
 
 /**
  * The coordinate at the center of the screen.
@@ -256,13 +252,12 @@ SDL_Rect find_bounding_box(body_t *body) {
   }
 
   list_free(points);
-  // TODO: make_texr takes as int and we pass double. 
-  if (get_type(body) == USER) {
-    return make_texr(min_x - 15, (max_y - (max_y - min_y)) - 10, 2 * (max_x - min_x), 2 * (max_y - min_y));
+  if (get_type(body) == USER) {  // need to align the user image with the body
+    return make_texr(min_x - USER_X_OFFSET, (max_y - (max_y - min_y)) - USER_Y_OFFSET, USER_W_SCALE * (max_x - min_x), USER_H_SCALE * (max_y - min_y));
   }
 
   if (get_type(body) == LASER || get_type(body) == LASER_ACTIVE) {
-    return make_texr(min_x, (max_y - (max_y - min_y)) - 28, (max_x - min_x), (max_y - min_y) + 56);
+    return make_texr(min_x, (max_y - (max_y - min_y)) - LASER_Y_OFFSET, (max_x - min_x), (max_y - min_y) + LASER_H_OFFSET);
   }
 
   return make_texr(min_x, (max_y - (max_y - min_y)), (max_x - min_x), (max_y - min_y));

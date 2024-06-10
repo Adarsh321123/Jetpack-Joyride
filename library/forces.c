@@ -1,13 +1,11 @@
 #include "forces.h"
 #include "collision.h"
+#include "constants.h"
 
 #include <assert.h>
 #include <math.h>
 #include <stdio.h>
 #include <stdlib.h>
-
-const double MIN_DIST = 5;
-const double DEFAULT_FORCE_CONSTANT = 0.0;
 
 typedef struct body_aux {
   double force_const;

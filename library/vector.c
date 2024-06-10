@@ -3,6 +3,18 @@
 
 const vector_t VEC_ZERO = (vector_t){0.0, 0.0};
 
+vector_t *vector_init(double x, double y) {
+  vector_t *vector = malloc(sizeof(vector_t));
+  assert(vector != NULL);
+  vector->x = x;
+  vector->y = y;
+  return vector;
+}
+
+void vector_free(vector_t *vector) {
+  free(vector);
+}
+
 vector_t vec_add(vector_t v1, vector_t v2) {
   vector_t v3;
   v3.x = v1.x + v2.x;

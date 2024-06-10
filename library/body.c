@@ -4,11 +4,7 @@
 #include <stdlib.h>
 
 #include "body.h"
-
-const double ROTATION_SPEED = 0.0;
-const size_t INITIAL_LIST_CAPACITY = 10;
-const double INITIAL_ANGLE = 0.0;
-const double HALF = 0.5;
+#include "constants.h"
 
 /**
  * A rigid body constrained to the plane.
@@ -77,6 +73,14 @@ list_t *body_get_shape(body_t *body) {
 
 vector_t body_get_centroid(body_t *body) { return body->centroid; }
 
+double euclidean_distance(body_t *body2, body_t *body1) {
+  vector_t body1_centroid = body_get_centroid(body1);
+  vector_t body2_centroid = body_get_centroid(body2);
+  double distance = sqrt(pow(body1_centroid.x - body2_centroid.x, 2) +
+                          pow(body1_centroid.y - body2_centroid.y, 2));
+  return distance;
+}
+
 vector_t body_get_velocity(body_t *body) {
   double x_velocity = polygon_get_velocity_x(body->poly);
   double y_velocity = polygon_get_velocity_y(body->poly);
@@ -113,6 +117,7 @@ void body_set_rotation(body_t *body, double angle) {
 
 void body_tick(body_t *body, double dt) {
   // by impulse momentum theorem, 1/mass * impulse gives delta v
+  // TODO: make changes from proj4
   double inverse_mass = 1 / body->mass;
   vector_t dv = VEC_ZERO;
   dv = vec_multiply(inverse_mass, body->impulse);

@@ -11,6 +11,7 @@
 #include "asset.h"
 #include "asset_cache.h"
 #include "sdl_wrapper.h"
+#include "constants.h"
 
 struct state {
   state_type_t curr_state;
@@ -128,7 +129,7 @@ bool emscripten_main(state_t *state) {
           return true;
       }
       default: {
-          printf("Unknown state!\n");
+          fprintf(stderr, "%s\n", ERROR_MESSAGE_STATE);
           exit(1);
       }
   }

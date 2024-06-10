@@ -1,6 +1,5 @@
 #include "subject.h"
-
-const size_t INITIAL_NUM_OBSERVERS = 10;
+#include "constants.h"
 
 struct subject {
   list_t *observers;

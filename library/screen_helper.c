@@ -1,4 +1,5 @@
 #include "screen_helper.h"
+#include "constants.h"
 
 static void create_backgrounds(screen_state_t screen_state, background_info_t background_templates[], size_t num_backgrounds) {
   for (size_t i = 0; i < num_backgrounds; i++) {

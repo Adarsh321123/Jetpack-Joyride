@@ -31,7 +31,8 @@ typedef enum {
 typedef enum {
     SHIELD,
     MAGNETIC,
-    MORE_COIN
+    MORE_COIN,
+    GRAVITY_SWAP
 } powerup_type_t;
 
 typedef enum {

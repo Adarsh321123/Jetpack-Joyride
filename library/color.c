@@ -4,9 +4,7 @@
 #include <stdlib.h>
 
 #include "color.h"
-
-const double COLOR_MAX = 255; // max value of each rgb value
-const double WHITE_MIX = 1;
+#include "constants.h"
 
 rgb_color_t *color_init(double red, double green, double blue) {
   rgb_color_t *color = malloc(sizeof(rgb_color_t));
