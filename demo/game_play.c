@@ -6,6 +6,8 @@
 #include <time.h>
 #include <math.h>
 
+// #include "game_play_helper.h"
+// #include "laser.h"
 #include "collision.h"
 #include "forces.h"
 #include "game_play.h"
@@ -17,13 +19,26 @@
 #include "observer.h"
 #include "achievement.h"
 
-// struct zapper_state {
-//   double time_until_zapper;
-//   double min_zapper_generation_time;
-//   double max_zapper_generation_time;
-//   double zapper_time;
-// };
+struct zapper_state {
+  double time_until_zapper;
+  double min_zapper_generation_time;
+  double max_zapper_generation_time;
+  double zapper_time;
+};
 
+struct laser_state {
+  double time_laser;
+  double time_laser_spawn;
+  double time_laser_activate;
+  double laser_generation_time;
+  bool laser_inactive;
+  bool laser_active;
+  list_t *laser_inactive_assets;
+  list_t *laser_active_assets;
+  list_t *laser_centers;
+  list_t *laser_spawn_positions;
+  laser_spawn_t laser_spawn_bool;
+};
 
 struct coin_state {
   double time_until_coin;
@@ -50,6 +65,22 @@ struct rocket_state {
   bool rocket_active;
   asset_t *rocket_inactive_asset;
   vector_t rocket_spawn_position;
+};
+
+struct game_play_state {
+  double time;
+  double last_update_time;
+  double distance_traveled;
+  TTF_Font *distance_font;
+  TTF_Font *coins_collected_font;
+  zapper_state_t *zapper;
+  laser_state_t *laser;
+  coin_state_t *coin;
+  powerup_state_t *powerup;
+  rocket_state_t *rocket;
+  state_type_t curr_state;
+  subject_t *subject;  // this is useful for achievements
+  state_temp_t *state;
 };
 
 /**
@@ -270,37 +301,37 @@ void activate_powerup(body_t *body1, body_t *body2, vector_t axis, void *aux1,
   }
 }
 
-// // TODO: same code, can we use inheritance here also for add?
-// void remove_zappers(game_play_state_t *game_play_state) {
-//   // TODO: remove from body assets once deleted so the image is not re-rendered each time
-//   size_t num_bodies = scene_bodies(game_play_state->state->scene);
-//   for (size_t i = 0; i < num_bodies; i++) {
-//     body_t *body = scene_get_body(game_play_state->state->scene, i);
-//     if (get_type(body) == ZAPPER && body_get_centroid(body).x + ZAPPER_REMOVE_OFFSET < MIN.x) {
-//       scene_remove_body(game_play_state->state->scene, i);
-//     }
-//   }
-// }
+// TODO: same code, can we use inheritance here also for add?
+void remove_zappers(game_play_state_t *game_play_state) {
+  // TODO: remove from body assets once deleted so the image is not re-rendered each time
+  size_t num_bodies = scene_bodies(game_play_state->state->scene);
+  for (size_t i = 0; i < num_bodies; i++) {
+    body_t *body = scene_get_body(game_play_state->state->scene, i);
+    if (get_type(body) == ZAPPER && body_get_centroid(body).x + ZAPPER_REMOVE_OFFSET < MIN.x) {
+      scene_remove_body(game_play_state->state->scene, i);
+    }
+  }
+}
 
-// void remove_coins(game_play_state_t *game_play_state) {
-//   size_t num_bodies = scene_bodies(game_play_state->state->scene);
-//   for (size_t i = 0; i < num_bodies; i++) {
-//     body_t *body = scene_get_body(game_play_state->state->scene, i);
-//     if (get_type(body) == COIN && body_get_centroid(body).x + COIN_REMOVE_OFFSET < MIN.x) {
-//       scene_remove_body(game_play_state->state->scene, i);
-//     }
-//   }
-// }
+void remove_coins(game_play_state_t *game_play_state) {
+  size_t num_bodies = scene_bodies(game_play_state->state->scene);
+  for (size_t i = 0; i < num_bodies; i++) {
+    body_t *body = scene_get_body(game_play_state->state->scene, i);
+    if (get_type(body) == COIN && body_get_centroid(body).x + COIN_REMOVE_OFFSET < MIN.x) {
+      scene_remove_body(game_play_state->state->scene, i);
+    }
+  }
+}
 
-// void remove_powerups(game_play_state_t *game_play_state) {
-//   size_t num_bodies = scene_bodies(game_play_state->state->scene);
-//   for (size_t i = 0; i < num_bodies; i++) {
-//     body_t *body = scene_get_body(game_play_state->state->scene, i);
-//     if (get_type(body) == POWERUP && body_get_centroid(body).x + POWERUP_REMOVE_OFFSET < MIN.x) {
-//       scene_remove_body(game_play_state->state->scene, i);
-//     }
-//   }
-// }
+void remove_powerups(game_play_state_t *game_play_state) {
+  size_t num_bodies = scene_bodies(game_play_state->state->scene);
+  for (size_t i = 0; i < num_bodies; i++) {
+    body_t *body = scene_get_body(game_play_state->state->scene, i);
+    if (get_type(body) == POWERUP && body_get_centroid(body).x + POWERUP_REMOVE_OFFSET < MIN.x) {
+      scene_remove_body(game_play_state->state->scene, i);
+    }
+  }
+}
 
 void remove_individual_powerup(game_play_state_t *game_play_state) {
   game_play_state->powerup->powerup_img->body = NULL;
@@ -343,53 +374,54 @@ void remove_lasers(game_play_state_t *game_play_state) {
 }
 
 
-// void remove_warnings(game_play_state_t *game_play_state) {
-//   size_t num_bodies = scene_bodies(game_play_state->state->scene);
-//   for (size_t i = 0; i < num_bodies; i++) {
-//     body_t *body = scene_get_body(game_play_state->state->scene, i);
-//     if (get_type(body) == ROCKET_WARNING) {
-//       asset_update_bounding_box_x(game_play_state->rocket->rocket_inactive_asset, ROCKET_INITIAL_X);
-//       scene_remove_body(game_play_state->state->scene, i);
-//     }
-//   }
-// }
+void remove_warnings(game_play_state_t *game_play_state) {
+  size_t num_bodies = scene_bodies(game_play_state->state->scene);
+  for (size_t i = 0; i < num_bodies; i++) {
+    body_t *body = scene_get_body(game_play_state->state->scene, i);
+    if (get_type(body) == ROCKET_WARNING) {
+      asset_update_bounding_box_x(game_play_state->rocket->rocket_inactive_asset, ROCKET_INITIAL_X);
+      scene_remove_body(game_play_state->state->scene, i);
+    }
+  }
+}
 
-// void remove_rockets(game_play_state_t *game_play_state) {
-//   game_play_state->rocket->time_rocket_activate = game_play_state->time;
-//   size_t num_bodies = scene_bodies(game_play_state->state->scene);
-//   for (size_t i = 0; i < num_bodies; i++) {
-//     body_t *body = scene_get_body(game_play_state->state->scene, i);
-//     if (get_type(body) == ROCKET && body_get_centroid(body).x + ROCKETS_REMOVE_OFFSET < MIN.x) {
-//       scene_remove_body(game_play_state->state->scene, i);
-//     }
-//   }
-// }
+void remove_rockets(game_play_state_t *game_play_state) {
+  game_play_state->rocket->time_rocket_activate = game_play_state->time;
+  size_t num_bodies = scene_bodies(game_play_state->state->scene);
+  for (size_t i = 0; i < num_bodies; i++) {
+    body_t *body = scene_get_body(game_play_state->state->scene, i);
+    if (get_type(body) == ROCKET && body_get_centroid(body).x + ROCKETS_REMOVE_OFFSET < MIN.x) {
+      // asset_update_bounding_box_x(game_play_state->rocket->rocket_active_asset, 2 * 1000);
+      scene_remove_body(game_play_state->state->scene, i);
+    }
+  }
+}
 
 
-// void add_zapper(game_play_state_t *game_play_state, double dt) {
-//   game_play_state->zapper->zapper_time += dt;
-//   bool laser_state = !game_play_state->laser->laser_active;
-//   if (laser_state && game_play_state->zapper->zapper_time >= game_play_state->zapper->time_until_zapper) {
-//     game_play_state->zapper->zapper_time = ZERO;
-//     game_play_state->zapper->time_until_zapper = fmod(rand(), 
-//     game_play_state->zapper->max_zapper_generation_time - 
-//     game_play_state->zapper->min_zapper_generation_time) + 
-//     game_play_state->zapper->min_zapper_generation_time;
-//     double y_pos = fmod(rand(), (MAX.y - ZAPPER_CEILING_OFFSET) - (MIN.y + ZAPPER_GROUND_OFFSET)) + ZAPPER_Y_POS_BUFFER;
-//     double x_pos = MAX.x + ZAPPER_X_POS_BUFFER;
-//     vector_t center = {.x = x_pos, .y = y_pos};
-//     // body_t *zapper = make_zapper(center, ZAPPER_WIDTH, ZAPPER_HEIGHT);
-//     body_t *zapper = make_obstacle_rectangle(&center, ZAPPER_WIDTH, ZAPPER_HEIGHT, ZAPPER, ZAPPER_VEL);
-//     scene_add_body(game_play_state->state->scene, zapper);
-//     asset_t *img = asset_make_image_with_body(ZAPPER_PATH, zapper);
-//     list_add(game_play_state->state->body_assets, img);
-//     if (!game_play_state->powerup->powerup_active || 
-//         game_play_state->powerup->powerup_type != SHIELD) {
-//           create_collision(game_play_state->state->scene, zapper, game_play_state->state->user, 
-//             game_over, game_play_state, NULL, DEFAULT_FORCE_CONSTANT);
-//         }
-//   }
-// }
+void add_zapper(game_play_state_t *game_play_state, double dt) {
+  game_play_state->zapper->zapper_time += dt;
+  bool laser_state = !game_play_state->laser->laser_active;
+  if (laser_state && game_play_state->zapper->zapper_time >= game_play_state->zapper->time_until_zapper) {
+    game_play_state->zapper->zapper_time = ZERO;
+    game_play_state->zapper->time_until_zapper = fmod(rand(), 
+    game_play_state->zapper->max_zapper_generation_time - 
+    game_play_state->zapper->min_zapper_generation_time) + 
+    game_play_state->zapper->min_zapper_generation_time;
+    double y_pos = fmod(rand(), (MAX.y - ZAPPER_CEILING_OFFSET) - (MIN.y + ZAPPER_GROUND_OFFSET)) + ZAPPER_Y_POS_BUFFER;
+    double x_pos = MAX.x + ZAPPER_X_POS_BUFFER;
+    vector_t center = {.x = x_pos, .y = y_pos};
+    // body_t *zapper = make_zapper(center, ZAPPER_WIDTH, ZAPPER_HEIGHT);
+    body_t *zapper = make_obstacle_rectangle(&center, ZAPPER_WIDTH, ZAPPER_HEIGHT, ZAPPER, ZAPPER_VEL);
+    scene_add_body(game_play_state->state->scene, zapper);
+    asset_t *img = asset_make_image_with_body(ZAPPER_PATH, zapper);
+    list_add(game_play_state->state->body_assets, img);
+    if (!game_play_state->powerup->powerup_active || 
+        game_play_state->powerup->powerup_type != SHIELD) {
+          create_collision(game_play_state->state->scene, zapper, game_play_state->state->user, 
+            game_over, game_play_state, NULL, DEFAULT_FORCE_CONSTANT);
+        }
+  }
+}
 
 void magnetic_powerup(game_play_state_t *game_play_state) {
   if (game_play_state->powerup->powerup_active && 
@@ -655,15 +687,11 @@ state_type_t game_play_main(game_play_state_t *game_play_state) {
   render_coins_collected(game_play_state);
   update_user_pos(game_play_state);
 
-  remove_moving_bodies(game_play_state->state, ZAPPER);
-  remove_moving_bodies(game_play_state->state, ROCKET);
-  remove_moving_bodies(game_play_state->state, COIN);
-  remove_moving_bodies(game_play_state->state, POWERUP);
-  
+  remove_zappers(game_play_state);
   remove_lasers(game_play_state);
-  // remove_rockets(game_play_state->state, ROCKET);
-  // remove_coins(game_play_state, COIN);
-  // remove_powerups(game_play_state, POWERUP);
+  remove_rockets(game_play_state);
+  remove_coins(game_play_state);
+  remove_powerups(game_play_state);
 
   sdl_show();
   scene_tick(state->scene, dt);

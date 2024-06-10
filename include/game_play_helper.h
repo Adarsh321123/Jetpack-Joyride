@@ -19,10 +19,6 @@
 typedef enum { USER, CEILING, GROUND, ZAPPER, LASER, LASER_ACTIVE, 
 ROCKET_WARNING, ROCKET, COIN, POWERUP} body_type_t;
 
-// typedef struct state_temp state_temp_t;
-
-// typedef struct background_state background_state_t;
-
 typedef struct background_state {
   asset_t *bg1;
   asset_t *bg2;

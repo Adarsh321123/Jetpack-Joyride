@@ -4,19 +4,12 @@
 #include "math.h"
 #include "sdl_wrapper.h"
 #include "game_play_helper.h"
-#include "laser.h"
-#include "zappers.h"
-#include "subject.h"
 #include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
 
-// typedef enum { USER, CEILING, GROUND, ZAPPER, LASER, LASER_ACTIVE, 
-// ROCKET_WARNING, ROCKET, COIN, POWERUP} body_type_t;
 
-// typedef struct background_state background_state_t;
-
-// typedef struct state_temp state_temp_t;
+typedef struct game_play_state game_play_state_t;
 
 typedef struct zapper_state zapper_state_t;
 
@@ -27,23 +20,6 @@ typedef struct rocket_state rocket_state_t;
 typedef struct coin_state coin_state_t;
 
 typedef struct powerup_state powerup_state_t;
-
-
-typedef struct game_play_state {
-  double time;
-  double last_update_time;
-  double distance_traveled;
-  TTF_Font *distance_font;
-  TTF_Font *coins_collected_font;
-  zapper_state_t *zapper;
-  laser_state_t *laser;
-  coin_state_t *coin;
-  powerup_state_t *powerup;
-  rocket_state_t *rocket;
-  state_type_t curr_state;
-  subject_t *subject;  // this is useful for achievements
-  state_temp_t *state;
-} game_play_state_t;
 
 /**
  * Gets the type of the given body.
