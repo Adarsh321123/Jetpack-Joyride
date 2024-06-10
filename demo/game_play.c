@@ -177,27 +177,30 @@ static void set_rockets_values(game_play_state_t *game_play_state) {
 */
 static void set_necessary_values(game_play_state_t *game_play_state,
                                 state_temp_t *state) {
-  game_play_state->laser->laser_inactive = false;
   game_play_state->laser->laser_active = false;
+  game_play_state->laser->time_laser = ZERO;
+  game_play_state->laser->time_laser_spawn = ZERO;
+  game_play_state->laser->time_laser_activate = ZERO;
+  game_play_state->laser->laser_spawn_bool = LASER_INACTIVE_STATE;
+
   game_play_state->state = state;
   game_play_state->time = ZERO;
   game_play_state->last_update_time = ZERO;
   game_play_state->distance_font = init_font(FONT_PATH, DISTANCE_FONT_SIZE);
-  game_play_state->coins_collected_font = init_font(FONT_PATH, COIN_FONT_SIZE);
   game_play_state->distance_traveled = ZERO;
+
   game_play_state->zapper->time_until_zapper = ZERO;
-  game_play_state->coin->time_until_coin = ZERO;
   game_play_state->zapper->zapper_time = ZERO;
+
+  game_play_state->coin->time_until_coin = ZERO;
   game_play_state->coin->coin_time = ZERO;
-  game_play_state->laser->time_laser = ZERO;
-  game_play_state->laser->time_laser_spawn = ZERO;
-  game_play_state->laser->time_laser_activate = ZERO;
   game_play_state->coin->coin_count = ZERO;
+  game_play_state->coins_collected_font = init_font(FONT_PATH, COIN_FONT_SIZE);
+
   game_play_state->powerup->time_until_powerup = ZERO;
   game_play_state->powerup->powerup_time = ZERO;
   game_play_state->powerup->powerup_start_time = ZERO;
   game_play_state->powerup->powerup_active = false;
-  game_play_state->laser->laser_spawn_bool = LASER_INACTIVE_STATE;
   game_play_state->powerup->powerup_type = SHIELD;
 }
 
@@ -652,7 +655,9 @@ static void add_rocket(game_play_state_t *game_play_state, double dt)
     game_play_state->rocket->time_rocket_spawn = INFINITY;
     remove_warnings(game_play_state);
     game_play_state->rocket->rocket_spawn_position.x += ROCKETS_X_POS_BUFFER;
-    body_t *rocket = make_obstacle_rectangle(&game_play_state->rocket->rocket_spawn_position, ROCKET_WIDTH, ROCKET_HEIGHT, ROCKET, ROCKET_VEL);
+    body_t *rocket = make_obstacle_rectangle(
+      &game_play_state->rocket->rocket_spawn_position, ROCKET_WIDTH, 
+      ROCKET_HEIGHT, ROCKET, ROCKET_VEL);
     scene_add_body(game_play_state->state->scene, rocket);
     asset_t *img = asset_make_image_with_body(ROCKET_PATH, rocket);
 
@@ -727,19 +732,24 @@ static void add_laser(game_play_state_t *game_play_state, double dt)
 
         for (size_t i = 0; i < size_of_spawn_list; i++)
         {
-          body_t *laser = make_obstacle_rectangle(list_get(game_play_state->laser->laser_spawn_positions, i), LASER_WIDTH_ACTIVE, LASER_HEIGHT_ACTIVE, LASER_ACTIVE, VEC_ZERO);
+          body_t *laser = make_obstacle_rectangle(list_get(
+            game_play_state->laser->laser_spawn_positions, i),
+            LASER_WIDTH_ACTIVE, LASER_HEIGHT_ACTIVE, LASER_ACTIVE, VEC_ZERO);
           scene_add_body(game_play_state->state->scene, laser);
-          asset_update_bounding_box(list_get(game_play_state->laser->laser_active_assets, i), laser);
+          asset_update_bounding_box(list_get(
+            game_play_state->laser->laser_active_assets, i), laser);
           if (!game_play_state->powerup->powerup_active ||
               game_play_state->powerup->powerup_type != SHIELD)
           {
-            create_collision(game_play_state->state->scene, laser, game_play_state->state->user, game_over,
+            create_collision(game_play_state->state->scene, laser, 
+                            game_play_state->state->user, game_over,
                             game_play_state, NULL, DEFAULT_FORCE_CONSTANT);
           }
         }
         for (size_t i = 0; i < size_of_spawn_list; i++)
         {
-          list_remove(game_play_state->laser->laser_spawn_positions, LIST_START_INDEX);
+          list_remove(game_play_state->laser->laser_spawn_positions,
+                      LIST_START_INDEX);
         }
       }
       break;
