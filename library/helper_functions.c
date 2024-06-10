@@ -1,19 +1,22 @@
 #include "helper_functions.h"
 
-body_type_t *make_type_info(body_type_t type) {
+body_type_t *make_type_info(body_type_t type)
+{
   body_type_t *info = malloc(sizeof(body_type_t));
   assert(info != NULL);
   *info = type;
   return info;
 }
 
-body_type_t get_type(body_t *body) {
+body_type_t get_type(body_t *body)
+{
   void *body_info = body_get_info(body);
   assert(body_info != NULL);
   return *(body_type_t *)body_info;
 }
 
-list_t *make_rectangle(vector_t center, double width, double height) {
+list_t *make_rectangle(vector_t center, double width, double height)
+{
   list_t *points = list_init(INITIAL_LIST_CAPACITY, free);
   vector_t *p1 = malloc(sizeof(vector_t));
   assert(p1 != NULL);
@@ -39,19 +42,22 @@ list_t *make_rectangle(vector_t center, double width, double height) {
   return points;
 }
 
-body_t *make_obstacle_rectangle(vector_t center, double width, double height, void *aux_info, double velocity) {
+body_t *make_obstacle_rectangle(vector_t center, double width, double height, void *aux_info, double velocity)
+{
   list_t *rectangle_shape = make_rectangle(center, width, height);
   body_t *rectangle = body_init_with_info(rectangle_shape, INFINITY, BLACK,
-                                      make_type_info(aux_info), free);
+                                          make_type_info(aux_info), free);
   body_set_velocity(rectangle, velocity);
   body_set_centroid(rectangle, center);
   return rectangle;
 }
 
-body_t *make_obstacle_circle(double radius, vector_t center, void *aux_info, double mass, vector_t velocity) {
+body_t *make_obstacle_circle(double radius, vector_t center, void *aux_info, double mass, vector_t velocity)
+{
   center.y += radius;
   list_t *circle_shape = list_init(USER_NUM_POINTS, free);
-  for (size_t i = 0; i < USER_NUM_POINTS; i++) {
+  for (size_t i = 0; i < USER_NUM_POINTS; i++)
+  {
     double angle = 2 * M_PI * i / USER_NUM_POINTS;
     vector_t *v = malloc(sizeof(*v));
     *v = (vector_t){center.x + radius * cos(angle),
@@ -65,7 +71,8 @@ body_t *make_obstacle_circle(double radius, vector_t center, void *aux_info, dou
   return coin;
 }
 
-void add_walls(state_temp_t *state) {
+void add_walls(state_temp_t *state)
+{
   list_t *ceiling_shape =
       make_rectangle((vector_t){MAX.x / 2, MAX.y - CEILING_OFFSET}, MAX.x, WALL_DIM);
   body_t *ceiling = body_init_with_info(ceiling_shape, INFINITY, BLACK,

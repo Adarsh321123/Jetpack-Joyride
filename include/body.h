@@ -129,7 +129,7 @@ void body_set_centroid(body_t *body, vector_t x);
 
 /**
  * Calculates the Euclidean distance between two bodies
-*/
+ */
 double euclidean_distance(body_t *body2, body_t *body1);
 
 /**

@@ -1,19 +1,22 @@
 #include "game_play_helper.h"
 
-body_type_t *make_type_info(body_type_t type) {
+body_type_t *make_type_info(body_type_t type)
+{
   body_type_t *info = malloc(sizeof(body_type_t));
   assert(info != NULL);
   *info = type;
   return info;
 }
 
-body_type_t get_type(body_t *body) {
+body_type_t get_type(body_t *body)
+{
   void *body_info = body_get_info(body);
   assert(body_info != NULL);
   return *(body_type_t *)body_info;
 }
 
-list_t *make_rectangle(vector_t center, double width, double height) {
+list_t *make_rectangle(vector_t center, double width, double height)
+{
   list_t *points = list_init(INITIAL_LIST_CAPACITY, free);
   vector_t *p1 = malloc(sizeof(vector_t));
   assert(p1 != NULL);
@@ -39,7 +42,8 @@ list_t *make_rectangle(vector_t center, double width, double height) {
   return points;
 }
 
-void add_walls(state_temp_t *state) {
+void add_walls(state_temp_t *state)
+{
   list_t *ceiling_shape =
       make_rectangle((vector_t){MAX.x / 2, MAX.y - CEILING_OFFSET}, MAX.x, WALL_DIM);
   body_t *ceiling = body_init_with_info(ceiling_shape, INFINITY, BLACK,
@@ -54,19 +58,22 @@ void add_walls(state_temp_t *state) {
   state->ground = ground;
 }
 
-body_t *make_obstacle_rectangle(vector_t *center, double width, double height, body_type_t info, vector_t velocity) {
+body_t *make_obstacle_rectangle(vector_t *center, double width, double height, body_type_t info, vector_t velocity)
+{
   list_t *rectangle_shape = make_rectangle(*center, width, height);
   body_t *rectangle = body_init_with_info(rectangle_shape, INFINITY, BLACK,
-                                      make_type_info(info), free);
+                                          make_type_info(info), free);
   body_set_velocity(rectangle, velocity);
   body_set_centroid(rectangle, *center);
   return rectangle;
 }
 
-body_t *make_obstacle_circle(double radius, vector_t *center, body_type_t info, double mass, vector_t velocity) {
+body_t *make_obstacle_circle(double radius, vector_t *center, body_type_t info, double mass, vector_t velocity)
+{
   center->y += radius;
   list_t *circle_shape = list_init(USER_NUM_POINTS, free);
-  for (size_t i = 0; i < USER_NUM_POINTS; i++) {
+  for (size_t i = 0; i < USER_NUM_POINTS; i++)
+  {
     double angle = 2 * M_PI * i / USER_NUM_POINTS;
     vector_t *v = malloc(sizeof(*v));
     *v = (vector_t){center->x + radius * cos(angle),
@@ -80,17 +87,21 @@ body_t *make_obstacle_circle(double radius, vector_t *center, body_type_t info, 
   return coin;
 }
 
-void remove_moving_bodies(state_temp_t *state, body_type_t info) {
+void remove_moving_bodies(state_temp_t *state, body_type_t info)
+{
   size_t num_bodies = scene_bodies(state->scene);
-  for (size_t i = 0; i < num_bodies; i++) {
+  for (size_t i = 0; i < num_bodies; i++)
+  {
     body_t *body = scene_get_body(state->scene, i);
-    if (get_type(body) == info && body_get_centroid(body).x + ZAPPER_REMOVE_OFFSET < MIN.x) {
+    if (get_type(body) == info && body_get_centroid(body).x + ZAPPER_REMOVE_OFFSET < MIN.x)
+    {
       scene_remove_body(state->scene, i);
     }
-  }  
+  }
 }
 
-background_state_t *background_init(const char *bg_path) {
+background_state_t *background_init(const char *bg_path)
+{
   background_state_t *state = malloc(sizeof(background_state_t));
   assert(state != NULL);
 
@@ -103,17 +114,20 @@ background_state_t *background_init(const char *bg_path) {
   return state;
 }
 
-void background_update(background_state_t *state, double dt) {
+void background_update(background_state_t *state, double dt)
+{
   state->bg_offset -= state->scroll_speed * dt;
-  if (state->bg_offset <= - WINDOW_WIDTH) {
+  if (state->bg_offset <= -WINDOW_WIDTH)
+  {
     state->bg_offset += WINDOW_WIDTH;
   }
   state->bg1->bounding_box.x = state->bg_offset;
   state->bg2->bounding_box.x = state->bg_offset + WINDOW_WIDTH;
 }
 
-state_temp_t *state_temp_init() {
-  state_temp_t *state = malloc(sizeof(state_temp_t));  
+state_temp_t *state_temp_init()
+{
+  state_temp_t *state = malloc(sizeof(state_temp_t));
   assert(state != NULL);
   state->scene = scene_init();
   state->body_assets = list_init(INITIAL_LIST_CAPACITY, (free_func_t)asset_destroy);
@@ -123,10 +137,8 @@ state_temp_t *state_temp_init() {
   body_set_centroid(state->user, start_pos);
   scene_add_body(state->scene, state->user);
   asset_t *img = asset_make_image_with_body(USER_IMG_PATH, state->user);
-  list_add(state->body_assets, img);  
+  list_add(state->body_assets, img);
   add_walls(state);
   state->background_state = background_init(BACKGROUND_PATH);
   return state;
 }
-
-

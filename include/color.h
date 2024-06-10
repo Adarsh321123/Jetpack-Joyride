@@ -3,7 +3,8 @@
 
 #include <stdbool.h>
 
-typedef struct color {
+typedef struct color
+{
   double r;
   double g;
   double b;

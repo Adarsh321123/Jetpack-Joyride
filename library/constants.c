@@ -54,7 +54,7 @@ const rgb_color_t YELLOW = (rgb_color_t){255, 255, 0};
 const double COLOR_MAX = 255;
 const double WHITE_MIX = 1;
 
-// USER: 
+// USER:
 const double USER_RADIUS = 15;
 const size_t USER_NUM_POINTS = 20;
 const vector_t USER_VEL = {0, 200};
@@ -81,7 +81,7 @@ const double ZAPPER_GROUND_OFFSET = 100;
 const double ZAPPER_Y_POS_BUFFER = 100;
 const double ZAPPER_X_POS_BUFFER = 15;
 
-// LASERS: 
+// LASERS:
 const double LASER_WIDTH_ACTIVE = 990;
 const double LASER_X = 500;
 const double LASER_HEIGHT_ACTIVE = 42.14;
@@ -100,7 +100,7 @@ const double LASER_OFFSET_BETWEEN = 42.5;
 const double LASER_Y_OFFSET = 28;
 const double LASER_H_OFFSET = 56;
 
-// ROCKETS: 
+// ROCKETS:
 const double ROCKET_WIDTH = 90;
 const double ROCKET_HEIGHT = 45;
 const double WARNING_WIDTH = 50;

@@ -14,7 +14,8 @@
 typedef struct state state_t;
 
 // TODO :move
-typedef enum {
+typedef enum
+{
     HOME,
     SETTINGS,
     GAME_PLAY,
@@ -22,20 +23,23 @@ typedef enum {
     EXIT
 } state_type_t;
 
-typedef enum {
+typedef enum
+{
     EASY,
     MEDIUM,
     HARD
 } difficulty_type_t;
 
-typedef enum {
+typedef enum
+{
     SHIELD,
     MAGNETIC,
     MORE_COIN,
     GRAVITY_SWAP
 } powerup_type_t;
 
-typedef enum {
+typedef enum
+{
     LASER_INACTIVE_STATE,
     LASER_ACTIVE_STATE
 } laser_spawn_t;
@@ -43,7 +47,7 @@ typedef enum {
 /**
  * Initializes sdl as well as the variables needed
  * Creates and stores all necessary variables for the demo in a created state
- * variable 
+ * variable
  * Returns the pointer to this state (This is the state emscripten_main
  * and emscripten_free work with)
  */

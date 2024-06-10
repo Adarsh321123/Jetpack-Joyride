@@ -15,7 +15,8 @@ typedef void (*free_func_t)(void *);
  * Can store values of any pointer type (e.g. vector_t*, body_t*).
  * The list automatically grows its internal array when more capacity is needed.
  */
-typedef struct list {
+typedef struct list
+{
   size_t length;
   size_t size;
   void **elements;

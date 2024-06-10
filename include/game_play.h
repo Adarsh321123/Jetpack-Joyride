@@ -8,7 +8,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-
 typedef struct game_play_state game_play_state_t;
 
 typedef struct zapper_state zapper_state_t;
@@ -25,13 +24,13 @@ typedef struct powerup_state powerup_state_t;
  * Gets the type of the given body.
  * @param body the body we want to get the type of
  * @return the `body_type_t` of the body
-*/
+ */
 body_type_t get_type(body_t *body);
 
 /**
  * Initializes sdl as well as the variables needed
  * Creates and stores all necessary variables for the game in a created state
- * variable 
+ * variable
  * Returns the pointer to this state
  * @param difficulty_level associated with the game
  */

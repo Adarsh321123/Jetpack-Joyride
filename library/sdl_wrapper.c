@@ -50,7 +50,8 @@ uint32_t key_start_timestamp;
 clock_t last_clock = 0;
 
 /** Computes the center of the window in pixel coordinates */
-vector_t get_window_center(void) {
+vector_t get_window_center(void)
+{
   int *width = malloc(sizeof(*width)), *height = malloc(sizeof(*height));
   assert(width != NULL);
   assert(height != NULL);
@@ -66,7 +67,8 @@ vector_t get_window_center(void) {
  * The scene is scaled by the same factor in the x and y dimensions,
  * chosen to maximize the size of the scene while keeping it in the window.
  */
-double get_scene_scale(vector_t window_center) {
+double get_scene_scale(vector_t window_center)
+{
   // Scale scene so it fits entirely in the window
   double x_scale = window_center.x / max_diff.x,
          y_scale = window_center.y / max_diff.y;
@@ -74,7 +76,8 @@ double get_scene_scale(vector_t window_center) {
 }
 
 /** Maps a scene coordinate to a window coordinate */
-vector_t get_window_position(vector_t scene_pos, vector_t window_center) {
+vector_t get_window_position(vector_t scene_pos, vector_t window_center)
+{
   // Scale scene coordinates by the scaling factor
   // and map the center of the scene to the center of the window
   vector_t scene_center_offset = vec_subtract(scene_pos, center);
@@ -91,21 +94,23 @@ vector_t get_window_position(vector_t scene_pos, vector_t window_center) {
  * 7-bit ASCII characters are just returned
  * and arrow keys are given special character codes.
  */
-char get_keycode(SDL_Keycode key) {
-  switch (key) {
-  case SDLK_LEFT:
-    return LEFT_ARROW;
-  case SDLK_UP:
-    return UP_ARROW;
-  case SDLK_RIGHT:
-    return RIGHT_ARROW;
-  case SDLK_DOWN:
-    return DOWN_ARROW;
-  case SDLK_SPACE:
-    return SPACE_BAR;
-  default:
-    // Only process 7-bit ASCII characters
-    return key == (SDL_Keycode)(char)key ? key : '\0';
+char get_keycode(SDL_Keycode key)
+{
+  switch (key)
+  {
+    case SDLK_LEFT:
+      return LEFT_ARROW;
+    case SDLK_UP:
+      return UP_ARROW;
+    case SDLK_RIGHT:
+      return RIGHT_ARROW;
+    case SDLK_DOWN:
+      return DOWN_ARROW;
+    case SDLK_SPACE:
+      return SPACE_BAR;
+    default:
+      // Only process 7-bit ASCII characters
+      return key == (SDL_Keycode)(char)key ? key : '\0';
   }
 }
 
@@ -114,18 +119,21 @@ char get_keycode(SDL_Keycode key) {
  * button. `SDL_BUTTON_LEFT` is mapped to `MOUSE_LEFT`, `SDL_BUTTON_RIGHT` is
  * mapped to `MOUSE_RIGHT`, and other button codes are ignored (returning '\0').
  */
-char get_mousecode(Uint8 button) {
-  switch (button) {
-  case SDL_BUTTON_LEFT:
-    return MOUSE_LEFT;
-  case SDL_BUTTON_RIGHT:
-    return MOUSE_RIGHT;
-  default:
-    return '\0';
+char get_mousecode(Uint8 button)
+{
+  switch (button)
+  {
+    case SDL_BUTTON_LEFT:
+      return MOUSE_LEFT;
+    case SDL_BUTTON_RIGHT:
+      return MOUSE_RIGHT;
+    default:
+      return '\0';
   }
 }
 
-void sdl_init(vector_t min, vector_t max) {
+void sdl_init(vector_t min, vector_t max)
+{
   // Check parameters
   assert(min.x < max.x);
   assert(min.y < max.y);
@@ -139,83 +147,97 @@ void sdl_init(vector_t min, vector_t max) {
   renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_PRESENTVSYNC);
 }
 
-bool sdl_is_done(void *state) {
+bool sdl_is_done(void *state)
+{
   SDL_Event *event = malloc(sizeof(*event));
   assert(event != NULL);
-  while (SDL_PollEvent(event)) {
-    switch (event->type) {
-    case SDL_QUIT:
-      free(event);
-      return true;
-    case SDL_KEYDOWN:
-    case SDL_KEYUP:
-      // Skip the keypress if no handler is configured
-      // or an unrecognized key was pressed
-      if (key_handler == NULL)
+  while (SDL_PollEvent(event))
+  {
+    switch (event->type)
+    {
+      case SDL_QUIT:
+        free(event);
+        return true;
+      case SDL_KEYDOWN:
+      case SDL_KEYUP:
+        // Skip the keypress if no handler is configured
+        // or an unrecognized key was pressed
+        if (key_handler == NULL)
+          break;
+        char key = get_keycode(event->key.keysym.sym);
+        if (key == '\0')
+          break;
+        uint32_t timestamp = event->key.timestamp;
+        if (!event->key.repeat)
+        {
+          key_start_timestamp = timestamp;
+        }
+        key_event_type_t type =
+            event->type == SDL_KEYDOWN ? KEY_PRESSED : KEY_RELEASED;
+        double held_time = (timestamp - key_start_timestamp) / MS_PER_S;
+        key_handler(key, type, held_time, state);
         break;
-      char key = get_keycode(event->key.keysym.sym);
-      if (key == '\0')
-        break;
-      uint32_t timestamp = event->key.timestamp;
-      if (!event->key.repeat) {
-        key_start_timestamp = timestamp;
-      }
-      key_event_type_t type =
-          event->type == SDL_KEYDOWN ? KEY_PRESSED : KEY_RELEASED;
-      double held_time = (timestamp - key_start_timestamp) / MS_PER_S;
-      key_handler(key, type, held_time, state);
-      break;
     }
   }
   free(event);
   return false;
 }
 
-void handle_mouse_events(void *state) {
+void handle_mouse_events(void *state)
+{
   SDL_Event event;
   char button_code;
-  while (SDL_PollEvent(&event)) {
-    switch (event.type) {
-    case SDL_QUIT:
-      break;
-    case SDL_MOUSEBUTTONDOWN:
-      button_code = get_mousecode(event.button.button);
-      if (button_code != '\0' && mouse_handler != NULL) {
-        mouse_handler(button_code, state, event);
-      }
-      break;
-    default:
-      break;
+  while (SDL_PollEvent(&event))
+  {
+    switch (event.type)
+    {
+      case SDL_QUIT:
+        break;
+      case SDL_MOUSEBUTTONDOWN:
+        button_code = get_mousecode(event.button.button);
+        if (button_code != '\0' && mouse_handler != NULL)
+        {
+          mouse_handler(button_code, state, event);
+        }
+        break;
+      default:
+        break;
     }
   }
 }
 
-void sdl_clear(void) {
+void sdl_clear(void)
+{
   SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
   SDL_RenderClear(renderer);
 }
 
-void sdl_destroy(void) {
+void sdl_destroy(void)
+{
   SDL_DestroyRenderer(renderer);
   SDL_DestroyWindow(window);
 }
 
-SDL_Texture *get_texture(const char *IMG_PATH) {
+SDL_Texture *get_texture(const char *IMG_PATH)
+{
   return IMG_LoadTexture(renderer, IMG_PATH);
 }
 
-void render_copy(SDL_Texture *img, SDL_Rect texr) {
+void render_copy(SDL_Texture *img, SDL_Rect texr)
+{
   SDL_RenderCopy(renderer, img, NULL, &texr);
 }
 
-TTF_Font *init_font(const char *FONT_PATH, size_t size) {
+TTF_Font *init_font(const char *FONT_PATH, size_t size)
+{
   TTF_Init();
   font = TTF_OpenFont(FONT_PATH, size);
   assert(font != NULL);
   return font;
 }
 
-SDL_Rect make_texr(int x, int y, int w, int h) {
+SDL_Rect make_texr(int x, int y, int w, int h)
+{
   SDL_Rect texr;
   texr.x = x;
   texr.y = y;
@@ -224,7 +246,8 @@ SDL_Rect make_texr(int x, int y, int w, int h) {
   return texr;
 }
 
-SDL_Rect find_bounding_box(body_t *body) {
+SDL_Rect find_bounding_box(body_t *body)
+{
   double min_x = __DBL_MAX__;
   double max_x = -__DBL_MAX__;
   double min_y = __DBL_MAX__;
@@ -234,29 +257,36 @@ SDL_Rect find_bounding_box(body_t *body) {
 
   list_t *points = body_get_shape(body);
   size_t num_vertices = list_size(points);
-  for (size_t i = 0; i < num_vertices; i++) {
+  for (size_t i = 0; i < num_vertices; i++)
+  {
     vector_t *vertex = list_get(points, i);
     vector_t pixel = get_window_position(*vertex, window_center);
-    if (pixel.x < min_x) {
+    if (pixel.x < min_x)
+    {
       min_x = pixel.x;
     }
-    if (pixel.x > max_x) {
+    if (pixel.x > max_x)
+    {
       max_x = pixel.x;
     }
-    if (pixel.y < min_y) {
+    if (pixel.y < min_y)
+    {
       min_y = pixel.y;
     }
-    if (pixel.y > max_y) {
+    if (pixel.y > max_y)
+    {
       max_y = pixel.y;
     }
   }
 
   list_free(points);
-  if (get_type(body) == USER) {  // need to align the user image with the body
+  if (get_type(body) == USER)
+  { // need to align the user image with the body
     return make_texr(min_x - USER_X_OFFSET, (max_y - (max_y - min_y)) - USER_Y_OFFSET, USER_W_SCALE * (max_x - min_x), USER_H_SCALE * (max_y - min_y));
   }
 
-  if (get_type(body) == LASER || get_type(body) == LASER_ACTIVE) {
+  if (get_type(body) == LASER || get_type(body) == LASER_ACTIVE)
+  {
     return make_texr(min_x, (max_y - (max_y - min_y)) - LASER_Y_OFFSET, (max_x - min_x), (max_y - min_y) + LASER_H_OFFSET);
   }
 
@@ -264,7 +294,8 @@ SDL_Rect find_bounding_box(body_t *body) {
 }
 
 void render_text(const char *text, TTF_Font *fontin, rgb_color_t rgb_color,
-                 SDL_Rect texr) {
+                 SDL_Rect texr)
+{
   SDL_Color color = {rgb_color.r, rgb_color.g, rgb_color.b};
   SDL_Surface *surface = TTF_RenderText_Solid(fontin, text, color);
   SDL_Texture *texture = SDL_CreateTextureFromSurface(renderer, surface);
@@ -273,7 +304,8 @@ void render_text(const char *text, TTF_Font *fontin, rgb_color_t rgb_color,
   SDL_DestroyTexture(texture);
 }
 
-void sdl_draw_polygon(polygon_t *poly, rgb_color_t color) {
+void sdl_draw_polygon(polygon_t *poly, rgb_color_t color)
+{
   list_t *points = polygon_get_points(poly);
   // Check parameters
   size_t n = list_size(points);
@@ -289,7 +321,8 @@ void sdl_draw_polygon(polygon_t *poly, rgb_color_t color) {
           *y_points = malloc(sizeof(*y_points) * n);
   assert(x_points != NULL);
   assert(y_points != NULL);
-  for (size_t i = 0; i < n; i++) {
+  for (size_t i = 0; i < n; i++)
+  {
     vector_t *vertex = list_get(points, i);
     vector_t pixel = get_window_position(*vertex, window_center);
     x_points[i] = pixel.x;
@@ -303,7 +336,8 @@ void sdl_draw_polygon(polygon_t *poly, rgb_color_t color) {
   free(y_points);
 }
 
-void sdl_show(void) {
+void sdl_show(void)
+{
   // Draw boundary lines
   vector_t window_center = get_window_center();
   vector_t max = vec_add(center, max_diff),
@@ -323,17 +357,20 @@ void sdl_show(void) {
   SDL_RenderPresent(renderer);
 }
 
-void sdl_render_scene(scene_t *scene, void *aux) {
+void sdl_render_scene(scene_t *scene, void *aux)
+{
   sdl_clear();
   size_t body_count = scene_bodies(scene);
-  for (size_t i = 0; i < body_count; i++) {
+  for (size_t i = 0; i < body_count; i++)
+  {
     body_t *body = scene_get_body(scene, i);
     list_t *shape = body_get_shape(body);
     polygon_t *poly = polygon_init(shape, (vector_t){0, 0}, 0, 0, 0, 0);
     sdl_draw_polygon(poly, *body_get_color(body));
     list_free(shape);
   }
-  if (aux != NULL) {
+  if (aux != NULL)
+  {
     body_t *body = aux;
     sdl_draw_polygon(body_get_polygon(body), *body_get_color(body));
   }
@@ -342,11 +379,13 @@ void sdl_render_scene(scene_t *scene, void *aux) {
 
 void sdl_on_key(key_handler_t handler) { key_handler = handler; }
 
-void sdl_on_mouse(mouse_handler_t handler_mouse) {
+void sdl_on_mouse(mouse_handler_t handler_mouse)
+{
   mouse_handler = handler_mouse;
 }
 
-double time_since_last_tick(void) {
+double time_since_last_tick(void)
+{
   clock_t now = clock();
   double difference = last_clock
                           ? (double)(now - last_clock) / CLOCKS_PER_SEC

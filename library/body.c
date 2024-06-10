@@ -10,7 +10,8 @@
  * A rigid body constrained to the plane.
  * Implemented as a polygon with uniform density.
  */
-struct body {
+struct body
+{
   polygon_t *poly;
 
   double mass;
@@ -26,7 +27,8 @@ struct body {
 };
 
 body_t *body_init_with_info(list_t *shape, double mass, rgb_color_t color,
-                            void *info, free_func_t info_freer) {
+                            void *info, free_func_t info_freer)
+{
   body_t *body = malloc(sizeof(body_t));
   assert(body != NULL);
   body->poly =
@@ -43,24 +45,29 @@ body_t *body_init_with_info(list_t *shape, double mass, rgb_color_t color,
   return body;
 }
 
-body_t *body_init(list_t *shape, double mass, rgb_color_t color) {
+body_t *body_init(list_t *shape, double mass, rgb_color_t color)
+{
   return body_init_with_info(shape, mass, color, NULL, NULL);
 }
 
-void body_free(body_t *body) {
+void body_free(body_t *body)
+{
   polygon_free(body->poly);
-  if (body->info_freer != NULL) {
+  if (body->info_freer != NULL)
+  {
     body->info_freer(body->info);
   }
   free(body);
 }
 
-list_t *body_get_shape(body_t *body) {
+list_t *body_get_shape(body_t *body)
+{
   list_t *points = polygon_get_points(body->poly);
   list_t *copy = list_init(INITIAL_LIST_CAPACITY, free);
   size_t size = list_size(points);
   assert(size >= 0);
-  for (size_t i = 0; i < size; i++) {
+  for (size_t i = 0; i < size; i++)
+  {
     vector_t *list_v = malloc(sizeof(*list_v));
     assert(list_v);
     vector_t *curr = list_get(points, i);
@@ -73,21 +80,24 @@ list_t *body_get_shape(body_t *body) {
 
 vector_t body_get_centroid(body_t *body) { return body->centroid; }
 
-double euclidean_distance(body_t *body2, body_t *body1) {
+double euclidean_distance(body_t *body2, body_t *body1)
+{
   vector_t body1_centroid = body_get_centroid(body1);
   vector_t body2_centroid = body_get_centroid(body2);
   double distance = sqrt(pow(body1_centroid.x - body2_centroid.x, 2) +
-                          pow(body1_centroid.y - body2_centroid.y, 2));
+                         pow(body1_centroid.y - body2_centroid.y, 2));
   return distance;
 }
 
-vector_t body_get_velocity(body_t *body) {
+vector_t body_get_velocity(body_t *body)
+{
   double x_velocity = polygon_get_velocity_x(body->poly);
   double y_velocity = polygon_get_velocity_y(body->poly);
   return (vector_t){.x = x_velocity, .y = y_velocity};
 }
 
-rgb_color_t *body_get_color(body_t *body) {
+rgb_color_t *body_get_color(body_t *body)
+{
   return polygon_get_color(body->poly);
 }
 
@@ -95,27 +105,32 @@ void *body_get_info(body_t *body) { return body->info; }
 
 polygon_t *body_get_polygon(body_t *body) { return body->poly; }
 
-void body_set_color(body_t *body, rgb_color_t *col) {
+void body_set_color(body_t *body, rgb_color_t *col)
+{
   polygon_set_color(body->poly, col);
 }
 
-void body_set_centroid(body_t *body, vector_t x) {
+void body_set_centroid(body_t *body, vector_t x)
+{
   polygon_set_center(body->poly, x);
   body->centroid = x;
 }
 
-void body_set_velocity(body_t *body, vector_t v) {
+void body_set_velocity(body_t *body, vector_t v)
+{
   polygon_set_velocity(body->poly, v);
 }
 
 double body_get_rotation(body_t *body) { return body->angle; }
 
-void body_set_rotation(body_t *body, double angle) {
+void body_set_rotation(body_t *body, double angle)
+{
   polygon_rotate(body->poly, angle - body->angle, body->centroid);
   body->angle = angle;
 }
 
-void body_tick(body_t *body, double dt) {
+void body_tick(body_t *body, double dt)
+{
   // by impulse momentum theorem, 1/mass * impulse gives delta v
   double inverse_mass = 1 / body->mass;
   vector_t dv = vec_multiply(inverse_mass, body->impulse);
@@ -140,15 +155,18 @@ void body_tick(body_t *body, double dt) {
 
 double body_get_mass(body_t *body) { return body->mass; }
 
-void body_add_force(body_t *body, vector_t force) {
+void body_add_force(body_t *body, vector_t force)
+{
   body->force = vec_add(body->force, force);
 }
 
-void body_add_impulse(body_t *body, vector_t impulse) {
+void body_add_impulse(body_t *body, vector_t impulse)
+{
   body->impulse = vec_add(body->impulse, impulse);
 }
 
-void body_reset(body_t *body) {
+void body_reset(body_t *body)
+{
   body->force = VEC_ZERO;
   body->impulse = VEC_ZERO;
 }

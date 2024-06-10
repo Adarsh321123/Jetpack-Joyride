@@ -5,7 +5,8 @@
 #include <stdlib.h>
 #include <assert.h>
 
-typedef enum {
+typedef enum
+{
     EVENT_COIN_COLLECTED,
     EVENT_DISTANCE_TRAVELED,
     EVENT_LASERS_AVOIDED
@@ -28,9 +29,10 @@ typedef void (*freer_t)(void *observer);
 
 // TODO: do we need this struct then?
 // TODO: move back to c?
-struct observer {
+struct observer
+{
     on_notify_t on_notify;
     freer_t freer;
 };
 
-#endif  // #ifndef __OBSERVER_H__
+#endif // #ifndef __OBSERVER_H__

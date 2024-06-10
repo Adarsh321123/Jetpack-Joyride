@@ -12,7 +12,8 @@
  * Stores the game settings state
  * Use this to store any variable needed every 'tick' of your game
  */
-typedef struct settings_state {
+typedef struct settings_state
+{
   screen_state_t screen_state;
   double time;
   state_type_t curr_state;
@@ -24,7 +25,7 @@ typedef struct settings_state {
 /**
  * Initializes sdl as well as the variables needed
  * Creates and stores all necessary variables for the game in a created state
- * variable 
+ * variable
  * Returns the pointer to this state
  */
 settings_state_t *settings_init();

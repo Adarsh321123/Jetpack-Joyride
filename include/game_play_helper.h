@@ -16,17 +16,30 @@
 #include "asset_cache.h"
 #include "sdl_wrapper.h"
 
-typedef enum { USER, CEILING, GROUND, ZAPPER, LASER, LASER_ACTIVE, 
-ROCKET_WARNING, ROCKET, COIN, POWERUP} body_type_t;
+typedef enum
+{
+  USER,
+  CEILING,
+  GROUND,
+  ZAPPER,
+  LASER,
+  LASER_ACTIVE,
+  ROCKET_WARNING,
+  ROCKET,
+  COIN,
+  POWERUP
+} body_type_t;
 
-typedef struct background_state {
+typedef struct background_state
+{
   asset_t *bg1;
   asset_t *bg2;
   double scroll_speed;
   double bg_offset;
 } background_state_t;
 
-typedef struct state_temp {
+typedef struct state_temp
+{
   background_state_t *background_state;
   list_t *body_assets;
   body_t *user;
@@ -65,7 +78,6 @@ body_t *make_obstacle_rectangle(vector_t *center, double width, double height, b
  */
 body_t *make_obstacle_circle(double radius, vector_t *center, body_type_t info, double mass, vector_t velocity);
 
-
 void remove_moving_bodies(state_temp_t *state, body_type_t info);
 
 /**
@@ -79,6 +91,5 @@ background_state_t *background_init(const char *bg_path);
 void background_update(background_state_t *state, double dt);
 
 state_temp_t *state_temp_init();
-
 
 #endif // #ifndef __GAME_PLAY_HELPER_H__

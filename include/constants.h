@@ -59,11 +59,11 @@ extern const rgb_color_t BLACK;
 extern const rgb_color_t RED;
 extern const rgb_color_t GREEN;
 extern const rgb_color_t BLUE;
-extern const rgb_color_t YELLOW ;
+extern const rgb_color_t YELLOW;
 extern const double COLOR_MAX;
 extern const double WHITE_MIX;
 
-// USER: 
+// USER:
 extern const double USER_RADIUS;
 extern const size_t USER_NUM_POINTS;
 extern const vector_t USER_VEL;
@@ -80,7 +80,7 @@ extern const double ZAPPER_HEIGHT;
 extern const double MIN_ZAPPER_GENERATION_TIME_EASY;
 extern const double MAX_ZAPPER_GENERATION_TIME_EASY;
 extern const double MIN_ZAPPER_GENERATION_TIME_MEDIUM;
-extern const double MAX_ZAPPER_GENERATION_TIME_MEDIUM ;
+extern const double MAX_ZAPPER_GENERATION_TIME_MEDIUM;
 extern const double MIN_ZAPPER_GENERATION_TIME_HARD;
 extern const double MAX_ZAPPER_GENERATION_TIME_HARD;
 extern const vector_t ZAPPER_VEL;
@@ -90,7 +90,7 @@ extern const double ZAPPER_GROUND_OFFSET;
 extern const double ZAPPER_Y_POS_BUFFER;
 extern const double ZAPPER_X_POS_BUFFER;
 
-// LASERS: 
+// LASERS:
 extern const double LASER_WIDTH_ACTIVE;
 extern const double LASER_X;
 extern const double LASER_HEIGHT_ACTIVE;
@@ -109,7 +109,7 @@ extern const double LASER_OFFSET_BETWEEN;
 extern const double LASER_Y_OFFSET;
 extern const double LASER_H_OFFSET;
 
-// ROCKETS: 
+// ROCKETS:
 extern const double ROCKET_WIDTH;
 extern const double ROCKET_HEIGHT;
 extern const double WARNING_WIDTH;

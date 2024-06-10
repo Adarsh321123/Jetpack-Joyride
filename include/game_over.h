@@ -11,7 +11,8 @@
 /**
  * Stores any variable needed at every 'tick' of the game
  */
-typedef struct game_over_state {
+typedef struct game_over_state
+{
   screen_state_t screen_state;
   double time;
   state_type_t curr_state;

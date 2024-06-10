@@ -10,19 +10,22 @@
 #include "asset_cache.h"
 #include "sdl_wrapper.h"
 
-typedef struct background_info {
+typedef struct background_info
+{
   const char *bg_path;
   SDL_Rect bg_box;
 } background_info_t;
 
-typedef struct text_info {
+typedef struct text_info
+{
   const char *font_path;
   SDL_Rect text_box;
   rgb_color_t text_color;
   const char *text;
 } text_info_t;
 
-typedef struct button_info {
+typedef struct button_info
+{
   const char *image_path;
   const char *font_path;
   SDL_Rect image_box;
@@ -34,7 +37,7 @@ typedef struct button_info {
 
 /**
  * Using `info`, initializes a background in the scene.
- 
+
  * @param info the background info struct used to initialize the background
  */
 asset_t *create_background_from_info(background_info_t info);

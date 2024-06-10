@@ -10,7 +10,8 @@
  * Positive x is towards the right; positive y is towards the top.
  * vector_t is defined here instead of vector.c because it is passed *by value*.
  */
-typedef struct {
+typedef struct
+{
   double x;
   double y;
 } vector_t;

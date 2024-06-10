@@ -14,65 +14,66 @@
 /**
  * Handler for going back to home screen
  */
-static void home(settings_state_t *settings_state){
+static void home(settings_state_t *settings_state)
+{
   settings_state->curr_state = HOME;
 }
 
 /**
  * Handler for setting the difficulty of game to easy
  */
-static void set_difficulty_easy(settings_state_t *settings_state){
+static void set_difficulty_easy(settings_state_t *settings_state)
+{
   settings_state->difficulty_level = EASY;
 }
 
 /**
  * Handler for setting the difficulty of game to medium
  */
-static void set_difficulty_medium(settings_state_t *settings_state){
+static void set_difficulty_medium(settings_state_t *settings_state)
+{
   settings_state->difficulty_level = MEDIUM;
 }
 
 /**
  * Handler for setting the difficulty of game to hard
  */
-static void set_difficulty_hard(settings_state_t *settings_state){
+static void set_difficulty_hard(settings_state_t *settings_state)
+{
   settings_state->difficulty_level = HARD;
 }
 
 static background_info_t background_templates[] = {
-     {.bg_path = "assets/BackdropMain.png",
-     .bg_box = (SDL_Rect){0, 0, 1000, 500}}
-     };
+    {.bg_path = "assets/BackdropMain.png",
+     .bg_box = (SDL_Rect){0, 0, 1000, 500}}};
 
 static text_info_t text_templates[] = {
-     {.font_path = "assets/New Athletic M54.ttf",
+    {.font_path = "assets/New Athletic M54.ttf",
      .text_box = (SDL_Rect){625, 50, 150, 50},
      .text_color = (rgb_color_t){255, 255, 255},
      .text = "Settings"},
-     {.font_path = "assets/New Athletic M54.ttf",
+    {.font_path = "assets/New Athletic M54.ttf",
      .text_box = (SDL_Rect){50, 325, 150, 50},
      .text_color = (rgb_color_t){0, 0, 0},
-     .text = "Current Difficulty Level : "}
-     };
+     .text = "Current Difficulty Level : "}};
 
 static text_info_t achievements_templates[] = {
-      {.font_path = "assets/Roboto-Regular.ttf",
+    {.font_path = "assets/Roboto-Regular.ttf",
      .text_box = (SDL_Rect){525, 125, 150, 50},
      .text_color = (rgb_color_t){255, 255, 255},
      .text = "Achievements"},
-     {.font_path = "assets/Roboto-Regular.ttf",
+    {.font_path = "assets/Roboto-Regular.ttf",
      .text_box = (SDL_Rect){525, 175, 150, 50},
      .text_color = (rgb_color_t){255, 255, 255},
      .text = ""},
-     {.font_path = "assets/Roboto-Regular.ttf",
+    {.font_path = "assets/Roboto-Regular.ttf",
      .text_box = (SDL_Rect){525, 225, 150, 50},
      .text_color = (rgb_color_t){255, 255, 255},
      .text = ""},
-     {.font_path = "assets/Roboto-Regular.ttf",
+    {.font_path = "assets/Roboto-Regular.ttf",
      .text_box = (SDL_Rect){525, 275, 150, 50},
      .text_color = (rgb_color_t){255, 255, 255},
-     .text = ""}
-};
+     .text = ""}};
 
 static button_info_t button_templates[] = {
     {.image_path = "assets/button.png",
@@ -102,53 +103,61 @@ static button_info_t button_templates[] = {
      .text_box = (SDL_Rect){750, 425, 150, 50},
      .text_color = (rgb_color_t){255, 255, 255},
      .text = "Hard",
-     .handler = (void *)set_difficulty_hard}
-     };
+     .handler = (void *)set_difficulty_hard}};
 
 /**
  * Displays the current difficulty level selected on the screen
  * Difficulty level is preserved after playing game again
  */
-static void display_difficulty_level(settings_state_t *settings_state){
-    char difficulty_text[DIFFICULTY_TEXT_SIZE];
-    switch (settings_state->difficulty_level) {
-        case EASY: {
-            sprintf(difficulty_text, "%s", EASY_DIFFICULTY_TEXT);
-            break;
-        }
-        case MEDIUM: {
-            sprintf(difficulty_text, "%s", MEDIUM_DIFFICULTY_TEXT);
-            break;
-        }
-        case HARD: {
-            sprintf(difficulty_text, "%s", HARD_DIFFICULTY_TEXT);
-            break;
-        }
-        default: {
-            sprintf(difficulty_text, "%s", UNKNOWN_DIFFICULTY_TEXT);
-            break;
-        }
+static void display_difficulty_level(settings_state_t *settings_state)
+{
+  char difficulty_text[DIFFICULTY_TEXT_SIZE];
+  switch (settings_state->difficulty_level)
+  {
+    case EASY:
+    {
+      sprintf(difficulty_text, "%s", EASY_DIFFICULTY_TEXT);
+      break;
     }
-    SDL_Rect bounding_box = DIFFICULTY_BOX;
-    TTF_Font *font = settings_state->difficulty_font;
-    TTF_SizeText(font, difficulty_text, &bounding_box.w, &bounding_box.h);
-    render_text(difficulty_text, font, BLACK, bounding_box);
+    case MEDIUM:
+    {
+      sprintf(difficulty_text, "%s", MEDIUM_DIFFICULTY_TEXT);
+      break;
+    }
+    case HARD:
+    {
+      sprintf(difficulty_text, "%s", HARD_DIFFICULTY_TEXT);
+      break;
+    }
+    default:
+    {
+      sprintf(difficulty_text, "%s", UNKNOWN_DIFFICULTY_TEXT);
+      break;
+    }
+  }
+  SDL_Rect bounding_box = DIFFICULTY_BOX;
+  TTF_Font *font = settings_state->difficulty_font;
+  TTF_SizeText(font, difficulty_text, &bounding_box.w, &bounding_box.h);
+  render_text(difficulty_text, font, BLACK, bounding_box);
 }
 
 /**
  * Displays the achievements reached by user over all games played in total
  */
-static void display_achievements(settings_state_t *settings_state) {
+static void display_achievements(settings_state_t *settings_state)
+{
   size_t num_achievements = sizeof(achievements_templates) / sizeof(achievements_templates[0]);
   TTF_Font *font = settings_state->achievements_font;
-  for (size_t i = 0; i < num_achievements; i++) {
+  for (size_t i = 0; i < num_achievements; i++)
+  {
     text_info_t info = achievements_templates[i];
     TTF_SizeText(font, info.text, &info.text_box.w, &info.text_box.h);
     render_text(info.text, font, info.text_color, info.text_box);
   }
 }
 
-settings_state_t *settings_init() {
+settings_state_t *settings_init()
+{
   settings_state_t *settings_state = malloc(sizeof(settings_state_t));
   assert(settings_state);
   TTF_Init();
@@ -159,8 +168,8 @@ settings_state_t *settings_init() {
   size_t num_text = sizeof(text_templates) / sizeof(text_templates[0]);
   size_t num_buttons = sizeof(button_templates) / sizeof(button_templates[0]);
   settings_state->screen_state = screen_init(settings_state->screen_state, background_templates,
-                                          text_templates, button_templates,
-                                          num_backgrounds, num_text, num_buttons);
+                                             text_templates, button_templates,
+                                             num_backgrounds, num_text, num_buttons);
   settings_state->time = ZERO;
   settings_state->curr_state = SETTINGS;
   settings_state->difficulty_level = EASY;
@@ -168,14 +177,16 @@ settings_state_t *settings_init() {
   settings_state->achievements_font = init_font(ACHIEVEMENTS_FONT_PATH, ACHIEVEMENTS_FONT_SIZE);
   list_t *results = read_achievements_settings();
   size_t num_results = list_size(results);
-  for (size_t i = 0; i < num_results; i++) {
-    achievements_templates[i + 1].text = list_get(results, i);  // + 1 since excluding achievements title
+  for (size_t i = 0; i < num_results; i++)
+  {
+    achievements_templates[i + 1].text = list_get(results, i); // + 1 since excluding achievements title
   }
   list_free(results);
   return settings_state;
 }
 
-state_type_t settings_main(settings_state_t *settings_state) {
+state_type_t settings_main(settings_state_t *settings_state)
+{
   sdl_clear();
   settings_state->time += time_since_last_tick();
   render_items(settings_state->screen_state);
@@ -186,7 +197,8 @@ state_type_t settings_main(settings_state_t *settings_state) {
   return settings_state->curr_state;
 }
 
-void settings_free(settings_state_t *settings_state) {
+void settings_free(settings_state_t *settings_state)
+{
   screen_free(settings_state->screen_state);
   TTF_CloseFont(settings_state->difficulty_font);
   TTF_CloseFont(settings_state->achievements_font);

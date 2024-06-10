@@ -6,7 +6,8 @@
 #include "color.h"
 #include "constants.h"
 
-rgb_color_t *color_init(double red, double green, double blue) {
+rgb_color_t *color_init(double red, double green, double blue)
+{
   rgb_color_t *color = malloc(sizeof(rgb_color_t));
   assert(color);
 
@@ -17,7 +18,8 @@ rgb_color_t *color_init(double red, double green, double blue) {
   return color;
 }
 
-rgb_color_t *color_get_random() {
+rgb_color_t *color_get_random()
+{
   double r = (double)rand();
   double g = (double)rand();
   double b = (double)rand();
@@ -33,7 +35,8 @@ rgb_color_t *color_get_random() {
   return color_init(r, g, b);
 }
 
-bool color_compare(rgb_color_t c1, rgb_color_t c2) {
+bool color_compare(rgb_color_t c1, rgb_color_t c2)
+{
   return c1.r == c2.r && c1.g == c2.g && c1.b == c2.b;
 }
 
