@@ -534,6 +534,18 @@ static void magnetic_powerup(game_play_state_t *game_play_state)
   }
 }
 
+static double add_more_coins_powerup(game_play_state_t *game_play_state, double y_pos) {
+  if (game_play_state->powerup->powerup_active &&
+      game_play_state->powerup->powerup_type == MORE_COIN)
+  {
+    game_play_state->coin->time_until_coin = COIN_GENERATION_TIME_POWERUP;
+    double new_deviation = fmod(rand(), MAX_COIN_DEVIATION_POWERUP) - 
+                                MIN_COIN_DEVIATION_POWERUP;
+    y_pos = game_play_state->coin->prev_center.y + new_deviation;
+  }
+  return y_pos;
+}
+
 /**
  * Add the coins to the game.
 */
@@ -553,14 +565,7 @@ static void add_coins(game_play_state_t *game_play_state, double dt)
                             (MIN.y + COIN_GROUND_OFFSET));
     double x_pos = MAX.x + COIN_X_POS_BUFFER;
     vector_t center = {.x = x_pos, .y = y_pos};
-    if (game_play_state->powerup->powerup_active &&
-        game_play_state->powerup->powerup_type == MORE_COIN)
-    {
-      game_play_state->coin->time_until_coin = COIN_GENERATION_TIME_POWERUP;
-      double new_deviation = fmod(rand(), MAX_COIN_DEVIATION_POWERUP) - 
-                                  MIN_COIN_DEVIATION_POWERUP;
-      y_pos = game_play_state->coin->prev_center.y + new_deviation;
-    }
+    y_pos = add_more_coins_powerup(game_play_state, y_pos);
     game_play_state->coin->prev_center = center;
     size_t COIN_GRID_WIDTH = (rand() % (MAX_COIN_GRID_SIZE -
                                MIN_COIN_GRID_SIZE + ONE)) + MIN_COIN_GRID_SIZE;
