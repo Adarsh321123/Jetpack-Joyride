@@ -6,8 +6,6 @@
 #include <time.h>
 #include <math.h>
 
-// #include "game_play_helper.h"
-// #include "laser.h"
 #include "collision.h"
 #include "forces.h"
 #include "game_play.h"
@@ -302,8 +300,6 @@ void activate_powerup(body_t *body1, body_t *body2, vector_t axis, void *aux1,
     game_play_state->powerup->powerup_active = true;
     game_play_state->powerup->powerup_start_time = game_play_state->time;
     game_play_state->powerup->powerup_type = powerup_type;
-    // for now we test magnetic coin
-    // game_play_state->powerup->powerup_type = GRAVITY_SWAP;
   }
   switch (game_play_state->powerup->powerup_type)
   {
@@ -827,11 +823,11 @@ void game_play_free(game_play_state_t *game_play_state)
   free(game_play_state->rocket);
   free(game_play_state->zapper);
   free(game_play_state->coin);
-  free(game_play_state->powerup);
   subject_free(game_play_state->subject);
   asset_cache_destroy();
   TTF_CloseFont(game_play_state->distance_font);
   TTF_CloseFont(game_play_state->coins_collected_font);
   state_free(game_play_state);
+  free(game_play_state->powerup);
   free(game_play_state);
 }
