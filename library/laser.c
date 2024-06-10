@@ -13,3 +13,4 @@ struct laser_state {
   list_t *laser_spawn_positions;
   laser_spawn_t laser_spawn_bool;
 };
+

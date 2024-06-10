@@ -117,17 +117,13 @@ void body_set_rotation(body_t *body, double angle) {
 
 void body_tick(body_t *body, double dt) {
   // by impulse momentum theorem, 1/mass * impulse gives delta v
-  // TODO: make changes from proj4
   double inverse_mass = 1 / body->mass;
-  vector_t dv = VEC_ZERO;
-  dv = vec_multiply(inverse_mass, body->impulse);
+  vector_t dv = vec_multiply(inverse_mass, body->impulse);
   vector_t vel = body_get_velocity(body);
   vector_t new_vel = vec_add(vel, dv);
 
   // by newton's second law, F/m = a
-  vector_t a = VEC_ZERO;
-  inverse_mass = 1 / body->mass;
-  a = vec_multiply(inverse_mass, body->force);
+  vector_t a = vec_multiply(inverse_mass, body->force);
   a = vec_multiply(dt, a);
   new_vel = vec_add(new_vel, a);
 
