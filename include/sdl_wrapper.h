@@ -133,7 +133,8 @@ TTF_Font *init_font(const char *FONT_PATH, size_t size);
 SDL_Rect make_texr(int x, int y, int w, int h);
 
 /**
- * Find the bounding box of a body given as the input
+ * Find the bounding box of a body given as the input. Modifies based on
+ * the type of the body
  *
  * @param body input body to find the bounding box of
  */

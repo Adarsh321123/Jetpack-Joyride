@@ -30,9 +30,13 @@ void on_mouse(char key, void *screen_state, SDL_Event event);
 /**
  * Initialize the screen state with the backgrounds, text, and buttons.
  */
-screen_state_t screen_init(screen_state_t screen_state, background_info_t background_templates[],
-                           text_info_t text_templates[], button_info_t button_templates[],
-                           size_t num_backgrounds, size_t num_text, size_t num_buttons);
+screen_state_t screen_init(screen_state_t screen_state,
+                            background_info_t background_templates[],
+                            text_info_t text_templates[],
+                            button_info_t button_templates[],
+                            size_t num_backgrounds,
+                            size_t num_text,
+                            size_t num_buttons);
 
 /**
  * Free the background, text, and buttons of the screen_state.

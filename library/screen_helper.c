@@ -72,13 +72,19 @@ void on_mouse(char key, void *screen_state, SDL_Event event)
   }
 }
 
-screen_state_t screen_init(screen_state_t screen_state, background_info_t background_templates[],
-                           text_info_t text_templates[], button_info_t button_templates[],
-                           size_t num_backgrounds, size_t num_text, size_t num_buttons)
+screen_state_t screen_init(screen_state_t screen_state,
+                           background_info_t background_templates[],
+                           text_info_t text_templates[],
+                           button_info_t button_templates[],
+                           size_t num_backgrounds,
+                           size_t num_text,
+                           size_t num_buttons)
 {
-  screen_state.backgrounds = list_init(INITIAL_ASSET_CAPACITY, (free_func_t)asset_destroy);
+  screen_state.backgrounds = list_init(INITIAL_ASSET_CAPACITY,
+                                      (free_func_t)asset_destroy);
   create_backgrounds(screen_state, background_templates, num_backgrounds);
-  screen_state.text = list_init(INITIAL_ASSET_CAPACITY, (free_func_t)asset_destroy);
+  screen_state.text = list_init(INITIAL_ASSET_CAPACITY,
+                                (free_func_t)asset_destroy);
   create_text(screen_state, text_templates, num_text);
   screen_state.manual_buttons = list_init(INITIAL_ASSET_CAPACITY, NULL);
   create_buttons(screen_state, button_templates, num_buttons);

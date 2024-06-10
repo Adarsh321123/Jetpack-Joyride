@@ -15,14 +15,17 @@ typedef enum
 /**
  * A observer handler.
  * When an event occurs, the observer is passed the event
- *
- * @param key a character indicating which key was pressed
- * @param state object passed in to retrieve and update idx
- * @param event event SDL_Event to retrieve position of mouse clicks
  */
 typedef struct observer observer_t;
 
+/**
+ * Function pointer to call when the observer is notified
+*/
 typedef void (*on_notify_t)(observer_t *observer, event_t event, void *aux);
+
+/**
+ * The freer to use to free the observer.
+*/
 typedef void (*freer_t)(void *observer);
 
 struct observer
