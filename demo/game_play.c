@@ -115,7 +115,11 @@ void on_key(char key, key_event_type_t type, double held_time, game_play_state_t
 void init_observers(game_play_state_t *game_play_state) {  
   game_play_state->subject = subject_init();
   achievements_t *achievements = achievements_init();
-  subject_add_observer(game_play_state->subject, &(achievements->observer));
+  observer_t *observer = achievements_get_observer(achievements);
+  // fprintf(stderr, "Observer created notify function is %p\n", (void*)observer->on_notify);
+  // fprintf(stderr, "Observer pointer is %p\n", (void*)observer);
+  subject_add_observer(game_play_state->subject, observer);
+  // fprintf(stderr, "End of init_observers in game_play.c\n");
 }
 
 game_play_state_t *game_play_init(difficulty_type_t difficulty_level) {

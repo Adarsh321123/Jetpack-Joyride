@@ -10,23 +10,9 @@
 typedef struct achievement achievement_t;
 typedef struct achievements achievements_t;
 
-// TODO: move these back to c
-struct achievement {
-    char *name;
-    size_t progress;
-    size_t target;
-    bool unlocked;
-};
-
-struct achievements {
-    observer_t observer;
-    list_t *achievements_list;
-};
-
-/**
- * Reads the achievements file and returns a list of parsed achievements.
- * Use this for displaying achievements in the settings menu.
- */
+// TODO: add docstrings
+// TODO: ensure all h match with
+observer_t *achievements_get_observer(achievements_t *achievements);
 list_t *read_achievements_settings();
 
 /**

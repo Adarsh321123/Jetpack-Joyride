@@ -2,6 +2,22 @@
 #include "constants.h"
 #include <emscripten.h>
 
+struct achievement {
+    char *name;
+    size_t progress;
+    size_t target;
+    bool unlocked;
+};
+
+struct achievements {
+    observer_t observer;
+    list_t *achievements_list;
+};
+
+observer_t *achievements_get_observer(achievements_t *achievements) {
+  return &(achievements->observer);
+}
+
 static size_t achievements_size(achievements_t *achievements) {
     return list_size(achievements->achievements_list);
 }
