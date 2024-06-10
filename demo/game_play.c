@@ -391,57 +391,6 @@ static void activate_powerup(body_t *body1, body_t *body2, vector_t axis, void *
 }
 
 /**
- * Remvoe the zappers from the screen.
-*/
-static void remove_zappers(game_play_state_t *game_play_state)
-{
-  size_t num_bodies = scene_bodies(game_play_state->state->scene);
-  for (size_t i = 0; i < num_bodies; i++)
-  {
-    body_t *body = scene_get_body(game_play_state->state->scene, i);
-    if (get_type(body) == ZAPPER && body_get_centroid(body).x +
-                                                  ZAPPER_REMOVE_OFFSET < MIN.x)
-    {
-      scene_remove_body(game_play_state->state->scene, i);
-    }
-  }
-}
-
-/**
- * Remove the coins from the game.
-*/
-static void remove_coins(game_play_state_t *game_play_state)
-{
-  size_t num_bodies = scene_bodies(game_play_state->state->scene);
-  for (size_t i = 0; i < num_bodies; i++)
-  {
-    body_t *body = scene_get_body(game_play_state->state->scene, i);
-    if (get_type(body) == COIN && body_get_centroid(body).x + 
-                                                    COIN_REMOVE_OFFSET < MIN.x)
-    {
-      scene_remove_body(game_play_state->state->scene, i);
-    }
-  }
-}
-
-/**
- * Remove the powerup from the game
-*/
-static void remove_powerups(game_play_state_t *game_play_state)
-{
-  size_t num_bodies = scene_bodies(game_play_state->state->scene);
-  for (size_t i = 0; i < num_bodies; i++)
-  {
-    body_t *body = scene_get_body(game_play_state->state->scene, i);
-    if (get_type(body) == POWERUP && body_get_centroid(body).x + 
-                                                  POWERUP_REMOVE_OFFSET < MIN.x)
-    {
-      scene_remove_body(game_play_state->state->scene, i);
-    }
-  }
-}
-
-/**
  * Remove the powerups from the individual boxes.
 */
 static void remove_individual_powerup(game_play_state_t *game_play_state)
@@ -516,24 +465,6 @@ static void remove_warnings(game_play_state_t *game_play_state)
       asset_update_bounding_box_x(
                   game_play_state->rocket->rocket_inactive_asset,
                   ROCKET_INITIAL_X);
-      scene_remove_body(game_play_state->state->scene, i);
-    }
-  }
-}
-
-/**
- * Remove the rockets from the game.
-*/
-static void remove_rockets(game_play_state_t *game_play_state)
-{
-  game_play_state->rocket->time_rocket_activate = game_play_state->time;
-  size_t num_bodies = scene_bodies(game_play_state->state->scene);
-  for (size_t i = 0; i < num_bodies; i++)
-  {
-    body_t *body = scene_get_body(game_play_state->state->scene, i);
-    if (get_type(body) == ROCKET && body_get_centroid(body).x + 
-                                                  ROCKETS_REMOVE_OFFSET < MIN.x)
-    {
       scene_remove_body(game_play_state->state->scene, i);
     }
   }
@@ -902,11 +833,11 @@ state_type_t game_play_main(game_play_state_t *game_play_state)
   render_distance(game_play_state);
   render_coins_collected(game_play_state);
   update_user_pos(game_play_state);
-  remove_zappers(game_play_state);
   remove_lasers(game_play_state);
-  remove_rockets(game_play_state);
-  remove_coins(game_play_state);
-  remove_powerups(game_play_state);
+  remove_moving_bodies(game_play_state->state, ZAPPER);
+  remove_moving_bodies(game_play_state->state, COIN);
+  remove_moving_bodies(game_play_state->state, ROCKET);
+  remove_moving_bodies(game_play_state->state, POWERUP);
   sdl_show();
   scene_tick(state->scene, dt);
   return game_play_state->curr_state;

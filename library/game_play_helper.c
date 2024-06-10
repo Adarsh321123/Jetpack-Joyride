@@ -108,7 +108,8 @@ void remove_moving_bodies(state_temp_t *state, body_type_t info)
   for (size_t i = 0; i < num_bodies; i++)
   {
     body_t *body = scene_get_body(state->scene, i);
-    if (get_type(body) == info && body_get_centroid(body).x + ZAPPER_REMOVE_OFFSET < MIN.x)
+    if (get_type(body) == info && body_get_centroid(body).x +
+                                                      REMOVE_OFFSET < MIN.x)
     {
       scene_remove_body(state->scene, i);
     }

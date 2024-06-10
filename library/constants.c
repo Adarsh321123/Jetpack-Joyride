@@ -35,6 +35,7 @@ const char *MEDIUM_DIFFICULTY_TEXT = "Medium";
 const char *HARD_DIFFICULTY_TEXT = "Hard";
 const char *UNKNOWN_DIFFICULTY_TEXT = "Unknown";
 const char *ERROR_MESSAGE_ASSET = "Invalid asset. Exiting...";
+const double REMOVE_OFFSET = 50;
 
 // WALLS:
 const double WALL_DIM = 1;

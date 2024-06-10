@@ -44,6 +44,7 @@ extern const char *MEDIUM_DIFFICULTY_TEXT;
 extern const char *HARD_DIFFICULTY_TEXT;
 extern const char *UNKNOWN_DIFFICULTY_TEXT;
 extern const char *ERROR_MESSAGE_ASSET;
+extern const double REMOVE_OFFSET;
 
 // WALLS:
 extern const double WALL_DIM;
