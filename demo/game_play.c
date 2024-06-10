@@ -127,6 +127,9 @@ void on_key(char key, key_event_type_t type, double held_time,
   }
 }
 
+/**
+ * Init the achievements observers.
+*/
 static void init_observers(game_play_state_t *game_play_state)
 {
   game_play_state->subject = subject_init();
@@ -380,7 +383,8 @@ void remove_coins(game_play_state_t *game_play_state)
   for (size_t i = 0; i < num_bodies; i++)
   {
     body_t *body = scene_get_body(game_play_state->state->scene, i);
-    if (get_type(body) == COIN && body_get_centroid(body).x + COIN_REMOVE_OFFSET < MIN.x)
+    if (get_type(body) == COIN && body_get_centroid(body).x + 
+                                                    COIN_REMOVE_OFFSET < MIN.x)
     {
       scene_remove_body(game_play_state->state->scene, i);
     }
@@ -393,7 +397,8 @@ void remove_powerups(game_play_state_t *game_play_state)
   for (size_t i = 0; i < num_bodies; i++)
   {
     body_t *body = scene_get_body(game_play_state->state->scene, i);
-    if (get_type(body) == POWERUP && body_get_centroid(body).x + POWERUP_REMOVE_OFFSET < MIN.x)
+    if (get_type(body) == POWERUP && body_get_centroid(body).x + 
+                                                  POWERUP_REMOVE_OFFSET < MIN.x)
     {
       scene_remove_body(game_play_state->state->scene, i);
     }
@@ -403,41 +408,41 @@ void remove_powerups(game_play_state_t *game_play_state)
 void remove_individual_powerup(game_play_state_t *game_play_state)
 {
   game_play_state->powerup->powerup_img->body = NULL;
-  asset_update_bounding_box_x(&game_play_state->powerup->powerup_img->base, POWERUP_INITIAL_X);
+  asset_update_bounding_box_x(&game_play_state->powerup->powerup_img->base,
+                                                            POWERUP_INITIAL_X);
 }
 
 void remove_lasers_inactive(game_play_state_t *game_play_state)
 {
-  // size_t num_bodies = scene_bodies(game_play_state->state->scene);
   for (size_t i = 0; i < scene_bodies(game_play_state->state->scene); i++)
   {
     body_t *body = scene_get_body(game_play_state->state->scene, i);
     if (get_type(body) == LASER)
     {
-      // asset_update_bounding_box_x(game_play_state->laser_inactive_asset, 2 * 1000);
       scene_remove_body(game_play_state->state->scene, i);
     }
   }
   for (size_t i = 0; i < INITIAL_LIST_CAPACITY; i++)
   {
-    asset_update_bounding_box_x(list_get(game_play_state->laser->laser_inactive_assets, i), LASER_INITIAL_X);
+    asset_update_bounding_box_x(list_get(
+                                  game_play_state->laser->laser_inactive_assets,
+                                  i), LASER_INITIAL_X);
   }
 }
 
 void remove_lasers(game_play_state_t *game_play_state)
 {
-  if (game_play_state->time - game_play_state->laser->time_laser_activate >= LASER_ON_TIME)
+  if (game_play_state->time - game_play_state->laser->time_laser_activate >=
+                                                                  LASER_ON_TIME)
   {
     game_play_state->laser->laser_active = false;
     game_play_state->laser->laser_spawn_bool = LASER_INACTIVE_STATE;
     game_play_state->laser->time_laser_activate = INFINITY;
-    // size_t num_bodies = scene_bodies(game_play_state->state->scene);
     for (size_t i = 0; i < scene_bodies(game_play_state->state->scene); i++)
     {
       body_t *body = scene_get_body(game_play_state->state->scene, i);
       if (get_type(body) == LASER_ACTIVE)
       {
-        // asset_update_bounding_box_x(game_play_state->laser_active_asset, 2 * 1000);
         scene_remove_body(game_play_state->state->scene, i);
         subject_notify(game_play_state->subject, EVENT_LASERS_AVOIDED, NULL);
       }
@@ -445,7 +450,9 @@ void remove_lasers(game_play_state_t *game_play_state)
 
     for (size_t i = 0; i < INITIAL_LIST_CAPACITY; i++)
     {
-      asset_update_bounding_box_x(list_get(game_play_state->laser->laser_active_assets, i), LASER_INITIAL_X);
+      asset_update_bounding_box_x(list_get(
+                            game_play_state->laser->laser_active_assets, i), 
+                            LASER_INITIAL_X);
     }
   }
 }
@@ -458,7 +465,9 @@ void remove_warnings(game_play_state_t *game_play_state)
     body_t *body = scene_get_body(game_play_state->state->scene, i);
     if (get_type(body) == ROCKET_WARNING)
     {
-      asset_update_bounding_box_x(game_play_state->rocket->rocket_inactive_asset, ROCKET_INITIAL_X);
+      asset_update_bounding_box_x(
+                  game_play_state->rocket->rocket_inactive_asset,
+                  ROCKET_INITIAL_X);
       scene_remove_body(game_play_state->state->scene, i);
     }
   }
@@ -471,9 +480,9 @@ void remove_rockets(game_play_state_t *game_play_state)
   for (size_t i = 0; i < num_bodies; i++)
   {
     body_t *body = scene_get_body(game_play_state->state->scene, i);
-    if (get_type(body) == ROCKET && body_get_centroid(body).x + ROCKETS_REMOVE_OFFSET < MIN.x)
+    if (get_type(body) == ROCKET && body_get_centroid(body).x + 
+                                                  ROCKETS_REMOVE_OFFSET < MIN.x)
     {
-      // asset_update_bounding_box_x(game_play_state->rocket->rocket_active_asset, 2 * 1000);
       scene_remove_body(game_play_state->state->scene, i);
     }
   }
@@ -483,26 +492,30 @@ void add_zapper(game_play_state_t *game_play_state, double dt)
 {
   game_play_state->zapper->zapper_time += dt;
   bool laser_state = !game_play_state->laser->laser_active;
-  if (laser_state && game_play_state->zapper->zapper_time >= game_play_state->zapper->time_until_zapper)
+  if (laser_state && game_play_state->zapper->zapper_time >= 
+                                    game_play_state->zapper->time_until_zapper)
   {
     game_play_state->zapper->zapper_time = ZERO;
     game_play_state->zapper->time_until_zapper = fmod(rand(),
-                                                      game_play_state->zapper->max_zapper_generation_time -
-                                                          game_play_state->zapper->min_zapper_generation_time) +
-                                                 game_play_state->zapper->min_zapper_generation_time;
-    double y_pos = fmod(rand(), (MAX.y - ZAPPER_CEILING_OFFSET) - (MIN.y + ZAPPER_GROUND_OFFSET)) + ZAPPER_Y_POS_BUFFER;
+                      game_play_state->zapper->max_zapper_generation_time -
+                          game_play_state->zapper->min_zapper_generation_time) +
+                  game_play_state->zapper->min_zapper_generation_time;
+    double y_pos = fmod(rand(), (MAX.y - ZAPPER_CEILING_OFFSET) - 
+                         (MIN.y + ZAPPER_GROUND_OFFSET)) + ZAPPER_Y_POS_BUFFER;
     double x_pos = MAX.x + ZAPPER_X_POS_BUFFER;
     vector_t center = {.x = x_pos, .y = y_pos};
-    // body_t *zapper = make_zapper(center, ZAPPER_WIDTH, ZAPPER_HEIGHT);
-    body_t *zapper = make_obstacle_rectangle(&center, ZAPPER_WIDTH, ZAPPER_HEIGHT, ZAPPER, ZAPPER_VEL);
+    body_t *zapper = make_obstacle_rectangle(&center, ZAPPER_WIDTH,  
+                                            ZAPPER_HEIGHT, ZAPPER, ZAPPER_VEL);
     scene_add_body(game_play_state->state->scene, zapper);
     asset_t *img = asset_make_image_with_body(ZAPPER_PATH, zapper);
     list_add(game_play_state->state->body_assets, img);
     if (!game_play_state->powerup->powerup_active ||
         game_play_state->powerup->powerup_type != SHIELD)
     {
-      create_collision(game_play_state->state->scene, zapper, game_play_state->state->user,
-                       game_over, game_play_state, NULL, DEFAULT_FORCE_CONSTANT);
+      create_collision(game_play_state->state->scene, 
+                        zapper, game_play_state->state->user,
+                       game_over, game_play_state, NULL, 
+                       DEFAULT_FORCE_CONSTANT);
     }
   }
 }
@@ -518,7 +531,8 @@ void magnetic_powerup(game_play_state_t *game_play_state)
       body_t *coin = scene_get_body(game_play_state->state->scene, i);
       if (get_type(coin) == COIN)
       {
-        double euc_dist = euclidean_distance(game_play_state->state->user, coin);
+        double euc_dist = euclidean_distance(game_play_state->state->user,
+                                            coin);
         if (euc_dist <= POWERUP_MIN_DIST)
         {
           create_newtonian_gravity(game_play_state->state->scene, G_CONSTANT,
@@ -534,37 +548,45 @@ void add_coins(game_play_state_t *game_play_state, double dt)
   magnetic_powerup(game_play_state);
   game_play_state->coin->coin_time += dt;
   bool laser_state = !game_play_state->laser->laser_active;
-  if (laser_state && game_play_state->coin->coin_time >= game_play_state->coin->time_until_coin)
+  if (laser_state && game_play_state->coin->coin_time >= 
+      game_play_state->coin->time_until_coin)
   {
     game_play_state->coin->coin_time = ZERO;
     game_play_state->coin->time_until_coin = fmod(rand(),
-                                                  MAX_COIN_GENERATION_TIME - MIN_COIN_GENERATION_TIME) +
-                                             MIN_COIN_GENERATION_TIME;
-    double y_pos = fmod(rand(), (MAX.y - COIN_CEILING_OFFSET) - (MIN.y + COIN_GROUND_OFFSET));
+                        MAX_COIN_GENERATION_TIME - MIN_COIN_GENERATION_TIME) +
+                    MIN_COIN_GENERATION_TIME;
+    double y_pos = fmod(rand(), (MAX.y - COIN_CEILING_OFFSET) -
+                            (MIN.y + COIN_GROUND_OFFSET));
     double x_pos = MAX.x + COIN_X_POS_BUFFER;
     vector_t center = {.x = x_pos, .y = y_pos};
     if (game_play_state->powerup->powerup_active &&
         game_play_state->powerup->powerup_type == MORE_COIN)
     {
       game_play_state->coin->time_until_coin = COIN_GENERATION_TIME_POWERUP;
-      double new_deviation = fmod(rand(), MAX_COIN_DEVIATION_POWERUP) - MIN_COIN_DEVIATION_POWERUP;
+      double new_deviation = fmod(rand(), MAX_COIN_DEVIATION_POWERUP) - 
+                                  MIN_COIN_DEVIATION_POWERUP;
       y_pos = game_play_state->coin->prev_center.y + new_deviation;
     }
     game_play_state->coin->prev_center = center;
-    size_t COIN_GRID_WIDTH = (rand() % (MAX_COIN_GRID_SIZE - MIN_COIN_GRID_SIZE + ONE)) + MIN_COIN_GRID_SIZE;
-    size_t COIN_GRID_HEIGHT = (rand() % (MAX_COIN_GRID_SIZE - MIN_COIN_GRID_SIZE + ONE)) + MIN_COIN_GRID_SIZE;
+    size_t COIN_GRID_WIDTH = (rand() % (MAX_COIN_GRID_SIZE -
+                               MIN_COIN_GRID_SIZE + ONE)) + MIN_COIN_GRID_SIZE;
+    size_t COIN_GRID_HEIGHT = (rand() % (MAX_COIN_GRID_SIZE - 
+                                MIN_COIN_GRID_SIZE + ONE)) + MIN_COIN_GRID_SIZE;
     for (size_t i = 0; i < COIN_GRID_WIDTH; i++)
     {
       for (size_t j = 0; j < COIN_GRID_HEIGHT; j++)
       {
-        vector_t center = {.x = x_pos + (i * COIN_SPACING_X_SHIFT), .y = y_pos + (j * COIN_SPACING_Y_SHIFT)};
-        // body_t *coin = make_coin(COIN_RADIUS, center);
-        body_t *coin = make_obstacle_circle(COIN_RADIUS, &center, COIN, COIN_MASS, COIN_VEL);
+        vector_t center = {.x = x_pos + (i * COIN_SPACING_X_SHIFT), .y = y_pos +
+                                          (j * COIN_SPACING_Y_SHIFT)};
+        body_t *coin = make_obstacle_circle(COIN_RADIUS, &center, COIN, 
+                                                      COIN_MASS, COIN_VEL);
         scene_add_body(game_play_state->state->scene, coin);
         asset_t *img = asset_make_image_with_body(COIN_PATH, coin);
         list_add(game_play_state->state->body_assets, img);
-        create_collision(game_play_state->state->scene, coin, game_play_state->state->user,
-                         collect_coin, img, game_play_state, COIN_FORCE_CONSTANT);
+        create_collision(game_play_state->state->scene, coin, 
+                          game_play_state->state->user,
+                         collect_coin, img, game_play_state,
+                        COIN_FORCE_CONSTANT);
       }
     }
   }
@@ -574,17 +596,19 @@ void add_powerup(game_play_state_t *game_play_state, double dt)
 {
   game_play_state->powerup->powerup_time += dt;
   bool laser_state = !game_play_state->laser->laser_active;
-  if (laser_state && game_play_state->powerup->powerup_time >= game_play_state->powerup->time_until_powerup)
+  if (laser_state && game_play_state->powerup->powerup_time >= 
+                    game_play_state->powerup->time_until_powerup)
   {
     game_play_state->powerup->powerup_time = ZERO;
     game_play_state->powerup->time_until_powerup = fmod(rand(),
-                                                        MAX_POWERUP_GENERATION_TIME - MIN_POWERUP_GENERATION_TIME) +
-                                                   MIN_POWERUP_GENERATION_TIME;
-    double y_pos = fmod(rand(), (MAX.y - POWERUP_CEILING_OFFSET) - (MIN.y + POWERUP_GROUND_OFFSET)) + POWERUP_Y_POS_BUFFER;
+                    MAX_POWERUP_GENERATION_TIME - MIN_POWERUP_GENERATION_TIME) +
+                MIN_POWERUP_GENERATION_TIME;
+    double y_pos = fmod(rand(), (MAX.y - POWERUP_CEILING_OFFSET) - 
+                      (MIN.y + POWERUP_GROUND_OFFSET)) + POWERUP_Y_POS_BUFFER;
     double x_pos = MAX.x + POWERUP_X_POS_BUFFER;
     vector_t center = {.x = x_pos, .y = y_pos};
-    //  body_t *powerup = make_powerup(center, POWERUP_SIZE, POWERUP_SIZE);
-    body_t *powerup = make_obstacle_rectangle(&center, POWERUP_SIZE, POWERUP_SIZE, POWERUP, POWERUP_VEL);
+    body_t *powerup = make_obstacle_rectangle(&center, POWERUP_SIZE, 
+                                            POWERUP_SIZE, POWERUP, POWERUP_VEL);
     scene_add_body(game_play_state->state->scene, powerup);
     asset_t *img = asset_make_image_with_body(POWERUP_PATH, powerup);
     list_add(game_play_state->state->body_assets, img);
@@ -593,7 +617,7 @@ void add_powerup(game_play_state_t *game_play_state, double dt)
                      game_play_state, POWERUP_FORCE_CONSTANT);
   }
   if (game_play_state->powerup->powerup_active && game_play_state->time >=
-                                                      game_play_state->powerup->powerup_start_time + POWERUP_DURATION)
+              game_play_state->powerup->powerup_start_time + POWERUP_DURATION)
   {
     game_play_state->powerup->powerup_active = false;
     remove_individual_powerup(game_play_state);
@@ -605,42 +629,42 @@ void add_rocket(game_play_state_t *game_play_state, double dt)
   game_play_state->rocket->time_rocket += dt;
   bool laser_state = !game_play_state->laser->laser_active;
   if (laser_state && !game_play_state->rocket->rocket_inactive &&
-      game_play_state->rocket->time_rocket >= game_play_state->rocket->rocket_generation_time)
+      game_play_state->rocket->time_rocket >= 
+                              game_play_state->rocket->rocket_generation_time)
   {
     game_play_state->rocket->time_rocket = ZERO;
     game_play_state->rocket->time_rocket_spawn = game_play_state->time;
     game_play_state->rocket->rocket_active = false;
-    double y_pos = fmod(rand(), (MAX.y - MIN.y) - ROCKETS_Y_OFFSET) + ROCKETS_Y_POS_BUFFER;
+    double y_pos = fmod(rand(), (MAX.y - MIN.y) - ROCKETS_Y_OFFSET) + 
+                                                          ROCKETS_Y_POS_BUFFER;
     double x_pos = MAX.x - ROCKETS_X_POS_BUFFER;
     vector_t center = {.x = x_pos, .y = y_pos};
     game_play_state->rocket->rocket_spawn_position = center;
-    // body_t *warning = make_rocket_warning(&center);
-    body_t *warning = make_obstacle_rectangle(&center, WARNING_WIDTH, WARNING_HEIGHT, ROCKET_WARNING, VEC_ZERO);
+    body_t *warning = make_obstacle_rectangle(&center, WARNING_WIDTH, 
+                                    WARNING_HEIGHT, ROCKET_WARNING, VEC_ZERO);
     scene_add_body(game_play_state->state->scene, warning);
-    asset_update_bounding_box(game_play_state->rocket->rocket_inactive_asset, warning);
+    asset_update_bounding_box(game_play_state->rocket->rocket_inactive_asset, 
+                              warning);
     game_play_state->rocket->rocket_inactive = true;
   }
 
-  else if (game_play_state->rocket->rocket_inactive && game_play_state->time - game_play_state->rocket->time_rocket_spawn >= ROCKETS_ACTIVATION_TIME)
+  else if (game_play_state->rocket->rocket_inactive && game_play_state->time - 
+          game_play_state->rocket->time_rocket_spawn >= ROCKETS_ACTIVATION_TIME)
   {
     game_play_state->rocket->time_rocket_activate = game_play_state->time;
     game_play_state->rocket->time_rocket_spawn = INFINITY;
-
     remove_warnings(game_play_state);
     game_play_state->rocket->rocket_spawn_position.x += ROCKETS_X_POS_BUFFER;
-    // body_t *rocket = make_rocket(&game_play_state->rocket->rocket_spawn_position);
     body_t *rocket = make_obstacle_rectangle(&game_play_state->rocket->rocket_spawn_position, ROCKET_WIDTH, ROCKET_HEIGHT, ROCKET, ROCKET_VEL);
     scene_add_body(game_play_state->state->scene, rocket);
-
-    // asset_update_bounding_box(game_play_state->rocket->rocket_active_asset, rocket);
-    // asset_t *img = game_play_state->rocket->rocket_active_asset;
     asset_t *img = asset_make_image_with_body(ROCKET_PATH, rocket);
 
     list_add(game_play_state->state->body_assets, img);
     if (!game_play_state->powerup->powerup_active ||
         game_play_state->powerup->powerup_type != SHIELD)
     {
-      create_collision(game_play_state->state->scene, rocket, game_play_state->state->user, game_over,
+      create_collision(game_play_state->state->scene, rocket, 
+                      game_play_state->state->user, game_over,
                        game_play_state, NULL, DEFAULT_FORCE_CONSTANT);
     }
     game_play_state->rocket->rocket_inactive = false;
@@ -655,27 +679,34 @@ void add_laser(game_play_state_t *game_play_state, double dt)
   {
     case LASER_INACTIVE_STATE:
     {
-      if (game_play_state->laser->time_laser >= game_play_state->laser->laser_generation_time)
+      if (game_play_state->laser->time_laser >=
+          game_play_state->laser->laser_generation_time)
       {
         game_play_state->laser->laser_active = true;
         game_play_state->laser->time_laser = ZERO;
-        size_t size_of_spawn_list = list_size(game_play_state->laser->laser_spawn_positions);
+        size_t size_of_spawn_list = list_size(
+                                game_play_state->laser->laser_spawn_positions);
         for (size_t i = 0; i < size_of_spawn_list; i++)
         {
-          list_remove(game_play_state->laser->laser_spawn_positions, LIST_START_INDEX);
+          list_remove(game_play_state->laser->laser_spawn_positions, 
+                        LIST_START_INDEX);
         }
         game_play_state->laser->time_laser_spawn = game_play_state->time;
-        size_t num_laser_initialize = (size_t)round(fmod(rand(), MAX_NUM_LASERS)) + MIN_NUM_LASERS;
-        size_t start_laser_position = (size_t)round(fmod(rand(), NUM_LASERS - num_laser_initialize));
+        size_t num_laser_initialize = (size_t)round(fmod(
+                                      rand(), MAX_NUM_LASERS)) + MIN_NUM_LASERS;
+        size_t start_laser_position = (size_t)round(fmod(
+                                    rand(), NUM_LASERS - num_laser_initialize));
 
-        for (size_t i = start_laser_position; i < start_laser_position + num_laser_initialize; i++)
+        for (size_t i = start_laser_position; i < start_laser_position +
+                                                    num_laser_initialize; i++)
         {
           vector_t *center = list_get(game_play_state->laser->laser_centers, i);
           list_add(game_play_state->laser->laser_spawn_positions, center);
-          // body_t *laser = make_laser(center);
-          body_t *laser = make_obstacle_rectangle(center, LASER_WIDTH_ACTIVE, LASER_HEIGHT_ACTIVE, LASER, VEC_ZERO);
+          body_t *laser = make_obstacle_rectangle(center, LASER_WIDTH_ACTIVE,
+                                          LASER_HEIGHT_ACTIVE, LASER, VEC_ZERO);
           scene_add_body(game_play_state->state->scene, laser);
-          asset_update_bounding_box(list_get(game_play_state->laser->laser_inactive_assets, i), laser);
+          asset_update_bounding_box(list_get(
+                      game_play_state->laser->laser_inactive_assets, i), laser);
         }
         game_play_state->laser->laser_spawn_bool = LASER_ACTIVE_STATE;
       }
@@ -684,17 +715,18 @@ void add_laser(game_play_state_t *game_play_state, double dt)
 
     case LASER_ACTIVE_STATE:
     {
-      if (game_play_state->time - game_play_state->laser->time_laser_spawn >= LASER_ACTIVATION_TIME)
+      if (game_play_state->time - game_play_state->laser->time_laser_spawn >=
+          LASER_ACTIVATION_TIME)
       {
         game_play_state->laser->time_laser_activate = game_play_state->time;
         game_play_state->laser->time_laser_spawn = INFINITY;
 
         remove_lasers_inactive(game_play_state);
-        size_t size_of_spawn_list = list_size(game_play_state->laser->laser_spawn_positions);
+        size_t size_of_spawn_list = list_size(
+                            game_play_state->laser->laser_spawn_positions);
 
         for (size_t i = 0; i < size_of_spawn_list; i++)
         {
-          // body_t *laser = make_laser_active(list_get(game_play_state->laser->laser_spawn_positions, i));
           body_t *laser = make_obstacle_rectangle(list_get(game_play_state->laser->laser_spawn_positions, i), LASER_WIDTH_ACTIVE, LASER_HEIGHT_ACTIVE, LASER_ACTIVE, VEC_ZERO);
           scene_add_body(game_play_state->state->scene, laser);
           asset_update_bounding_box(list_get(game_play_state->laser->laser_active_assets, i), laser);
