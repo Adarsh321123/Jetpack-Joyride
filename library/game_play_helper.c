@@ -1,6 +1,9 @@
 #include "game_play_helper.h"
 
-body_type_t *make_type_info(body_type_t type)
+/**
+ * Make type of the body.
+*/
+static body_type_t *make_type_info(body_type_t type)
 {
   body_type_t *info = malloc(sizeof(body_type_t));
   assert(info != NULL);
@@ -15,7 +18,14 @@ body_type_t get_type(body_t *body)
   return *(body_type_t *)body_info;
 }
 
-list_t *make_rectangle(vector_t center, double width, double height)
+/** Make a rectangle-shaped body object.
+ *
+ * @param center a vector representing the center of the body.
+ * @param width the width of the rectangle
+ * @param height the height of the rectangle
+ * @return pointer to the rectangle-shaped body
+ */
+static list_t *make_rectangle(vector_t center, double width, double height)
 {
   list_t *points = list_init(INITIAL_LIST_CAPACITY, free);
   vector_t *p1 = malloc(sizeof(vector_t));
@@ -42,7 +52,12 @@ list_t *make_rectangle(vector_t center, double width, double height)
   return points;
 }
 
-void add_walls(state_temp_t *state)
+/**
+ * Adds walls as bodies to the scene.
+ *
+ * @param state the current state of the demo
+ */
+static void add_walls(state_temp_t *state)
 {
   list_t *ceiling_shape =
       make_rectangle((vector_t){MAX.x / 2, MAX.y - CEILING_OFFSET}, MAX.x, WALL_DIM);
@@ -100,7 +115,10 @@ void remove_moving_bodies(state_temp_t *state, body_type_t info)
   }
 }
 
-background_state_t *background_init(const char *bg_path)
+/**
+ * Initializes background
+ */
+static background_state_t *background_init(const char *bg_path)
 {
   background_state_t *state = malloc(sizeof(background_state_t));
   assert(state != NULL);
