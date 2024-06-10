@@ -21,11 +21,17 @@ observer_t *achievements_get_observer(achievements_t *achievements)
   return &(achievements->observer);
 }
 
+/**
+ * Return size of the achievements.
+*/
 static size_t achievements_size(achievements_t *achievements)
 {
   return list_size(achievements->achievements_list);
 }
 
+/**
+ * Initialize an achievements file.
+*/
 static void init_achievements_file()
 {
   FILE *achievements_file = fopen(ACHIEVEMENTS_FILENAME, "w");
@@ -38,6 +44,9 @@ static void init_achievements_file()
   assert(close_result == 0);
 }
 
+/**
+ * Check if the file exists and if not make a new one.
+*/
 static FILE *check_achievements_file()
 {
   FILE *achievements_file = fopen(ACHIEVEMENTS_FILENAME, "r");
@@ -85,6 +94,9 @@ list_t *read_achievements_settings()
   return results;
 }
 
+/**
+ * Read the achievements into an achievement_t for modification.
+*/
 static void read_achievements(achievements_t *achievements)
 {
   FILE *achievements_file = check_achievements_file();
@@ -123,6 +135,9 @@ static void read_achievements(achievements_t *achievements)
   free(line);
 }
 
+/**
+ * Write the updated achievements to the file.
+*/
 static void write_achievements(achievements_t *achievements)
 {
   FILE *achievements_file = fopen(ACHIEVEMENTS_FILENAME, "w");
@@ -155,6 +170,9 @@ static void write_achievements(achievements_t *achievements)
   assert(close_result == 0);
 }
 
+/**
+ * Handle the coin collected event and update progress.
+*/
 static void handle_coin_collected(achievements_t *achievements)
 {
   size_t num_achievements = achievements_size(achievements);
@@ -177,6 +195,9 @@ static void handle_coin_collected(achievements_t *achievements)
   }
 }
 
+/**
+ * Handle the distance traveled event and update progress.
+*/
 static void handle_distance_traveled(achievements_t *achievements, void *aux)
 {
   size_t num_achievements = achievements_size(achievements);
@@ -201,6 +222,9 @@ static void handle_distance_traveled(achievements_t *achievements, void *aux)
   }
 }
 
+/**
+ * Handle the lasers avoided event and update progress.
+*/
 static void handle_lasers_avoided(achievements_t *achievements)
 {
   size_t num_achievements = achievements_size(achievements);

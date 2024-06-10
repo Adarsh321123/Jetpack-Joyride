@@ -10,7 +10,14 @@
 typedef struct achievement achievement_t;
 typedef struct achievements achievements_t;
 
+/**
+ * Return the observer of the achievement.
+*/
 observer_t *achievements_get_observer(achievements_t *achievements);
+
+/**
+ * Read the file of the achievement adn return for settings.
+*/
 list_t *read_achievements_settings();
 
 /**

@@ -55,10 +55,14 @@ body_t *image_asset_get_body(image_asset_t *image_asset);
  */
 asset_t *asset_make_image(const char *filepath, SDL_Rect bounding_box);
 
+/**
+ * Update the bounding box of the asset retrieved.
+*/
 void asset_update_bounding_box(asset_t *image, body_t *body);
 
-void asset_update_bounding_box_center(asset_t *image, vector_t *center, double w, double h);
-
+/**
+ * Update the x-pos of the image.
+*/
 void asset_update_bounding_box_x(asset_t *image, int x);
 
 /**
@@ -71,6 +75,9 @@ void asset_update_bounding_box_x(asset_t *image, int x);
  */
 asset_t *asset_make_image_with_body(const char *filepath, body_t *body);
 
+/**
+ * Make the image_asset_t type for the image.
+*/
 image_asset_t *asset_image_make_image_with_body(const char *filepath, body_t *body);
 
 /**
