@@ -455,7 +455,7 @@ static void remove_lasers(game_play_state_t *game_play_state)
 }
 
 /**
- * Remove the rocket warnings
+ * Remove the rocket warnings.
 */
 static void remove_warnings(game_play_state_t *game_play_state)
 {
@@ -534,6 +534,9 @@ static void magnetic_powerup(game_play_state_t *game_play_state)
   }
 }
 
+/**
+ * Helper for adding the more coins powerup.
+*/
 static double add_more_coins_powerup(game_play_state_t *game_play_state, double y_pos) {
   if (game_play_state->powerup->powerup_active &&
       game_play_state->powerup->powerup_type == MORE_COIN)
@@ -567,10 +570,12 @@ static void add_coins(game_play_state_t *game_play_state, double dt)
     vector_t center = {.x = x_pos, .y = y_pos};
     y_pos = add_more_coins_powerup(game_play_state, y_pos);
     game_play_state->coin->prev_center = center;
+    // we use randomness of width and height
     size_t COIN_GRID_WIDTH = (rand() % (MAX_COIN_GRID_SIZE -
                                MIN_COIN_GRID_SIZE + ONE)) + MIN_COIN_GRID_SIZE;
     size_t COIN_GRID_HEIGHT = (rand() % (MAX_COIN_GRID_SIZE - 
                                 MIN_COIN_GRID_SIZE + ONE)) + MIN_COIN_GRID_SIZE;
+    // iterate through the grid and spawn a block of coins
     for (size_t i = 0; i < COIN_GRID_WIDTH; i++)
     {
       for (size_t j = 0; j < COIN_GRID_HEIGHT; j++)
@@ -582,6 +587,7 @@ static void add_coins(game_play_state_t *game_play_state, double dt)
         scene_add_body(game_play_state->state->scene, coin);
         asset_t *img = asset_make_image_with_body(COIN_PATH, coin);
         list_add(game_play_state->state->body_assets, img);
+        // use a function handler to collect coins
         create_collision(game_play_state->state->scene, coin, 
                           game_play_state->state->user,
                          collect_coin, img, game_play_state,
@@ -702,19 +708,14 @@ static void add_laser_inactive(game_play_state_t *game_play_state) {
   {
     game_play_state->laser->laser_active = true;
     game_play_state->laser->time_laser = ZERO;
-    size_t size_of_spawn_list = list_size(
-                            game_play_state->laser->laser_spawn_positions);
-    for (size_t i = 0; i < size_of_spawn_list; i++)
-    {
-      list_remove(game_play_state->laser->laser_spawn_positions, 
-                    LIST_START_INDEX);
-    }
     game_play_state->laser->time_laser_spawn = game_play_state->time;
+    // we randomly select the number of lasers
     size_t num_laser_initialize = (size_t)round(fmod(
                                   rand(), MAX_NUM_LASERS)) + MIN_NUM_LASERS;
     size_t start_laser_position = (size_t)round(fmod(
                                 rand(), NUM_LASERS - num_laser_initialize));
 
+    // based on random numbers, iteratre and active predefined list of lasers
     for (size_t i = start_laser_position; i < start_laser_position +
                                                 num_laser_initialize; i++)
     {
@@ -734,16 +735,18 @@ static void add_laser_inactive(game_play_state_t *game_play_state) {
  * Logic to add an active laser
 */
 static void add_active_laser(game_play_state_t *game_play_state) {
+  // if inactive laser there for certain amount of time,
+  // replace with active type
   if (game_play_state->time - game_play_state->laser->time_laser_spawn >=
       LASER_ACTIVATION_TIME)
   {
     game_play_state->laser->time_laser_activate = game_play_state->time;
     game_play_state->laser->time_laser_spawn = INFINITY;
-
     remove_lasers_inactive(game_play_state);
     size_t size_of_spawn_list = list_size(
                         game_play_state->laser->laser_spawn_positions);
 
+    // retrieve centers from spawn list
     for (size_t i = 0; i < size_of_spawn_list; i++)
     {
       body_t *laser = make_obstacle_rectangle(list_get(
