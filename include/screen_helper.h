@@ -16,21 +16,6 @@ typedef struct screen_state {
     list_t *manual_buttons;
 } screen_state_t;
 
-// /**
-//  * Initializes and stores the background assets in the screen_state.
-//  */
-// void create_backgrounds(screen_state_t screen_state, background_info_t background_templates[]);
-
-// /**
-//  * Initializes and stores the text assets in the screen_state.
-//  */
-// void create_text(screen_state_t screen_state, text_info_t text_templates[]);
-
-// /**
-//  * Initializes and stores the button assets in the screen_state.
-//  */
-// void create_buttons(screen_state_t screen_state, button_info_t button_templates[]);
-
 /**
  * Render the backgrounds, texts, and buttons for a tick.
  */

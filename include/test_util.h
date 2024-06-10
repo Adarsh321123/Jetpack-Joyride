@@ -6,9 +6,8 @@
 #include <stdbool.h>
 #include <stdio.h>
 #include <string.h>
-
 #include "vector.h"
-// TODO: delete?
+
 /**
  * Returns whether two double values are nearly equal,
  * i.e. within 10 ** -7 of each other.

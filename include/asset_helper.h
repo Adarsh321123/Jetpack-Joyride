@@ -34,7 +34,7 @@ typedef struct button_info {
 
 /**
  * Using `info`, initializes a background in the scene.
- *
+ 
  * @param info the background info struct used to initialize the background
  */
 asset_t *create_background_from_info(background_info_t info);

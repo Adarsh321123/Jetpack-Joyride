@@ -36,6 +36,9 @@ size_t subject_num_observers(subject_t *subject);
 */
 void subject_notify(subject_t *subject, event_t event, void *aux);
 
+/**
+ * Frees the subject
+*/
 void subject_free(subject_t *subject);
 
 #endif // #ifndef __SUBJECT_H__

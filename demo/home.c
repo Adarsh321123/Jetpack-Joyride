@@ -66,7 +66,7 @@ home_state_t *home_init() {
   home_state->screen_state = screen_init(home_state->screen_state, background_templates,
                                           text_templates, button_templates,
                                           num_backgrounds, num_text, num_buttons);
-  home_state->time = 0;
+  home_state->time = ZERO;
   home_state->curr_state = HOME;
   return home_state;
 }

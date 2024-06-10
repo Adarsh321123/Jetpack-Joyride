@@ -22,7 +22,10 @@ struct state {
   game_over_state_t *game_over_state;
 };
 
-void run_home(state_t *state) {
+/**
+ * Running the home screen each tick
+ */
+static void run_home(state_t *state) {
   home_state_t *home_state = state->home_state;
   if (!home_state) {
     home_state = home_init();
@@ -40,7 +43,10 @@ void run_home(state_t *state) {
   }
 }
 
-void run_settings(state_t *state) {
+/**
+ * Running the settings screen each tick
+ */
+static void run_settings(state_t *state) {
   settings_state_t *settings_state = state->settings_state;
   if (!settings_state) {
     settings_state = settings_init();
@@ -60,7 +66,10 @@ void run_settings(state_t *state) {
   }
 }
 
-void run_game_play(state_t *state) {
+/**
+ * Running the game play each tick
+ */
+static void run_game_play(state_t *state) {
   game_play_state_t *game_play_state = state->game_play_state;
   if (!game_play_state) {
     game_play_state = game_play_init(state->difficulty_level);
@@ -78,7 +87,10 @@ void run_game_play(state_t *state) {
   }
 }
 
-void run_game_over(state_t *state) {
+/**
+ * Running the game over screen each tick
+ */
+static void run_game_over(state_t *state) {
   game_over_state_t *game_over_state = state->game_over_state;
   if (!game_over_state) {
     game_over_state = game_over_init();
@@ -98,6 +110,7 @@ void run_game_over(state_t *state) {
 
 state_t *emscripten_init() {
   state_t *state = malloc(sizeof(state_t));
+  assert(state);
   state->curr_state = HOME;
   state->difficulty_level = EASY;
   state->home_state = NULL;

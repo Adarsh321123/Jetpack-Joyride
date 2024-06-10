@@ -105,9 +105,12 @@ static button_info_t button_templates[] = {
      .handler = (void *)set_difficulty_hard}
      };
 
+/**
+ * Displays the current difficulty level selected on the screen
+ * Difficulty level is preserved after playing game again
+ */
 static void display_difficulty_level(settings_state_t *settings_state){
     char difficulty_text[DIFFICULTY_TEXT_SIZE];
-
     switch (settings_state->difficulty_level) {
         case EASY: {
             sprintf(difficulty_text, "%s", EASY_DIFFICULTY_TEXT);
@@ -126,13 +129,15 @@ static void display_difficulty_level(settings_state_t *settings_state){
             break;
         }
     }
-
     SDL_Rect bounding_box = DIFFICULTY_BOX;
     TTF_Font *font = settings_state->difficulty_font;
     TTF_SizeText(font, difficulty_text, &bounding_box.w, &bounding_box.h);
     render_text(difficulty_text, font, BLACK, bounding_box);
 }
 
+/**
+ * Displays the achievements reached by user over all games played in total
+ */
 static void display_achievements(settings_state_t *settings_state) {
   size_t num_achievements = sizeof(achievements_templates) / sizeof(achievements_templates[0]);
   TTF_Font *font = settings_state->achievements_font;
@@ -156,7 +161,7 @@ settings_state_t *settings_init() {
   settings_state->screen_state = screen_init(settings_state->screen_state, background_templates,
                                           text_templates, button_templates,
                                           num_backgrounds, num_text, num_buttons);
-  settings_state->time = 0;
+  settings_state->time = ZERO;
   settings_state->curr_state = SETTINGS;
   settings_state->difficulty_level = EASY;
   settings_state->difficulty_font = init_font(FONT_PATH, DIFFICULTY_FONT_SIZE);
