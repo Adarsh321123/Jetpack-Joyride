@@ -1,62 +1,91 @@
 #include "achievement.h"
+#include "constants.h"
 #include <emscripten.h>
 
-// TODO: inconsistent tabs
-// TODO: occasional weird output in unicode other lang?
+struct achievement
+{
+  char *name;
+  size_t progress;
+  size_t target;
+  bool unlocked;
+};
 
-const size_t INITIAL_ACHIEVEMENTS = 3;
-const char *ACHIEVEMENTS_FILENAME = "/achievements.txt";
-const char *FIRST_ACHIEVEMENT = "Collect 50 Coins|0|50|false";
-const char *SECOND_ACHIEVEMENT = "Travel 1000 Meters In A Game|0|1000|false";  // TODO: test this one more
-const char *THIRD_ACHIEVEMENT = "Avoid 5 Lasers|0|5|false";
+struct achievements
+{
+  observer_t observer;
+  list_t *achievements_list;
+};
 
-size_t achievements_size(achievements_t *achievements) {
-    return list_size(achievements->achievements_list);
+observer_t *achievements_get_observer(achievements_t *achievements)
+{
+  return &(achievements->observer);
 }
 
-void init_achievements_file() {
+/**
+ * Return size of the achievements.
+*/
+static size_t achievements_size(achievements_t *achievements)
+{
+  return list_size(achievements->achievements_list);
+}
+
+/**
+ * Initialize an achievements file.
+*/
+static void init_achievements_file()
+{
   FILE *achievements_file = fopen(ACHIEVEMENTS_FILENAME, "w");
   assert(achievements_file != NULL);
   fprintf(achievements_file, "%s\n", FIRST_ACHIEVEMENT);
   fprintf(achievements_file, "%s\n", SECOND_ACHIEVEMENT);
   fprintf(achievements_file, "%s\n", THIRD_ACHIEVEMENT);
   fflush(achievements_file);
-  int close_result = fclose(achievements_file);  // using int from Adam's example
+  int close_result = fclose(achievements_file); // using int from Adam's example
   assert(close_result == 0);
-  fprintf(stderr, "Initialized new achievements file\n");
 }
 
-list_t *read_achievements_settings() {
+/**
+ * Check if the file exists and if not make a new one.
+*/
+static FILE *check_achievements_file()
+{
   FILE *achievements_file = fopen(ACHIEVEMENTS_FILENAME, "r");
-  if (achievements_file == NULL) {
-    fprintf(stderr, "Achievements file not found. Creating a new one.\n");
+  if (achievements_file == NULL)
+  {
     init_achievements_file();
     achievements_file = fopen(ACHIEVEMENTS_FILENAME, "r");
     assert(achievements_file != NULL);
   }
-  fprintf(stderr, "File opened for reading\n");
-  size_t char_read = 256;
-  char *line = malloc(sizeof(char) * (char_read + 1));
-  list_t *results = list_init(INITIAL_ACHIEVEMENTS, free);
-  while(fgets(line, char_read + 1, achievements_file)) {
-    fprintf(stderr, "%s", line);
-    char *result = malloc(sizeof(char) * (char_read + 1));
-    line[strcspn(line, "\n")] = '\0';
-    char *token = strtok(line, "|");
-    if (token != NULL) {
+  return achievements_file;
+}
+
+list_t *read_achievements_settings()
+{
+  FILE *achievements_file = check_achievements_file();
+  size_t LINE_WITH_TERMINATOR = CHAR_TO_READ + 1;
+  char *line = malloc(sizeof(char) * LINE_WITH_TERMINATOR);
+  list_t *results = list_init(INITIAL_ACHIEVEMENTS, NULL);
+  while (fgets(line, LINE_WITH_TERMINATOR, achievements_file))
+  {
+    char *result = malloc(sizeof(char) * LINE_WITH_TERMINATOR);
+    line[strcspn(line, NEWLINE)] = '\0';
+    char *token = strtok(line, PIPE);
+    if (token != NULL)
+    {
       strcpy(result, token);
     }
-    strcat(result, " ");
-    token = strtok(NULL, "|");
-    if (token != NULL) {
+    strcat(result, SPACE);
+    token = strtok(NULL, PIPE);
+    if (token != NULL)
+    {
       strcat(result, token);
     }
-    strcat(result, "/");
-    token = strtok(NULL, "|");
-    if (token != NULL) {
+    strcat(result, SLASH);
+    token = strtok(NULL, PIPE);
+    if (token != NULL)
+    {
       strcat(result, token);
     }
-    fprintf(stderr, "result: %s\n", result);
     list_add(results, result);
   }
   int close_result = fclose(achievements_file);
@@ -65,192 +94,202 @@ list_t *read_achievements_settings() {
   return results;
 }
 
-void read_achievements(achievements_t *achievements) {
-  FILE *achievements_file = fopen(ACHIEVEMENTS_FILENAME, "r");
-  if (achievements_file == NULL) {
-    fprintf(stderr, "Achievements file not found. Creating a new one.\n");
-    init_achievements_file();
-    achievements_file = fopen(ACHIEVEMENTS_FILENAME, "r");
-    assert(achievements_file != NULL);
-  }
-  fprintf(stderr, "File opened for reading\n");
-  size_t char_read = 256;
-  char *line = malloc(sizeof(char) * (char_read + 1));
-  while(fgets(line, char_read + 1, achievements_file)) {
-    fprintf(stderr, "%s", line);
+/**
+ * Read the achievements into an achievement_t for modification.
+*/
+static void read_achievements(achievements_t *achievements)
+{
+  FILE *achievements_file = check_achievements_file();
+  size_t LINE_WITH_TERMINATOR = CHAR_TO_READ + 1;
+  char *line = malloc(sizeof(char) * (LINE_WITH_TERMINATOR));
+  while (fgets(line, LINE_WITH_TERMINATOR, achievements_file))
+  {
     achievement_t *achievement = malloc(sizeof(achievement_t));
-    line[strcspn(line, "\n")] = '\0';
-    char *token = strtok(line, "|");
-    if (token != NULL) {
-      // TODO: need strdup?
+    line[strcspn(line, NEWLINE)] = '\0';
+    char *token = strtok(line, PIPE);
+    if (token != NULL)
+    {
       achievement->name = strdup(token);
       assert(achievement->name);
     }
-    token = strtok(NULL, "|");
-    if (token != NULL) {
+    token = strtok(NULL, PIPE);
+    if (token != NULL)
+    {
       achievement->progress = atoi(token);
     }
-    token = strtok(NULL, "|");
-    if (token != NULL) {
+    token = strtok(NULL, PIPE);
+    if (token != NULL)
+    {
       achievement->target = atoi(token);
     }
-    token = strtok(NULL, "|");
-    if (token != NULL) {
-      bool unlocked = strcmp(token, "true") == 0;
+    token = strtok(NULL, PIPE);
+    if (token != NULL)
+    {
+      bool unlocked = strcmp(token, TRUE_TEXT) == 0;
       achievement->unlocked = unlocked;
     }
     list_add(achievements->achievements_list, achievement);
-  }
-  fprintf(stderr, "Read all lines\n");
-  fprintf(stderr, "%s\n", ((achievement_t *)list_get(achievements->achievements_list, 0))->name);
-  fprintf(stderr, "%zu\n", ((achievement_t *)list_get(achievements->achievements_list, 0))->progress);
-  fprintf(stderr, "%zu\n", ((achievement_t *)list_get(achievements->achievements_list, 0))->target);
-  if (((achievement_t *)list_get(achievements->achievements_list, 0))->unlocked) {
-      fprintf(stderr, "true\n");
-  } else {
-      fprintf(stderr, "false\n");
   }
   int close_result = fclose(achievements_file);
   assert(close_result == 0);
   free(line);
 }
 
-void write_achievements(achievements_t *achievements) {
+/**
+ * Write the updated achievements to the file.
+*/
+static void write_achievements(achievements_t *achievements)
+{
   FILE *achievements_file = fopen(ACHIEVEMENTS_FILENAME, "w");
   assert(achievements_file != NULL);
-  fprintf(stderr, "File opened for writing\n");
   size_t num_achievements = achievements_size(achievements);
-  for (size_t i = 0; i < num_achievements; i++) {
+  for (size_t i = 0; i < num_achievements; i++)
+  {
     achievement_t *achievement = list_get(achievements->achievements_list, i);
     char *unlocked = NULL;
-    if (achievement->unlocked) {
-      unlocked = "true";
-    } else {
-      unlocked = "false";
+    if (achievement->unlocked)
+    {
+      unlocked = strdup(TRUE_TEXT);
     }
+    else
+    {
+      unlocked = strdup(FALSE_TEXT);
+    }
+    assert(unlocked != NULL);
 
     fprintf(achievements_file, "%s|%zu|%zu|%s\n",
             achievement->name,
             achievement->progress,
             achievement->target,
             unlocked);
+    free(unlocked);
   }
   fflush(achievements_file);
-  fprintf(stderr, "Wrote all lines\n");
 
   int close_result = fclose(achievements_file);
   assert(close_result == 0);
 }
 
-// TODO: clean up later such as constants for strings
-void achievements_on_notify(observer_t *observer, event_t event, void *aux) {
-    fprintf(stderr, "inside achievements_on_notify\n");
-    achievements_t *achievements = (achievements_t *)observer;
-    size_t num_achievements = achievements_size(achievements);
-    fprintf(stderr, "Number of achievements: %zu\n", num_achievements);
-    // TODO: maybe do logic in sep funcs instead of switch?
-    switch (event) {
-        case EVENT_COIN_COLLECTED:
-            fprintf(stderr, "Achievements recieved EVENT_COIN_COLLECTED\n");
-            for (size_t i = 0; i < num_achievements; i++) {
-                achievement_t *cur_achievement = list_get(achievements->achievements_list, i);
-                fprintf(stderr, "Got achievement %zu\n", i);
-                if (strcmp(cur_achievement->name, "Collect 50 Coins") == 0) {
-                    // TODO: update encapsulation later with an "edit" or "put" func to avoid this direct change
-                    // TODO: save instead of casting each time?
-                    if (!((achievement_t *)(achievements->achievements_list->elements[i]))->unlocked) {
-                      ((achievement_t *)(achievements->achievements_list->elements[i]))->progress++;
-                      fprintf(stderr, "Progress on collecting coins: %zu / 50\n", ((achievement_t *)(achievements->achievements_list->elements[i]))->progress);
-                      if (((achievement_t *)(achievements->achievements_list->elements[i]))->progress >=
-                          ((achievement_t *)(achievements->achievements_list->elements[i]))->target) {
-                          ((achievement_t *)(achievements->achievements_list->elements[i]))->unlocked = true;
-                          fprintf(stderr, "Achievement Unlocked: %s\n", ((achievement_t *)(achievements->achievements_list->elements[i]))->name);
-                          ((achievement_t *)(achievements->achievements_list->elements[i]))->progress = ((achievement_t *)(achievements->achievements_list->elements[i]))->target;  // looks better in settings
-                      }
-                    }
-                    break;
-                }
-            }
-            break;
-        case EVENT_DISTANCE_TRAVELED:
-          fprintf(stderr, "Achievements recieved EVENT_DISTANCE_TRAVELED\n");
-          char *dist_traveled = (char *)aux;
-          size_t dist_traveled_num = atoi(dist_traveled);
-          for (size_t i = 0; i < num_achievements; i++) {
-              achievement_t *cur_achievement = list_get(achievements->achievements_list, i);
-              fprintf(stderr, "Got achievement %zu\n", i);
-              if (strcmp(cur_achievement->name, "Travel 1000 Meters In A Game") == 0) {
-                  // TODO: update encapsulation later with an "edit" or "put" func to avoid this direct change
-                  // TODO: save instead of casting each time?
-                  // TODO: only update progress if not unlocked sicne then easier to show in settings
-                  if (!((achievement_t *)(achievements->achievements_list->elements[i]))->unlocked) {
-                    ((achievement_t *)(achievements->achievements_list->elements[i]))->progress = dist_traveled_num;
-                    fprintf(stderr, "Progress on distance traveled: %zu / 1000\n", ((achievement_t *)(achievements->achievements_list->elements[i]))->progress);
-                    if (((achievement_t *)(achievements->achievements_list->elements[i]))->progress >=
-                        ((achievement_t *)(achievements->achievements_list->elements[i]))->target) {
-                        ((achievement_t *)(achievements->achievements_list->elements[i]))->unlocked = true;
-                        fprintf(stderr, "Achievement Unlocked: %s\n", ((achievement_t *)(achievements->achievements_list->elements[i]))->name);
-                        ((achievement_t *)(achievements->achievements_list->elements[i]))->progress = ((achievement_t *)(achievements->achievements_list->elements[i]))->target;  // looks better in settings
-                    }
-                  }
-                  break;
-              }
-          }
-          break;
-        case EVENT_LASERS_AVOIDED:
-          fprintf(stderr, "Achievements recieved EVENT_LASERS_AVOIDED\n");
-          for (size_t i = 0; i < num_achievements; i++) {
-              achievement_t *cur_achievement = list_get(achievements->achievements_list, i);
-              fprintf(stderr, "Got achievement %zu\n", i);
-              if (strcmp(cur_achievement->name, "Avoid 5 Lasers") == 0) {
-                  // TODO: update encapsulation later with an "edit" or "put" func to avoid this direct change
-                  // TODO: save instead of casting each time?
-                  if (!((achievement_t *)(achievements->achievements_list->elements[i]))->unlocked) {
-                    ((achievement_t *)(achievements->achievements_list->elements[i]))->progress++;
-                    fprintf(stderr, "Progress on lasers avoided: %zu / 5\n", ((achievement_t *)(achievements->achievements_list->elements[i]))->progress);
-                    if (((achievement_t *)(achievements->achievements_list->elements[i]))->progress >=
-                        ((achievement_t *)(achievements->achievements_list->elements[i]))->target) {
-                        ((achievement_t *)(achievements->achievements_list->elements[i]))->unlocked = true;
-                        fprintf(stderr, "Achievement Unlocked: %s\n", ((achievement_t *)(achievements->achievements_list->elements[i]))->name);
-                        ((achievement_t *)(achievements->achievements_list->elements[i]))->progress = ((achievement_t *)(achievements->achievements_list->elements[i]))->target;  // looks better in settings
-                    }
-                  }
-                  break;
-              }
-          }
-          break;
-        default:
-            fprintf(stderr, "default on switch for achievements\n");
-            break;
+/**
+ * Handle the coin collected event and update progress.
+*/
+static void handle_coin_collected(achievements_t *achievements)
+{
+  size_t num_achievements = achievements_size(achievements);
+  for (size_t i = 0; i < num_achievements; i++)
+  {
+    achievement_t *cur_achievement = list_get(achievements->achievements_list, i);
+    if (strcmp(cur_achievement->name, FIRST_ACHIEVEMENT_NAME) == 0)
+    {
+      if (!cur_achievement->unlocked)
+      {
+        cur_achievement->progress++;
+        if (cur_achievement->progress >= cur_achievement->target)
+        {
+          cur_achievement->unlocked = true;
+          cur_achievement->progress = cur_achievement->target; // looks better in settings
+        }
+      }
+      break;
     }
-}
-// TODO: rename this file achievements (plural)
-// TODO: laggy
-// TODO: change makefile to not use persistence anymore
-achievements_t *achievements_init() {
-    achievements_t *achievements = malloc(sizeof(achievements_t));
-    assert(achievements != NULL);
-    achievements->observer.on_notify = achievements_on_notify;
-    achievements->observer.freer = achievements_free;
-    fprintf(stderr, "Achievements initialized at %p, observer at %p\n", (void*)achievements, (void*)(&(achievements->observer)));
-    achievements->achievements_list = list_init(INITIAL_ACHIEVEMENTS, (free_func_t)free);
-    fprintf(stderr, "Initialized achievements list\n");
-
-    // achievement_t *achievement = malloc(sizeof(achievement_t));
-    // achievement->name = "Collect 50 Coins";
-    // achievement->progress = 0;
-    // achievement->target = 5;
-    // achievement->unlocked = false;
-    // list_add(achievements->achievements_list, achievement);
-    read_achievements(achievements);
-    return achievements;
+  }
 }
 
-// TODO: heap use after free sometimes
-void achievements_free(void *observer) {
-    fprintf(stderr, "Inside achievements_free\n");
-    achievements_t *achievements = (achievements_t *)observer;
-    write_achievements(achievements);
-    list_free(achievements->achievements_list);
-    free(achievements);
+/**
+ * Handle the distance traveled event and update progress.
+*/
+static void handle_distance_traveled(achievements_t *achievements, void *aux)
+{
+  size_t num_achievements = achievements_size(achievements);
+  char *dist_traveled = (char *)aux;
+  size_t dist_traveled_num = atoi(dist_traveled);
+  for (size_t i = 0; i < num_achievements; i++)
+  {
+    achievement_t *cur_achievement = list_get(achievements->achievements_list, i);
+    if (strcmp(cur_achievement->name, SECOND_ACHIEVEMENT_NAME) == 0)
+    {
+      if (!cur_achievement->unlocked)
+      {
+        cur_achievement->progress = dist_traveled_num;
+        if (cur_achievement->progress >= cur_achievement->target)
+        {
+          cur_achievement->unlocked = true;
+          cur_achievement->progress = cur_achievement->target; // looks better in settings
+        }
+      }
+      break;
+    }
+  }
+}
+
+/**
+ * Handle the lasers avoided event and update progress.
+*/
+static void handle_lasers_avoided(achievements_t *achievements)
+{
+  size_t num_achievements = achievements_size(achievements);
+  for (size_t i = 0; i < num_achievements; i++)
+  {
+    achievement_t *cur_achievement = list_get(achievements->achievements_list, i);
+    if (strcmp(cur_achievement->name, THIRD_ACHIEVEMENT_NAME) == 0)
+    {
+      if (!cur_achievement->unlocked)
+      {
+        cur_achievement->progress++;
+        if (cur_achievement->progress >= cur_achievement->target)
+        {
+          cur_achievement->unlocked = true;
+          cur_achievement->progress = cur_achievement->target; // looks better in settings
+        }
+      }
+      break;
+    }
+  }
+}
+
+void achievements_on_notify(observer_t *observer, event_t event, void *aux)
+{
+  achievements_t *achievements = (achievements_t *)observer;
+  switch (event)
+  {
+    case EVENT_COIN_COLLECTED:
+      handle_coin_collected(achievements);
+      break;
+    case EVENT_DISTANCE_TRAVELED:
+      handle_distance_traveled(achievements, aux);
+      break;
+    case EVENT_LASERS_AVOIDED:
+      handle_lasers_avoided(achievements);
+      break;
+    default:
+      break;
+  }
+}
+
+achievements_t *achievements_init()
+{
+  achievements_t *achievements = malloc(sizeof(achievements_t));
+  assert(achievements != NULL);
+  achievements->observer.on_notify = achievements_on_notify;
+  achievements->observer.freer = achievements_free;
+  achievements->achievements_list = list_init(INITIAL_ACHIEVEMENTS, (free_func_t)free);
+  read_achievements(achievements);
+  return achievements;
+}
+
+void achievements_free(void *observer)
+{
+  achievements_t *achievements = (achievements_t *)observer;
+  write_achievements(achievements);
+  size_t num_achievements = achievements_size(achievements);
+  for (size_t i = 0; i < num_achievements; i++)
+  {
+    achievement_t *achievement = list_get(achievements->achievements_list, i);
+    if (achievement != NULL && achievement->name != NULL)
+    {
+      free(achievement->name);
+    }
+  }
+  list_free(achievements->achievements_list);
+  free(achievements);
 }

@@ -11,7 +11,8 @@
  * Represents the status of a collision between two shapes.
  * The shapes are either not colliding, or they are colliding along some axis.
  */
-typedef struct {
+typedef struct
+{
   /** Whether the two shapes are colliding */
   bool collided;
   /**

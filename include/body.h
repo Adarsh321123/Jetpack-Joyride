@@ -128,6 +128,11 @@ void body_set_color(body_t *body, rgb_color_t *col);
 void body_set_centroid(body_t *body, vector_t x);
 
 /**
+ * Calculates the Euclidean distance between two bodies
+ */
+double euclidean_distance(body_t *body2, body_t *body1);
+
+/**
  * Changes a body's velocity (the time-derivative of its position).
  *
  * @param body a pointer to a body returned from body_init()

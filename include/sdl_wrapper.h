@@ -14,7 +14,8 @@
 #include <stdbool.h>
 
 // Values passed to a key handler when the given arrow key is pressed
-typedef enum {
+typedef enum
+{
   LEFT_ARROW = 1,
   UP_ARROW = 2,
   RIGHT_ARROW = 3,
@@ -31,7 +32,11 @@ typedef enum {
  * #define KEY_PRESSED 0
  * #define KEY_RELEASED 1
  */
-typedef enum { KEY_PRESSED, KEY_RELEASED } key_event_type_t;
+typedef enum
+{
+  KEY_PRESSED,
+  KEY_RELEASED
+} key_event_type_t;
 
 /**
  * A keypress handler.
@@ -128,7 +133,8 @@ TTF_Font *init_font(const char *FONT_PATH, size_t size);
 SDL_Rect make_texr(int x, int y, int w, int h);
 
 /**
- * Find the bounding box of a body given as the input
+ * Find the bounding box of a body given as the input. Modifies based on
+ * the type of the body
  *
  * @param body input body to find the bounding box of
  */

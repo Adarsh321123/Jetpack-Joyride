@@ -1,5 +1,9 @@
+#ifndef __GAME_OVER_H__
+#define __GAME_OVER_H__
+
 #include "math.h"
 #include "sdl_wrapper.h"
+#include "screen_helper.h"
 #include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -7,12 +11,10 @@
 /**
  * Stores any variable needed at every 'tick' of the game
  */
-typedef struct game_over_state {
+typedef struct game_over_state
+{
+  screen_state_t screen_state;
   double time;
-  list_t *text;
-  list_t *backgrounds;
-  list_t *manual_buttons;
-  list_t *button_assets;
   state_type_t curr_state;
 } game_over_state_t;
 
@@ -41,3 +43,5 @@ state_type_t game_over_main(game_over_state_t *game_over_state);
  * @param game_over_state pointer to a game_over state object
  */
 void game_over_free(game_over_state_t *game_over_state);
+
+#endif // #ifndef __GAME_OVER_H__

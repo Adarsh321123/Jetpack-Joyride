@@ -10,31 +10,30 @@
 typedef struct achievement achievement_t;
 typedef struct achievements achievements_t;
 
-// TODO: move these back to c
-struct achievement {
-    char *name;
-    size_t progress;
-    size_t target;
-    bool unlocked;
-};
+/**
+ * Return the observer of the achievement.
+*/
+observer_t *achievements_get_observer(achievements_t *achievements);
 
-struct achievements {
-    observer_t observer;
-    list_t *achievements_list;
-};
-
-// TODO: add docstrings
-size_t achievements_size(achievements_t *achievements);
-void init_achievements_file();
+/**
+ * Read the file of the achievement adn return for settings.
+*/
 list_t *read_achievements_settings();
-void read_achievements(achievements_t *achievements);
-void write_achievements(achievements_t *achievements);
-void sync_to_persistent_storage();
-void sync_from_persistent_storage_and_read(achievements_t *achievements);
-void sync_from_persistent_storage_and_write(achievements_t *achievements);
-void mount_persistent_fs();
+
+/**
+ * Event handler for the achievements.
+ * Use aux to hold information for a specific achievement, like the total distance covered.
+ */
 void achievements_on_notify(observer_t *observer, event_t event, void *aux);
+
+/**
+ * Initialize achievements struct, its superclass observer, and its list of achievements.
+ */
 achievements_t *achievements_init();
+
+/**
+ * Free the achievements.
+ */
 void achievements_free(void *observer);
 
 #endif // #ifndef __ACHIEVEMENT_H__
