@@ -31,24 +31,19 @@ static list_t *make_rectangle(vector_t center, double width, double height)
   vector_t *p1 = malloc(sizeof(vector_t));
   assert(p1 != NULL);
   *p1 = (vector_t){center.x - width / 2, center.y - height / 2};
-
   vector_t *p2 = malloc(sizeof(vector_t));
   assert(p2 != NULL);
   *p2 = (vector_t){center.x + width / 2, center.y - height / 2};
-
   vector_t *p3 = malloc(sizeof(vector_t));
   assert(p3 != NULL);
   *p3 = (vector_t){center.x + width / 2, center.y + height / 2};
-
   vector_t *p4 = malloc(sizeof(vector_t));
   assert(p4 != NULL);
   *p4 = (vector_t){center.x - width / 2, center.y + height / 2};
-
   list_add(points, p1);
   list_add(points, p2);
   list_add(points, p3);
   list_add(points, p4);
-
   return points;
 }
 
@@ -125,13 +120,11 @@ static background_state_t *background_init(const char *bg_path)
 {
   background_state_t *state = malloc(sizeof(background_state_t));
   assert(state != NULL);
-
   state->scroll_speed = BACKGROUND_SCROLL_SPEED;
   state->bg_offset = BACKGROUND_OFFSET;
   SDL_Rect bg_bounds = make_texr(MIN.x, MIN.y, MAX.x, MAX.y);
   state->bg1 = asset_make_image(bg_path, bg_bounds);
   state->bg2 = asset_make_image(bg_path, bg_bounds);
-
   return state;
 }
 

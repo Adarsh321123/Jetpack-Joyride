@@ -66,7 +66,6 @@ void scene_tick(scene_t *scene, double dt)
   {
     body_t *current_body = list_get(scene->bodies, i);
     bool check_body_removed = body_is_removed(current_body);
-
     if (check_body_removed)
     {
       ssize_t j = 0;

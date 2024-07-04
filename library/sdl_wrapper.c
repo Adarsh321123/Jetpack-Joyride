@@ -137,7 +137,6 @@ void sdl_init(vector_t min, vector_t max)
   // Check parameters
   assert(min.x < max.x);
   assert(min.y < max.y);
-
   center = vec_multiply(0.5, vec_add(min, max));
   max_diff = vec_subtract(max, center);
   SDL_Init(SDL_INIT_EVERYTHING);
@@ -315,9 +314,7 @@ void sdl_draw_polygon(polygon_t *poly, rgb_color_t color)
   assert(0 <= color.r && color.r <= 1);
   assert(0 <= color.g && color.g <= 1);
   assert(0 <= color.b && color.b <= 1);
-
   vector_t window_center = get_window_center();
-
   // Convert each vertex to a point on screen
   int16_t *x_points = malloc(sizeof(*x_points) * n),
           *y_points = malloc(sizeof(*y_points) * n);
@@ -355,7 +352,6 @@ void sdl_show(void)
   SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
   SDL_RenderDrawRect(renderer, boundary);
   free(boundary);
-
   SDL_RenderPresent(renderer);
 }
 

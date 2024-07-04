@@ -156,7 +156,6 @@ static void write_achievements(achievements_t *achievements)
       unlocked = strdup(FALSE_TEXT);
     }
     assert(unlocked != NULL);
-
     fprintf(achievements_file, "%s|%zu|%zu|%s\n",
             achievement->name,
             achievement->progress,
@@ -165,7 +164,6 @@ static void write_achievements(achievements_t *achievements)
     free(unlocked);
   }
   fflush(achievements_file);
-
   int close_result = fclose(achievements_file);
   assert(close_result == 0);
 }

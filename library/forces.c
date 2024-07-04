@@ -34,10 +34,8 @@ body_aux_t *body_aux_init(double force_const, list_t *bodies)
 {
   body_aux_t *aux = malloc(sizeof(body_aux_t));
   assert(aux);
-
   aux->bodies = bodies;
   aux->force_const = force_const;
-
   return aux;
 }
 
@@ -53,7 +51,6 @@ collision_aux_t *collision_aux_init(double force_const, list_t *bodies,
 {
   collision_aux_t *collision_aux = malloc(sizeof(collision_aux_t));
   assert(collision_aux);
-
   collision_aux->force_const = force_const;
   collision_aux->bodies = bodies;
   collision_aux->handler = handler;
@@ -76,10 +73,8 @@ force_creator_info_t *force_creator_init(force_creator_t force_creator,
   }
   free(bodies->elements);
   free(bodies);
-
   fc->force_creator = force_creator;
   fc->aux = (body_aux_t *)aux;
-
   return fc;
 }
 
@@ -157,15 +152,12 @@ void create_newtonian_gravity(scene_t *scene, double G, body_t *body1,
 static void spring_force(void *info)
 {
   body_aux_t *aux = info;
-
   double k = aux->force_const;
   body_t *body1 = list_get(aux->bodies, 0);
   body_t *body2 = list_get(aux->bodies, 1);
-
   vector_t center_1 = body_get_centroid(body1);
   vector_t center_2 = body_get_centroid(body2);
   vector_t distance = vec_subtract(center_1, center_2);
-
   vector_t spring_force = {-k * distance.x, -k * distance.y};
   body_add_force(body1, spring_force);
   body_add_force(body2, vec_negate(spring_force));
@@ -196,7 +188,6 @@ static void drag_force(void *info)
   body_aux_t *aux = (body_aux_t *)info;
   vector_t cons_force = vec_multiply(
       -1 * aux->force_const, body_get_velocity(list_get(aux->bodies, 0)));
-
   body_add_force(list_get(aux->bodies, 0), cons_force);
 }
 
@@ -220,21 +211,17 @@ void create_drag(scene_t *scene, double gamma, body_t *body)
 static void collision_force_creator(void *collision_aux)
 {
   collision_aux_t *col_aux = collision_aux;
-
   list_t *bodies = col_aux->bodies;
   body_t *body1 = list_get(bodies, 0);
   body_t *body2 = list_get(bodies, 1);
-
   // Check for collision; if bodies collide, call collision_handler
   bool prev_collision = col_aux->collided;
-
   collision_info_t info = find_collision(body1, body2);
   // avoids registering impulse multiple times while bodies are still
   // colliding
   if (info.collided && !prev_collision)
   {
     collision_handler_t handler = col_aux->handler;
-
     handler(body1, body2, info.axis, col_aux->aux1, col_aux->aux2, col_aux->force_const);
     col_aux->collided = true;
   }
@@ -251,14 +238,11 @@ void create_collision(scene_t *scene, body_t *body1, body_t *body2,
   list_t *bodies = list_init(2, NULL);
   list_add(bodies, body1);
   list_add(bodies, body2);
-
   list_t *aux_bodies = list_init(2, NULL);
   list_add(aux_bodies, body1);
   list_add(aux_bodies, body2);
-
   collision_aux_t *collision_aux =
       collision_aux_init(force_const, aux_bodies, handler, false, aux1, aux2);
-
   scene_add_bodies_force_creator(scene, collision_force_creator, collision_aux,
                                  bodies);
 }
