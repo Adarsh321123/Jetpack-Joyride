@@ -141,7 +141,8 @@ static void init_observers(game_play_state_t *game_play_state)
 /**
  * Malloc the necessary objects.
 */
-static void create_objects(game_play_state_t *game_play_state) {
+static void create_objects(game_play_state_t *game_play_state)
+{
   game_play_state->zapper = malloc(sizeof(zapper_state_t));
   assert(game_play_state->zapper);
   game_play_state->laser = malloc(sizeof(laser_state_t));
@@ -157,7 +158,8 @@ static void create_objects(game_play_state_t *game_play_state) {
 /**
  * Set the values of the rockets
 */
-static void set_rockets_values(game_play_state_t *game_play_state) {
+static void set_rockets_values(game_play_state_t *game_play_state)
+{
   game_play_state->rocket->rocket_inactive = false;
   game_play_state->rocket->rocket_active = false;
   game_play_state->rocket->time_rocket = ZERO;
@@ -175,8 +177,8 @@ static void set_rockets_values(game_play_state_t *game_play_state) {
 /**
  * Set the necessary values like lasers.
 */
-static void set_necessary_values(game_play_state_t *game_play_state,
-                                state_temp_t *state) {
+static void set_necessary_values(game_play_state_t *game_play_state, state_temp_t *state)
+{
   game_play_state->laser->laser_active = false;
   game_play_state->laser->time_laser = ZERO;
   game_play_state->laser->time_laser_spawn = ZERO;
@@ -207,7 +209,8 @@ static void set_necessary_values(game_play_state_t *game_play_state,
 /**
  * Set the logic necessary for the lasers.
 */
-static void set_lasers_values(game_play_state_t *game_play_state) {
+static void set_lasers_values(game_play_state_t *game_play_state)
+{
   SDL_Rect bounding_box_laser = make_texr(LASER_INITIAL_X, LASER_INITIAL_Y, 
                                       LASER_WIDTH_ACTIVE, LASER_HEIGHT_ACTIVE);
   game_play_state->laser->laser_active_assets = list_init(INITIAL_LIST_CAPACITY, 
@@ -245,7 +248,8 @@ static void set_lasers_values(game_play_state_t *game_play_state) {
  * Chagne generation time based on the level
 */
 static void switch_generation_difficulty(game_play_state_t *game_play_state,
-                                        difficulty_type_t difficulty_level) {
+                                        difficulty_type_t difficulty_level)
+{
   switch (difficulty_level)
   {
     case EASY:
@@ -537,7 +541,8 @@ static void magnetic_powerup(game_play_state_t *game_play_state)
 /**
  * Helper for adding the more coins powerup.
 */
-static double add_more_coins_powerup(game_play_state_t *game_play_state, double y_pos) {
+static double add_more_coins_powerup(game_play_state_t *game_play_state, double y_pos)
+{
   if (game_play_state->powerup->powerup_active &&
       game_play_state->powerup->powerup_type == MORE_COIN)
   {
@@ -635,7 +640,8 @@ static void add_powerup(game_play_state_t *game_play_state, double dt)
 /**
  * Make the things for rocket warning.
 */
-static void make_rocket_warning(game_play_state_t *game_play_state) {
+static void make_rocket_warning(game_play_state_t *game_play_state)
+{
   game_play_state->rocket->time_rocket = ZERO;
   game_play_state->rocket->time_rocket_spawn = game_play_state->time;
   game_play_state->rocket->rocket_active = false;
@@ -655,7 +661,8 @@ static void make_rocket_warning(game_play_state_t *game_play_state) {
 /**
  * Make the things for rocket moving.
 */
-static void make_moving_rocket(game_play_state_t *game_play_state) {
+static void make_moving_rocket(game_play_state_t *game_play_state)
+{
   game_play_state->rocket->time_rocket_activate = game_play_state->time;
   game_play_state->rocket->time_rocket_spawn = INFINITY;
   remove_warnings(game_play_state);
@@ -702,7 +709,8 @@ static void add_rocket(game_play_state_t *game_play_state, double dt)
 /**
  * Logic to add an inactive laser
 */
-static void add_laser_inactive(game_play_state_t *game_play_state) {
+static void add_laser_inactive(game_play_state_t *game_play_state)
+{
   if (game_play_state->laser->time_laser >=
       game_play_state->laser->laser_generation_time)
   {
@@ -734,7 +742,8 @@ static void add_laser_inactive(game_play_state_t *game_play_state) {
 /**
  * Logic to add an active laser
 */
-static void add_active_laser(game_play_state_t *game_play_state) {
+static void add_active_laser(game_play_state_t *game_play_state)
+{
   // if inactive laser there for certain amount of time,
   // replace with active type
   if (game_play_state->time - game_play_state->laser->time_laser_spawn >=

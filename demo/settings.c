@@ -44,66 +44,70 @@ static void set_difficulty_hard(settings_state_t *settings_state)
 }
 
 static background_info_t background_templates[] = {
-    {.bg_path = "assets/BackdropMain.png",
-     .bg_box = (SDL_Rect){0, 0, 1000, 500}}};
+  {.bg_path = "assets/BackdropMain.png",
+    .bg_box = (SDL_Rect){0, 0, 1000, 500}}
+};
 
 static text_info_t text_templates[] = {
-    {.font_path = "assets/New Athletic M54.ttf",
-     .text_box = (SDL_Rect){625, 50, 150, 50},
-     .text_color = (rgb_color_t){255, 255, 255},
-     .text = "Settings"},
-    {.font_path = "assets/New Athletic M54.ttf",
-     .text_box = (SDL_Rect){50, 325, 150, 50},
-     .text_color = (rgb_color_t){0, 0, 0},
-     .text = "Current Difficulty Level : "}};
+  {.font_path = "assets/New Athletic M54.ttf",
+    .text_box = (SDL_Rect){625, 50, 150, 50},
+    .text_color = (rgb_color_t){255, 255, 255},
+    .text = "Settings"},
+  {.font_path = "assets/New Athletic M54.ttf",
+    .text_box = (SDL_Rect){50, 325, 150, 50},
+    .text_color = (rgb_color_t){0, 0, 0},
+    .text = "Current Difficulty Level : "}
+};
 
 static text_info_t achievements_templates[] = {
-    {.font_path = "assets/Roboto-Regular.ttf",
-     .text_box = (SDL_Rect){525, 125, 150, 50},
-     .text_color = (rgb_color_t){255, 255, 255},
-     .text = "Achievements"},
-    {.font_path = "assets/Roboto-Regular.ttf",
-     .text_box = (SDL_Rect){525, 175, 150, 50},
-     .text_color = (rgb_color_t){255, 255, 255},
-     .text = ""},
-    {.font_path = "assets/Roboto-Regular.ttf",
-     .text_box = (SDL_Rect){525, 225, 150, 50},
-     .text_color = (rgb_color_t){255, 255, 255},
-     .text = ""},
-    {.font_path = "assets/Roboto-Regular.ttf",
-     .text_box = (SDL_Rect){525, 275, 150, 50},
-     .text_color = (rgb_color_t){255, 255, 255},
-     .text = ""}};
+  {.font_path = "assets/Roboto-Regular.ttf",
+    .text_box = (SDL_Rect){525, 125, 150, 50},
+    .text_color = (rgb_color_t){255, 255, 255},
+    .text = "Achievements"},
+  {.font_path = "assets/Roboto-Regular.ttf",
+    .text_box = (SDL_Rect){525, 175, 150, 50},
+    .text_color = (rgb_color_t){255, 255, 255},
+    .text = ""},
+  {.font_path = "assets/Roboto-Regular.ttf",
+    .text_box = (SDL_Rect){525, 225, 150, 50},
+    .text_color = (rgb_color_t){255, 255, 255},
+    .text = ""},
+  {.font_path = "assets/Roboto-Regular.ttf",
+    .text_box = (SDL_Rect){525, 275, 150, 50},
+    .text_color = (rgb_color_t){255, 255, 255},
+    .text = ""}
+};
 
 static button_info_t button_templates[] = {
-    {.image_path = "assets/button.png",
-     .font_path = "assets/New Athletic M54.ttf",
-     .image_box = (SDL_Rect){100, 25, 300, 100},
-     .text_box = (SDL_Rect){200, 50, 150, 50},
-     .text_color = (rgb_color_t){255, 255, 255},
-     .text = "Home",
-     .handler = (void *)home},
-    {.image_path = "assets/button.png",
-     .font_path = "assets/New Athletic M54.ttf",
-     .image_box = (SDL_Rect){50, 400, 300, 100},
-     .text_box = (SDL_Rect){150, 425, 150, 50},
-     .text_color = (rgb_color_t){255, 255, 255},
-     .text = "Easy",
-     .handler = (void *)set_difficulty_easy},
-    {.image_path = "assets/button.png",
-     .font_path = "assets/New Athletic M54.ttf",
-     .image_box = (SDL_Rect){350, 400, 300, 100},
-     .text_box = (SDL_Rect){450, 425, 150, 50},
-     .text_color = (rgb_color_t){255, 255, 255},
-     .text = "Medium",
-     .handler = (void *)set_difficulty_medium},
-    {.image_path = "assets/button.png",
-     .font_path = "assets/New Athletic M54.ttf",
-     .image_box = (SDL_Rect){650, 400, 300, 100},
-     .text_box = (SDL_Rect){750, 425, 150, 50},
-     .text_color = (rgb_color_t){255, 255, 255},
-     .text = "Hard",
-     .handler = (void *)set_difficulty_hard}};
+  {.image_path = "assets/button.png",
+    .font_path = "assets/New Athletic M54.ttf",
+    .image_box = (SDL_Rect){100, 25, 300, 100},
+    .text_box = (SDL_Rect){200, 50, 150, 50},
+    .text_color = (rgb_color_t){255, 255, 255},
+    .text = "Home",
+    .handler = (void *)home},
+  {.image_path = "assets/button.png",
+    .font_path = "assets/New Athletic M54.ttf",
+    .image_box = (SDL_Rect){50, 400, 300, 100},
+    .text_box = (SDL_Rect){150, 425, 150, 50},
+    .text_color = (rgb_color_t){255, 255, 255},
+    .text = "Easy",
+    .handler = (void *)set_difficulty_easy},
+  {.image_path = "assets/button.png",
+    .font_path = "assets/New Athletic M54.ttf",
+    .image_box = (SDL_Rect){350, 400, 300, 100},
+    .text_box = (SDL_Rect){450, 425, 150, 50},
+    .text_color = (rgb_color_t){255, 255, 255},
+    .text = "Medium",
+    .handler = (void *)set_difficulty_medium},
+  {.image_path = "assets/button.png",
+    .font_path = "assets/New Athletic M54.ttf",
+    .image_box = (SDL_Rect){650, 400, 300, 100},
+    .text_box = (SDL_Rect){750, 425, 150, 50},
+    .text_color = (rgb_color_t){255, 255, 255},
+    .text = "Hard",
+    .handler = (void *)set_difficulty_hard}
+};
 
 /**
  * Displays the current difficulty level selected on the screen

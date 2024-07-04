@@ -26,31 +26,35 @@ static void play(home_state_t *home_state)
   home_state->curr_state = GAME_PLAY;
 }
 
-static background_info_t background_templates[] = {
-    {.bg_path = "assets/jetpack_joyride_home.jpg",
-     .bg_box = (SDL_Rect){0, 0, 1000, 500}}};
+static background_info_t background_templates[] =
+{
+  {.bg_path = "assets/jetpack_joyride_home.jpg",
+    .bg_box = (SDL_Rect){0, 0, 1000, 500}}
+};
 
 static text_info_t text_templates[] = {
-    {.font_path = "assets/New Athletic M54.ttf",
-     .text_box = (SDL_Rect){625, 50, 150, 50},
-     .text_color = (rgb_color_t){255, 255, 255},
-     .text = "Jetpack Joyride"}};
+  {.font_path = "assets/New Athletic M54.ttf",
+    .text_box = (SDL_Rect){625, 50, 150, 50},
+    .text_color = (rgb_color_t){255, 255, 255},
+    .text = "Jetpack Joyride"}
+};
 
 static button_info_t button_templates[] = {
-    {.image_path = "assets/button.png",
-     .font_path = "assets/New Athletic M54.ttf",
-     .image_box = (SDL_Rect){150, 300, 300, 100},
-     .text_box = (SDL_Rect){200, 325, 150, 50},
-     .text_color = (rgb_color_t){255, 255, 255},
-     .text = "Settings",
-     .handler = (void *)settings},
-    {.image_path = "assets/button.png",
-     .font_path = "assets/New Athletic M54.ttf",
-     .image_box = (SDL_Rect){450, 300, 300, 100},
-     .text_box = (SDL_Rect){550, 325, 150, 50},
-     .text_color = (rgb_color_t){255, 255, 255},
-     .text = "Play",
-     .handler = (void *)play}};
+  {.image_path = "assets/button.png",
+    .font_path = "assets/New Athletic M54.ttf",
+    .image_box = (SDL_Rect){150, 300, 300, 100},
+    .text_box = (SDL_Rect){200, 325, 150, 50},
+    .text_color = (rgb_color_t){255, 255, 255},
+    .text = "Settings",
+    .handler = (void *)settings},
+  {.image_path = "assets/button.png",
+    .font_path = "assets/New Athletic M54.ttf",
+    .image_box = (SDL_Rect){450, 300, 300, 100},
+    .text_box = (SDL_Rect){550, 325, 150, 50},
+    .text_color = (rgb_color_t){255, 255, 255},
+    .text = "Play",
+    .handler = (void *)play}
+};
 
 home_state_t *home_init()
 {

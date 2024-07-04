@@ -26,31 +26,36 @@ static void home(game_over_state_t *game_over_state)
   game_over_state->curr_state = HOME;
 }
 
-static background_info_t background_templates[] = {
-    {.bg_path = "assets/jetpack_joyride_game_over.jpg",
-     .bg_box = (SDL_Rect){0, 0, 1000, 500}}};
+static background_info_t background_templates[] = 
+{
+  {.bg_path = "assets/jetpack_joyride_game_over.jpg",
+    .bg_box = (SDL_Rect){0, 0, 1000, 500}
+  }
+};
 
 static text_info_t text_templates[] = {
-    {.font_path = "assets/New Athletic M54.ttf",
-     .text_box = (SDL_Rect){625, 50, 150, 50},
-     .text_color = (rgb_color_t){255, 255, 255},
-     .text = "Game Over..."}};
+  {.font_path = "assets/New Athletic M54.ttf",
+    .text_box = (SDL_Rect){625, 50, 150, 50},
+    .text_color = (rgb_color_t){255, 255, 255},
+    .text = "Game Over..."}
+};
 
 static button_info_t button_templates[] = {
-    {.image_path = "assets/button.png",
-     .font_path = "assets/New Athletic M54.ttf",
-     .image_box = (SDL_Rect){200, 300, 300, 100},
-     .text_box = (SDL_Rect){300, 325, 150, 50},
-     .text_color = (rgb_color_t){255, 255, 255},
-     .text = "Exit",
-     .handler = (void *)exit_game},
-    {.image_path = "assets/button.png",
-     .font_path = "assets/New Athletic M54.ttf",
-     .image_box = (SDL_Rect){500, 300, 300, 100},
-     .text_box = (SDL_Rect){525, 325, 150, 50},
-     .text_color = (rgb_color_t){255, 255, 255},
-     .text = "Play Again",
-     .handler = (void *)home}};
+  {.image_path = "assets/button.png",
+    .font_path = "assets/New Athletic M54.ttf",
+    .image_box = (SDL_Rect){200, 300, 300, 100},
+    .text_box = (SDL_Rect){300, 325, 150, 50},
+    .text_color = (rgb_color_t){255, 255, 255},
+    .text = "Exit",
+    .handler = (void *)exit_game},
+  {.image_path = "assets/button.png",
+    .font_path = "assets/New Athletic M54.ttf",
+    .image_box = (SDL_Rect){500, 300, 300, 100},
+    .text_box = (SDL_Rect){525, 325, 150, 50},
+    .text_color = (rgb_color_t){255, 255, 255},
+    .text = "Play Again",
+    .handler = (void *)home}
+};
 
 game_over_state_t *game_over_init()
 {
