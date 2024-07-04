@@ -64,10 +64,12 @@ list_t *read_achievements_settings()
   FILE *achievements_file = check_achievements_file();
   size_t LINE_WITH_TERMINATOR = CHAR_TO_READ + 1;
   char *line = malloc(sizeof(char) * LINE_WITH_TERMINATOR);
+  assert(line);
   list_t *results = list_init(INITIAL_ACHIEVEMENTS, NULL);
   while (fgets(line, LINE_WITH_TERMINATOR, achievements_file))
   {
     char *result = malloc(sizeof(char) * LINE_WITH_TERMINATOR);
+    assert(result);
     line[strcspn(line, NEWLINE)] = '\0';
     char *token = strtok(line, PIPE);
     if (token != NULL)
@@ -102,9 +104,11 @@ static void read_achievements(achievements_t *achievements)
   FILE *achievements_file = check_achievements_file();
   size_t LINE_WITH_TERMINATOR = CHAR_TO_READ + 1;
   char *line = malloc(sizeof(char) * (LINE_WITH_TERMINATOR));
+  assert(line);
   while (fgets(line, LINE_WITH_TERMINATOR, achievements_file))
   {
     achievement_t *achievement = malloc(sizeof(achievement_t));
+    assert(achievement);
     line[strcspn(line, NEWLINE)] = '\0';
     char *token = strtok(line, PIPE);
     if (token != NULL)

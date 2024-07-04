@@ -88,6 +88,7 @@ body_t *make_obstacle_circle(double radius, vector_t *center, body_type_t info,
   {
     double angle = 2 * M_PI * i / USER_NUM_POINTS;
     vector_t *v = malloc(sizeof(*v));
+    assert(v);
     *v = (vector_t){center->x + radius * cos(angle),
                     center->y + radius * sin(angle)};
     list_add(circle_shape, v);
