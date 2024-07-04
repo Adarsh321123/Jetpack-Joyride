@@ -5,7 +5,7 @@ Team Members: Adarsh Kumarappan, Dhruv Sheth, Rayhan Zirvi
 Welcome to our Jetpack Joyride clone written in C for Caltech's Software Design class!
 
 # Usage
-1. Install sdl2, sdl2_gfx, sdl2_ttf, and sdl2_image.
+1. Install `sdl2`, `sdl2_gfx`, `sdl2_ttf`, and `sdl2_image`.
 2. If necessary, export the necessary PATH variables to point to the libraries. For example, on an M1 Mac I must use:
 ```
 export PKG_CONFIG_PATH="/opt/homebrew/lib/pkgconfig"
