@@ -11,7 +11,9 @@
 #include "sdl_wrapper.h"
 
 /**
- * Handler for entering settings page
+ * Handler for entering settings page.
+ * 
+ * @param home_state the home state when entering settings
  */
 static void settings(home_state_t *home_state)
 {
@@ -19,7 +21,9 @@ static void settings(home_state_t *home_state)
 }
 
 /**
- * Handler for entering game play
+ * Handler for entering game play.
+ * 
+ * @param home_state the home state when entering game play
  */
 static void play(home_state_t *home_state)
 {

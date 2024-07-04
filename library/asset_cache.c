@@ -23,6 +23,11 @@ entry_t *get_entry(size_t i) { return list_get(ASSET_CACHE, i); }
 
 void *get_entry_obj(entry_t *entry) { return entry->obj; }
 
+/**
+ * Frees an entry in the asset cache.
+ * 
+ * @param entry the entry to free
+ */
 static void asset_cache_free_entry(entry_t *entry)
 {
   switch (entry->type)
@@ -59,7 +64,13 @@ void asset_cache_init()
 
 void asset_cache_destroy() { list_free(ASSET_CACHE); }
 
-void *asset_cache_find_obj(asset_type_t ty, const char *filepath)
+/**
+ * Finds an asset in the asset cache.
+ * 
+ * @param ty the type of the asset
+ * @param filepath the filepath of the asset
+ */
+static void *asset_cache_find_obj(asset_type_t ty, const char *filepath)
 {
   size_t size = list_size(ASSET_CACHE);
   for (size_t i = 0; i < size; i++)

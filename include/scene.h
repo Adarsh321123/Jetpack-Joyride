@@ -14,7 +14,8 @@ typedef struct scene scene_t;
 /**
  * A function which adds some forces or impulses to bodies,
  * e.g. from collisions, gravity, or spring forces.
- * Takes in an auxiliary value that can store parameters or state.
+ * 
+ * @param aux auxiliary value that can store parameters or state.
  */
 typedef void (*force_creator_t)(void *aux);
 
@@ -62,8 +63,6 @@ body_t *scene_get_body(scene_t *scene, size_t index);
 void scene_add_body(scene_t *scene, body_t *body);
 
 /**
- * @deprecated Use body_remove() instead
- *
  * Removes and frees the body at a given index from a scene.
  * Asserts that the index is valid.
  *
@@ -73,8 +72,11 @@ void scene_add_body(scene_t *scene, body_t *body);
 void scene_remove_body(scene_t *scene, size_t index);
 
 /**
- * @deprecated Use scene_add_bodies_force_creator() instead
- * so the scene knows which bodies the force creator depends on
+ * Adds a force creator to a scene,
+ * 
+ * @param scene a pointer to a scene returned from scene_init()
+ * @param forcer a force creator function
+ * @param aux an auxiliary value to pass to forcer when it is called
  */
 void scene_add_force_creator(scene_t *scene, force_creator_t forcer, void *aux);
 

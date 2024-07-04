@@ -30,7 +30,14 @@ typedef struct collision_aux
   void *aux2;
 } collision_aux_t;
 
-body_aux_t *body_aux_init(double force_const, list_t *bodies)
+/**
+ * Initialize the body_aux struct with auxiliary values
+ * 
+ * @param force_const the force constant
+ * @param bodies the list of bodies on which the force creator is being applied
+ * @return a pointer to a body_aux_t object
+ */
+static body_aux_t *body_aux_init(double force_const, list_t *bodies)
 {
   body_aux_t *aux = malloc(sizeof(body_aux_t));
   assert(aux);
@@ -39,12 +46,26 @@ body_aux_t *body_aux_init(double force_const, list_t *bodies)
   return aux;
 }
 
-void body_aux_free(void *aux)
+/**
+ * Free the body_aux struct and its aux value
+ */
+static void body_aux_free(void *aux)
 {
   list_free(((body_aux_t *)aux)->bodies);
   free(aux);
 }
 
+/**
+ * Initialize the collision_aux struct with auxiliary values
+ * 
+ * @param force_const the force constant
+ * @param bodies the list of bodies on which the force creator is being applied
+ * @param handler the collision handler
+ * @param collided whether the bodies are colliding
+ * @param aux1 auxiliary value for the first body
+ * @param aux2 auxiliary value for the second body
+ * @return a pointer to a collision_aux_t object
+ */
 collision_aux_t *collision_aux_init(double force_const, list_t *bodies,
                                     collision_handler_t handler, bool collided,
                                     void *aux1, void *aux2)
@@ -249,6 +270,13 @@ void create_collision(scene_t *scene, body_t *body1, body_t *body2,
 
 /**
  * The collision handler for destructive collisions
+ * 
+ * @param body1 the first body in the collision
+ * @param body2 the second body in the collision
+ * @param axis the axis of the collision
+ * @param aux1 auxiliary information about the collision
+ * @param aux2 auxiliary information about the collision
+ * @param force_const the force constant of the collision
  */
 static void destructive_collision(body_t *body1, body_t *body2, vector_t axis,
                                   void *aux1, void *aux2, double force_const)

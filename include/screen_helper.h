@@ -19,16 +19,32 @@ typedef struct screen_state
 
 /**
  * Render the backgrounds, texts, and buttons for a tick.
+ * 
+ * @param screen_state the screen state to help with rendering
+ * 
  */
 void render_items(screen_state_t screen_state);
 
 /**
  * On mouse handler for the screen.
+ * 
+ * @param key the key that was pressed
+ * @param screen_state the screen state
+ * @param event the event that was triggered
  */
 void on_mouse(char key, void *screen_state, SDL_Event event);
 
 /**
  * Initialize the screen state with the backgrounds, text, and buttons.
+ * 
+ * @param screen_state the current screen state to help with rendering
+ * @param background_templates the background templates to use
+ * @param text_templates the text templates to use
+ * @param button_templates the button templates to use
+ * @param num_backgrounds the number of backgrounds to use
+ * @param num_text the number of text to use
+ * @param num_buttons the number of buttons to use
+ * @return the screen state
  */
 screen_state_t screen_init(screen_state_t screen_state,
                             background_info_t background_templates[],
@@ -40,6 +56,8 @@ screen_state_t screen_init(screen_state_t screen_state,
 
 /**
  * Free the background, text, and buttons of the screen_state.
+ * 
+ * @param screen_state the screen state to help with rendering
  */
 void screen_free(screen_state_t screen_state);
 

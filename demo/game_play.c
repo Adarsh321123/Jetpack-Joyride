@@ -88,13 +88,15 @@ struct game_play_state
 };
 
 /**
- * Move user up if space bar is pressed and back down otherwise
+ * Move user up if space bar is pressed and back down otherwise.
+ * However, if the gravity swap powerup is active, then the user will
+ * switch direction of gravity when the space bar is pressed.
  *
  * @param key the character of the key pressed
  * @param type event type connected to key
  * @param held_time double value representing the amount of time the key is held
  * down
- * @param state the current state of game
+ * @param game_play_state the current state of game
  */
 void on_key(char key, key_event_type_t type, double held_time, 
             game_play_state_t *game_play_state)
@@ -128,7 +130,10 @@ void on_key(char key, key_event_type_t type, double held_time,
 }
 
 /**
- * Init the achievements observers.
+ * Initialize the observers. This currently only uses achievements but this can
+ * be expanded to include other types of observers.
+ * 
+ * @param game_play_state the current state of game
 */
 static void init_observers(game_play_state_t *game_play_state)
 {
@@ -139,7 +144,9 @@ static void init_observers(game_play_state_t *game_play_state)
 }
 
 /**
- * Malloc the necessary objects.
+ * Malloc the necessary objects for the game play state.
+ * 
+ * @param game_play_state the current state of game
 */
 static void create_objects(game_play_state_t *game_play_state)
 {
@@ -156,7 +163,9 @@ static void create_objects(game_play_state_t *game_play_state)
 }
 
 /**
- * Set the values of the rockets
+ * Set the values of the rockets.
+ * 
+ * @param game_play_state the current state of game
 */
 static void set_rockets_values(game_play_state_t *game_play_state)
 {
@@ -176,6 +185,9 @@ static void set_rockets_values(game_play_state_t *game_play_state)
 
 /**
  * Set the necessary values like lasers.
+ * 
+ * @param game_play_state the current state of game
+ * @param state the current state of the game containing bodies
 */
 static void set_necessary_values(game_play_state_t *game_play_state, state_temp_t *state)
 {
@@ -208,6 +220,8 @@ static void set_necessary_values(game_play_state_t *game_play_state, state_temp_
 
 /**
  * Set the logic necessary for the lasers.
+ * 
+ * @param game_play_state the current state of game
 */
 static void set_lasers_values(game_play_state_t *game_play_state)
 {
@@ -245,7 +259,10 @@ static void set_lasers_values(game_play_state_t *game_play_state)
 }
 
 /**
- * Chagne generation time based on the level
+ * Change generation time based on the difficulty level.
+ * 
+ * @param game_play_state the current state of game
+ * @param difficulty_level the current difficulty level
 */
 static void switch_generation_difficulty(game_play_state_t *game_play_state,
                                         difficulty_type_t difficulty_level)
@@ -312,6 +329,13 @@ game_play_state_t *game_play_init(difficulty_type_t difficulty_level)
 
 /**
  * Game over function pointer for hitting obstacles.
+ * 
+ * @param body1 the first body in the collision
+ * @param body2 the second body in the collision
+ * @param axis the axis of the collision
+ * @param aux1 the first auxiliary data in the collision
+ * @param aux2 the second auxiliary data in the collision
+ * @param force_const the force constant of the collision
 */
 static void game_over(body_t *body1, body_t *body2, vector_t axis, void *aux1,
                void *aux2, double force_const)
@@ -321,7 +345,14 @@ static void game_over(body_t *body1, body_t *body2, vector_t axis, void *aux1,
 }
 
 /**
- * Function pointer for collecting the coin.
+ * Function pointer for collecting a coin.
+ * 
+ * @param body1 the first body in the collision
+ * @param body2 the second body in the collision
+ * @param axis the axis of the collision
+ * @param aux1 the first auxiliary data in the collision
+ * @param aux2 the second auxiliary data in the collision
+ * @param force_const the force constant of the collision
 */
 static void collect_coin(body_t *body1, body_t *body2, vector_t axis, void *aux1,
                   void *aux2, double force_const)
@@ -329,14 +360,16 @@ static void collect_coin(body_t *body1, body_t *body2, vector_t axis, void *aux1
   asset_t *asset = (asset_t *)aux1;
   body_remove(body1);
   asset_update_bounding_box_x(asset, COIN_OFFSET);
-
   game_play_state_t *game_play_state = (game_play_state_t *)aux2;
   game_play_state->coin->coin_count++;
   subject_notify(game_play_state->subject, EVENT_COIN_COLLECTED, NULL);
 }
 
 /**
- * Make the powerup for the box.
+ * Make the powerup image.
+ * 
+ * @param game_play_state the current state of the game
+ * @param path the path of the image
 */
 static void make_individual_powerup(game_play_state_t *game_play_state,
                             const char *path)
@@ -349,6 +382,13 @@ static void make_individual_powerup(game_play_state_t *game_play_state,
 
 /**
  * Active the powerup once the user hits it.
+ * 
+ * @param body1 the first body in the collision
+ * @param body2 the second body in the collision
+ * @param axis the axis of the collision
+ * @param aux1 the first auxiliary data in the collision
+ * @param aux2 the second auxiliary data in the collision
+ * @param force_const the force constant of the collision
 */
 static void activate_powerup(body_t *body1, body_t *body2, vector_t axis, void *aux1,
                       void *aux2, double force_const)
@@ -398,7 +438,9 @@ static void activate_powerup(body_t *body1, body_t *body2, vector_t axis, void *
 }
 
 /**
- * Remove the powerups from the individual boxes.
+ * Remove the powerup boxes.
+ * 
+ * @param game_play_state the current state of the game
 */
 static void remove_individual_powerup(game_play_state_t *game_play_state)
 {
@@ -409,6 +451,8 @@ static void remove_individual_powerup(game_play_state_t *game_play_state)
 
 /**
  * Remove the inactive lasers from the game.
+ * 
+ * @param game_play_state the current state of the game
 */
 static void remove_lasers_inactive(game_play_state_t *game_play_state)
 {
@@ -430,6 +474,8 @@ static void remove_lasers_inactive(game_play_state_t *game_play_state)
 
 /**
  * Remove the lasers from the game.
+ * 
+ * @param game_play_state the current state of the game
 */
 static void remove_lasers(game_play_state_t *game_play_state)
 {
@@ -460,6 +506,8 @@ static void remove_lasers(game_play_state_t *game_play_state)
 
 /**
  * Remove the rocket warnings.
+ * 
+ * @param game_play_state the current state of the game
 */
 static void remove_warnings(game_play_state_t *game_play_state)
 {
@@ -479,6 +527,9 @@ static void remove_warnings(game_play_state_t *game_play_state)
 
 /**
  * Add the zapper to the game.
+ * 
+ * @param game_play_state the current state of the game
+ * @param dt the time elapsed since the last tick
 */
 static void add_zapper(game_play_state_t *game_play_state, double dt)
 {
@@ -514,6 +565,8 @@ static void add_zapper(game_play_state_t *game_play_state, double dt)
 
 /**
  * Use the magnetic powerup for the coins.
+ * 
+ * @param game_play_state the current state of the game
 */
 static void magnetic_powerup(game_play_state_t *game_play_state)
 {
@@ -539,7 +592,11 @@ static void magnetic_powerup(game_play_state_t *game_play_state)
 }
 
 /**
- * Helper for adding the more coins powerup.
+ * Helper for adding the powerup for more coins.
+ * 
+ * @param game_play_state the current state of the game
+ * @param y_pos the current y position of the coin
+ * @return the potentially new y position of the coin
 */
 static double add_more_coins_powerup(game_play_state_t *game_play_state, double y_pos)
 {
@@ -556,6 +613,9 @@ static double add_more_coins_powerup(game_play_state_t *game_play_state, double 
 
 /**
  * Add the coins to the game.
+ * 
+ * @param game_play_state the current state of the game
+ * @param dt the time elapsed since the last tick
 */
 static void add_coins(game_play_state_t *game_play_state, double dt)
 {
@@ -604,6 +664,9 @@ static void add_coins(game_play_state_t *game_play_state, double dt)
 
 /**
  * Add a powerup to the user.
+ * 
+ * @param game_play_state the current state of the game
+ * @param dt the time elapsed since the last tick
 */
 static void add_powerup(game_play_state_t *game_play_state, double dt)
 {
@@ -638,7 +701,9 @@ static void add_powerup(game_play_state_t *game_play_state, double dt)
 }
 
 /**
- * Make the things for rocket warning.
+ * Make the necessary items for the rocket warning.
+ * 
+ * @param game_play_state the current state of the game
 */
 static void make_rocket_warning(game_play_state_t *game_play_state)
 {
@@ -659,7 +724,9 @@ static void make_rocket_warning(game_play_state_t *game_play_state)
 }
 
 /**
- * Make the things for rocket moving.
+ * Make the necessary items for the rocket moving.
+ * 
+ * @param game_play_state the current state of the game
 */
 static void make_moving_rocket(game_play_state_t *game_play_state)
 {
@@ -687,6 +754,9 @@ static void make_moving_rocket(game_play_state_t *game_play_state)
 
 /**
  * Add the rocket to the game.
+ * 
+ * @param game_play_state the current state of the game
+ * @param dt the time elapsed since the last tick
 */
 static void add_rocket(game_play_state_t *game_play_state, double dt)
 {
@@ -707,7 +777,9 @@ static void add_rocket(game_play_state_t *game_play_state, double dt)
 }
 
 /**
- * Logic to add an inactive laser
+ * Add an inactive laser.
+ * 
+ * @param game_play_state the current state of the game
 */
 static void add_laser_inactive(game_play_state_t *game_play_state)
 {
@@ -740,7 +812,9 @@ static void add_laser_inactive(game_play_state_t *game_play_state)
 }
 
 /**
- * Logic to add an active laser
+ * Add an active laser.
+ * 
+ * @param game_play_state the current state of the game
 */
 static void add_active_laser(game_play_state_t *game_play_state)
 {
@@ -781,7 +855,10 @@ static void add_active_laser(game_play_state_t *game_play_state)
 }
 
 /**
- * Add the laser to the game
+ * Add the laser to the game.
+ * 
+ * @param game_play_state the current state of the game
+ * @param dt the time elapsed since the last tick
 */
 static void add_laser(game_play_state_t *game_play_state, double dt)
 {
@@ -807,8 +884,9 @@ static void add_laser(game_play_state_t *game_play_state, double dt)
 }
 
 /**
- * Renders the distance traveled on the screen
- * Updates the achievements accordingly
+ * Renders the distance traveled on the screen and notifies the observers of this event.
+ * 
+ * @param game_play_state the current state of the game
  */
 static void render_distance(game_play_state_t *game_play_state)
 {
@@ -827,8 +905,9 @@ static void render_distance(game_play_state_t *game_play_state)
 }
 
 /**
- * Renders the coins collected on the screen
- * Updates the achievements accordingly
+ * Renders the coins collected on the screen and notifies the observers of this event.
+ * 
+ * @param game_play_state the current state of the game
  */
 static void render_coins_collected(game_play_state_t *game_play_state)
 {
@@ -842,7 +921,9 @@ static void render_coins_collected(game_play_state_t *game_play_state)
 }
 
 /**
- * Updates the user position to prevent going above the ceiling or below the ground
+ * Updates the user position to prevent going above the ceiling or below the ground.
+ * 
+ * @param game_play_state the current state of the game
  */
 static void update_user_pos(game_play_state_t *game_play_state)
 {
@@ -901,7 +982,9 @@ state_type_t game_play_main(game_play_state_t *game_play_state)
 }
 
 /**
- * Frees everything in the general state
+ * Frees everything in the general state with its bodies.
+ * 
+ * @param game_play_state the current state of the game
  */
 static void state_free(game_play_state_t *game_play_state)
 {
@@ -915,7 +998,9 @@ static void state_free(game_play_state_t *game_play_state)
 }
 
 /**
- * Frees everything in the laser state
+ * Frees everything in the laser state.
+ * 
+ * @param game_play_state the current state of the game
  */
 static void laser_free(game_play_state_t *game_play_state)
 {

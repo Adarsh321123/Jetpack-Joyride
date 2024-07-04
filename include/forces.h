@@ -8,12 +8,19 @@ typedef struct force_creator_info force_creator_info_t;
 
 /**
  * Initialize the force creator struct with auxiliary values
+ * 
+ * @param force_creator the force creator
+ * @param aux the auxiliary value
+ * @param bodies the list of bodies on which the force creator is being applied
+ * @return a pointer to a force_creator_info_t object
  */
 force_creator_info_t *force_creator_init(force_creator_t force_creator,
                                          void *aux, list_t *bodies);
 
 /**
  * Free the force creator struct and its aux value
+ * 
+ * @param fc the force creator to free
  */
 void force_creator_free(void *fc);
 
@@ -21,16 +28,22 @@ void force_creator_free(void *fc);
  * Returns a list of bodies associated to force_creator_info_t object
  * since list of bodies on which force creator is being applied is not directly
  * accessible by other files
+ * 
+ * @param info the force_creator_info_t object as a void *
+ * @return a list of bodies associated to force_creator_info_t object
  */
 list_t *get_bodies_force_creator(void *info);
 
 /**
  * Apply the force creator on the given auxiliary data for it.
+ * 
+ * @param info the force_creator_info_t object
  */
 void apply_force_creator(force_creator_info_t *info);
 
 /**
  * A function called when a collision occurs.
+ * 
  * @param body1 the first body passed to create_collision()
  * @param body2 the second body passed to create_collision()
  * @param axis a unit vector pointing from body1 towards body2
@@ -120,6 +133,13 @@ void create_destructive_collision(scene_t *scene, body_t *body1, body_t *body2);
 /**
  * The collision handler for for physics collisions. Applies impulses to
  * bodies according to the elasticity in `aux`.
+ * 
+ * @param body1 the first body in the collision
+ * @param body2 the second body in the collision
+ * @param axis the collision axis
+ * @param aux1 the first auxiliary value for the collision
+ * @param aux2 the second auxiliary value for the collision
+ * @param force_const the force constant for the collision
  */
 void physics_collision_handler(body_t *body1, body_t *body2, vector_t axis,
                                void *aux1, void *aux2, double force_const);

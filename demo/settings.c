@@ -12,7 +12,9 @@
 #include "achievement.h"
 
 /**
- * Handler for going back to home screen
+ * Handler for going back to home screen.
+ * 
+ * @param settings_state the settings state
  */
 static void home(settings_state_t *settings_state)
 {
@@ -20,7 +22,9 @@ static void home(settings_state_t *settings_state)
 }
 
 /**
- * Handler for setting the difficulty of game to easy
+ * Handler for setting the difficulty of the game to easy.
+ * 
+ * @param settings_state the settings state
  */
 static void set_difficulty_easy(settings_state_t *settings_state)
 {
@@ -28,7 +32,9 @@ static void set_difficulty_easy(settings_state_t *settings_state)
 }
 
 /**
- * Handler for setting the difficulty of game to medium
+ * Handler for setting the difficulty of the game to medium.
+ * 
+ * @param settings_state the settings state
  */
 static void set_difficulty_medium(settings_state_t *settings_state)
 {
@@ -36,7 +42,9 @@ static void set_difficulty_medium(settings_state_t *settings_state)
 }
 
 /**
- * Handler for setting the difficulty of game to hard
+ * Handler for setting the difficulty of the game to hard
+ * 
+ * @param settings_state the settings state
  */
 static void set_difficulty_hard(settings_state_t *settings_state)
 {
@@ -110,8 +118,9 @@ static button_info_t button_templates[] = {
 };
 
 /**
- * Displays the current difficulty level selected on the screen
- * Difficulty level is preserved after playing game again
+ * Displays the current difficulty level selected on the screen.
+ * 
+ * @param settings_state the settings state
  */
 static void display_difficulty_level(settings_state_t *settings_state)
 {
@@ -146,7 +155,9 @@ static void display_difficulty_level(settings_state_t *settings_state)
 }
 
 /**
- * Displays the achievements reached by user over all games played in total
+ * Displays the achievements reached by the user over all of their played games.
+ * 
+ * @param settings_state the settings state
  */
 static void display_achievements(settings_state_t *settings_state)
 {

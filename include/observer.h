@@ -20,11 +20,17 @@ typedef struct observer observer_t;
 
 /**
  * Function pointer to call when the observer is notified
+ * 
+ * @param observer the observer that was notified
+ * @param event the event that was notified
+ * @param aux any auxiliary data that was passed to the observer
 */
 typedef void (*on_notify_t)(observer_t *observer, event_t event, void *aux);
 
 /**
  * The freer to use to free the observer.
+ * 
+ * @param observer the observer to free
 */
 typedef void (*freer_t)(void *observer);
 

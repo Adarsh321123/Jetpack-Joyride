@@ -67,6 +67,7 @@ static vector_t get_max_min_projections(list_t *shape, vector_t unit_axis)
  *
  * @param shape1 the first shape
  * @param shape2 the second shape
+ * @param min_overlap the minimum overlap between the two shapes
  * @return whether the shapes are colliding
  */
 static collision_info_t compare_collision(list_t *shape1, list_t *shape2,

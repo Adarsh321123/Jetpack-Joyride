@@ -11,7 +11,9 @@
 #include "sdl_wrapper.h"
 
 /**
- * Handler for exiting the game
+ * Handler for exiting the game.
+ * 
+ * @param game_over_state The game over state when exiting
  */
 static void exit_game(game_over_state_t *game_over_state)
 {
@@ -19,7 +21,9 @@ static void exit_game(game_over_state_t *game_over_state)
 }
 
 /**
- * Handler for going to homescreen
+ * Handler for going home.
+ * 
+ * @param game_over_state The game over state when going home
  */
 static void home(game_over_state_t *game_over_state)
 {

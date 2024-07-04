@@ -22,7 +22,10 @@ observer_t *achievements_get_observer(achievements_t *achievements)
 }
 
 /**
- * Return size of the achievements.
+ * Return the size of the achievements.
+ * 
+ * @param achievements the achievements to get the size of.
+ * @return the size of the achievements.
 */
 static size_t achievements_size(achievements_t *achievements)
 {
@@ -45,7 +48,9 @@ static void init_achievements_file()
 }
 
 /**
- * Check if the file exists and if not make a new one.
+ * Check if the file exists and, if not, make a new one.
+ * 
+ * @return the achievements file.
 */
 static FILE *check_achievements_file()
 {
@@ -98,6 +103,8 @@ list_t *read_achievements_settings()
 
 /**
  * Read the achievements into an achievement_t for modification.
+ * 
+ * @param achievements the achievements to read into.
 */
 static void read_achievements(achievements_t *achievements)
 {
@@ -141,6 +148,8 @@ static void read_achievements(achievements_t *achievements)
 
 /**
  * Write the updated achievements to the file.
+ * 
+ * @param achievements the achievements to write.
 */
 static void write_achievements(achievements_t *achievements)
 {
@@ -174,6 +183,8 @@ static void write_achievements(achievements_t *achievements)
 
 /**
  * Handle the coin collected event and update progress.
+ * 
+ * @param achievements the achievements to update.
 */
 static void handle_coin_collected(achievements_t *achievements)
 {
@@ -199,6 +210,9 @@ static void handle_coin_collected(achievements_t *achievements)
 
 /**
  * Handle the distance traveled event and update progress.
+ * 
+ * @param achievements the achievements to update.
+ * @param aux the distance traveled.
 */
 static void handle_distance_traveled(achievements_t *achievements, void *aux)
 {
@@ -226,6 +240,8 @@ static void handle_distance_traveled(achievements_t *achievements, void *aux)
 
 /**
  * Handle the lasers avoided event and update progress.
+ * 
+ * @param achievements the achievements to update.
 */
 static void handle_lasers_avoided(achievements_t *achievements)
 {

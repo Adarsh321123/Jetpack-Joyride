@@ -23,8 +23,20 @@ typedef struct
  */
 extern const vector_t VEC_ZERO;
 
+/**
+ * Allocates memory for a vector and initializes it.
+ * 
+ * @param x the x component of the vector
+ * @param y the y component of the vector
+ * @return the pointer to the newly allocated vector
+ */
 vector_t *vector_init(double x, double y);
 
+/**
+ * Frees the memory allocated for a vector.
+ * 
+ * @param vector the vector to free
+ */
 void vector_free(vector_t *vector);
 
 /**

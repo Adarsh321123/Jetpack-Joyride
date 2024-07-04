@@ -24,8 +24,9 @@ typedef struct powerup_state powerup_state_t;
  * Initializes sdl as well as the variables needed
  * Creates and stores all necessary variables for the game in a created state
  * variable
- * Returns the pointer to this state
+ * 
  * @param difficulty_level associated with the game
+ * @return pointer to a game_play_state_t object
  */
 game_play_state_t *game_play_init(difficulty_type_t difficulty_level);
 
@@ -34,8 +35,8 @@ game_play_state_t *game_play_init(difficulty_type_t difficulty_level);
  * Updates the state variables and display as necessary, depending on the time
  * that has passed.
  *
- * @param game_play_state pointer to a state object
- * @return the current state that the game is in
+ * @param game_play_state the current state of the game
+ * @return the current state type
  */
 state_type_t game_play_main(game_play_state_t *game_play_state);
 

@@ -154,6 +154,11 @@ asset_t *asset_make_button(SDL_Rect bounding_box, asset_t *image_asset,
 /**
  * Checks whether the mouse click is within the bounding
  * box of the given button.
+ * 
+ * @param button the button to check
+ * @param x the x coordinate of the mouse click
+ * @param y the y coordinate of the mouse click
+ * @return true if the mouse click is within the bounding box
  */
 static bool in_bounding_box(asset_t *button, double x, double y)
 {

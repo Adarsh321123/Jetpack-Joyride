@@ -34,6 +34,7 @@ typedef struct button_asset button_asset_t;
 /**
  * Gets the `asset_type_t` of the asset.
  *
+ * @param asset the asset to get the type of
  * @return the type of the asset.
  */
 asset_type_t asset_get_type(asset_t *asset);
@@ -41,6 +42,7 @@ asset_type_t asset_get_type(asset_t *asset);
 /**
  * Gets the `body_t` type associated with an image asset.
  *
+ * @param image_asset the image asset to get the body of
  * @return the body associated with the image.
  */
 body_t *image_asset_get_body(image_asset_t *image_asset);
@@ -57,11 +59,17 @@ asset_t *asset_make_image(const char *filepath, SDL_Rect bounding_box);
 
 /**
  * Update the bounding box of the asset retrieved.
+ * 
+ * @param image the image to update the bounding box of
+ * @param body the body to get the bounding box of
 */
 void asset_update_bounding_box(asset_t *image, body_t *body);
 
 /**
  * Update the x-pos of the image.
+ * 
+ * @param image the image to update the x-pos of
+ * @param x the x-pos to update the image to
 */
 void asset_update_bounding_box_x(asset_t *image, int x);
 
@@ -77,6 +85,10 @@ asset_t *asset_make_image_with_body(const char *filepath, body_t *body);
 
 /**
  * Make the image_asset_t type for the image.
+ * 
+ * @param filepath the filepath to the image file
+ * @param body the body to render the image on top of
+ * @return a pointer to the newly allocated image asset
 */
 image_asset_t *asset_image_make_image_with_body(const char *filepath, body_t *body);
 
@@ -113,6 +125,7 @@ typedef void (*button_handler_t)(void *state);
  * @param image_asset the image that the button renders. Can be NULL.
  * @param text_asset the text that the button renders. Can be NULL.
  * @param handler the button handler that runs when the button is clicked.
+ * @return a pointer to the newly allocated button asset
  */
 asset_t *asset_make_button(SDL_Rect bounding_box, asset_t *image_asset,
                            asset_t *text_asset, button_handler_t handler);

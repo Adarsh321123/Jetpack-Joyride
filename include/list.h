@@ -67,6 +67,7 @@ void *list_get(list_t *list, size_t index);
  * Asserts that the index is valid, given the list's current size.
  *
  * @param list a pointer to a list returned from list_init()
+ * @param index an index in the list (the first element is at 0)
  * @return the element at the given index in the list
  */
 void *list_remove(list_t *list, size_t index);

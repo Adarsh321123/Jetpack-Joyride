@@ -49,8 +49,12 @@ uint32_t key_start_timestamp;
  */
 clock_t last_clock = 0;
 
-/** Computes the center of the window in pixel coordinates */
-vector_t get_window_center(void)
+/**
+ * Computes the center of the window in pixel coordinates
+ * 
+ * @return the center of the window in pixel coordinates as a vector_t
+ */
+static vector_t get_window_center(void)
 {
   int *width = malloc(sizeof(*width)), *height = malloc(sizeof(*height));
   assert(width != NULL);
@@ -66,8 +70,11 @@ vector_t get_window_center(void)
  * Computes the scaling factor between scene coordinates and pixel coordinates.
  * The scene is scaled by the same factor in the x and y dimensions,
  * chosen to maximize the size of the scene while keeping it in the window.
+ * 
+ * @param window_center the center of the window in pixel coordinates
+ * @return the scaling factor
  */
-double get_scene_scale(vector_t window_center)
+static double get_scene_scale(vector_t window_center)
 {
   // Scale scene so it fits entirely in the window
   double x_scale = window_center.x / max_diff.x,
@@ -75,8 +82,14 @@ double get_scene_scale(vector_t window_center)
   return x_scale < y_scale ? x_scale : y_scale;
 }
 
-/** Maps a scene coordinate to a window coordinate */
-vector_t get_window_position(vector_t scene_pos, vector_t window_center)
+/**
+ * Maps a scene coordinate to a window coordinate
+ * 
+ * @param scene_pos the scene coordinate
+ * @param window_center the center of the window in pixel coordinates
+ * @return the window coordinate as a vector_t
+ */
+static vector_t get_window_position(vector_t scene_pos, vector_t window_center)
 {
   // Scale scene coordinates by the scaling factor
   // and map the center of the scene to the center of the window
@@ -93,6 +106,9 @@ vector_t get_window_position(vector_t scene_pos, vector_t window_center)
  * Converts an SDL key code to a char.
  * 7-bit ASCII characters are just returned
  * and arrow keys are given special character codes.
+ * 
+ * @param key the SDL key code
+ * @return the corresponding char
  */
 char get_keycode(SDL_Keycode key)
 {
@@ -118,6 +134,9 @@ char get_keycode(SDL_Keycode key)
  * Converts an SDL mouse button code to a corresponding char representing the
  * button. `SDL_BUTTON_LEFT` is mapped to `MOUSE_LEFT`, `SDL_BUTTON_RIGHT` is
  * mapped to `MOUSE_RIGHT`, and other button codes are ignored (returning '\0').
+ * 
+ * @param button the SDL mouse button code
+ * @return the corresponding char
  */
 char get_mousecode(Uint8 button)
 {

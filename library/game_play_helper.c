@@ -2,6 +2,9 @@
 
 /**
  * Make type of the body.
+ * 
+ * @param type the type of the body
+ * @return pointer to the type of the body
 */
 static body_type_t *make_type_info(body_type_t type)
 {
@@ -116,6 +119,9 @@ void remove_moving_bodies(state_temp_t *state, body_type_t info)
 
 /**
  * Initializes background
+ * 
+ * @param bg_path the path to the background image
+ * @return pointer to the background state
  */
 static background_state_t *background_init(const char *bg_path)
 {

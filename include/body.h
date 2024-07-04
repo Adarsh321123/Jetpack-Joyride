@@ -16,6 +16,11 @@ typedef struct body body_t;
 /**
  * Initializes a body without any info.
  * Acts like body_init_with_info() where info and info_freer are NULL.
+ * 
+ * @param shape a list of vectors describing the initial shape of the body
+ * @param mass the mass of the body
+ * @param color the color of the body
+ * @return a pointer to the newly allocated body
  */
 
 body_t *body_init(list_t *shape, double mass, rgb_color_t color);
@@ -114,7 +119,7 @@ void *body_get_info(body_t *body);
  * Sets the display color of a body.
  *
  * @param body a pointer to a body returned from body_init()
- * @param the body's color, as an (R, G, B) tuple
+ * @param col the body's color, as an (R, G, B) tuple
  */
 void body_set_color(body_t *body, rgb_color_t *col);
 
@@ -129,6 +134,9 @@ void body_set_centroid(body_t *body, vector_t x);
 
 /**
  * Calculates the Euclidean distance between two bodies
+ * 
+ * @param body1 a pointer to a body returned from body_init()
+ * @param body2 a pointer to a body returned from body_init()
  */
 double euclidean_distance(body_t *body2, body_t *body1);
 

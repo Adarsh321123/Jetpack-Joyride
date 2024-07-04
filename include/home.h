@@ -10,7 +10,6 @@
 
 /**
  * Stores the game home state
- * Use this to store any variable needed every 'tick' of your game
  */
 typedef struct home_state
 {
@@ -23,7 +22,8 @@ typedef struct home_state
  * Initializes sdl as well as the variables needed
  * Creates and stores all necessary variables for the game in a created state
  * variable
- * Returns the pointer to this state
+ * 
+ * @return pointer to a home_state_t object
  */
 home_state_t *home_init();
 
@@ -33,7 +33,7 @@ home_state_t *home_init();
  * that has passed.
  *
  * @param home_state pointer to a state object
- * @return a boolean representing whether the game is over
+ * @return the current state type of the game
  */
 state_type_t home_main(home_state_t *home_state);
 

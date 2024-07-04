@@ -11,8 +11,6 @@ typedef struct polygon polygon_t;
  * Initialize a polygon object given a list of vertices.
  *
  * @param points the list of vertices that make up the polygon
- * @param initial_position a vector representing the initial center position of
- * the polygon
  * @param initial_velocity a vector representing the initial velocity of the
  * polygon
  * @param rotation_speed the rotation angle of the polygon per unit time

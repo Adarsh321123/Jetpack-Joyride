@@ -47,6 +47,7 @@ typedef enum
  * @param key a character indicating which key was pressed
  * @param type the type of key event (KEY_PRESSED or KEY_RELEASED)
  * @param held_time if a press event, the time the key has been held in seconds
+ * @param state the current state
  */
 typedef void (*key_handler_t)(char key, key_event_type_t type, double held_time,
                               void *state);
@@ -74,6 +75,7 @@ void sdl_init(vector_t min, vector_t max);
  * Processes all SDL events and returns whether the window has been closed.
  * This function must be called in order to handle inputs.
  *
+ * @param state object passed in for the key handler
  * @return true if the window was closed, false otherwise
  */
 bool sdl_is_done(void *state);
@@ -82,6 +84,7 @@ bool sdl_is_done(void *state);
  * This function must be called in order to handle mouseclicks.
  * Identifies mouseclick and invokes `mouse_handler` to process
  * custom actions corresponding to different mouse_clicks.
+ * 
  * @param state object passed in to retrieve and update idx
  */
 void handle_mouse_events(void *state);
@@ -137,6 +140,7 @@ SDL_Rect make_texr(int x, int y, int w, int h);
  * the type of the body
  *
  * @param body input body to find the bounding box of
+ * @return bounding box of the body
  */
 SDL_Rect find_bounding_box(body_t *body);
 
@@ -206,6 +210,7 @@ void sdl_on_key(key_handler_t handler);
 /**
  * Registers a function to be called every time a mouse click is registered.
  * Overwrites any existing handler.
+ * 
  * @param handler_mouse the function to call with each mouse click
  */
 void sdl_on_mouse(mouse_handler_t handler_mouse);

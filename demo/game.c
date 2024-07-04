@@ -24,7 +24,9 @@ struct state
 };
 
 /**
- * Running the home screen each tick
+ * Run the home screen each tick if that is the right state to be in.
+ * 
+ * @param state the state object
  */
 static void run_home(state_t *state)
 {
@@ -49,7 +51,9 @@ static void run_home(state_t *state)
 }
 
 /**
- * Running the settings screen each tick
+ * Running the settings screen each tick if that is the right state to be in.
+ * 
+ * @param state the state object
  */
 static void run_settings(state_t *state)
 {
@@ -76,7 +80,9 @@ static void run_settings(state_t *state)
 }
 
 /**
- * Running the game play each tick
+ * Running the game play each tick if that is the right state to be in.
+ * 
+ * @param state the state object
  */
 static void run_game_play(state_t *state)
 {
@@ -101,7 +107,9 @@ static void run_game_play(state_t *state)
 }
 
 /**
- * Running the game over screen each tick
+ * Running the game over screen each tick if that is the right state to be in.
+ * 
+ * @param state the state object
  */
 static void run_game_over(state_t *state)
 {

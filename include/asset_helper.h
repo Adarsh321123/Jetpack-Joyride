@@ -39,6 +39,7 @@ typedef struct button_info
  * Using `info`, initializes a background in the scene.
 
  * @param info the background info struct used to initialize the background
+ * @return a pointer to the newly created background asset
  */
 asset_t *create_background_from_info(background_info_t info);
 
@@ -46,6 +47,7 @@ asset_t *create_background_from_info(background_info_t info);
  * Using `info`, initializes text in the scene.
  *
  * @param info the text info struct used to initialize the text
+ * @return a pointer to the newly created text asset
  */
 asset_t *create_text_from_info(text_info_t info);
 
@@ -53,6 +55,7 @@ asset_t *create_text_from_info(text_info_t info);
  * Using `info`, initializes a button in the scene.
  *
  * @param info the button info struct used to initialize the button
+ * @return a pointer to the newly created button asset
  */
 asset_t *create_button_from_info(button_info_t info);
 
