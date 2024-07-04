@@ -22,7 +22,7 @@ list_t *read_achievements_settings();
 
 /**
  * Event handler for the achievements.
- * Use aux to hold information for a specific achievement, like the total distance covered.
+ * Use aux to hold information for a specific achievement, like total distance covered.
  */
 void achievements_on_notify(observer_t *observer, event_t event, void *aux);
 

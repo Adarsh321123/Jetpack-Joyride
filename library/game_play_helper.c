@@ -73,7 +73,8 @@ static void add_walls(state_temp_t *state)
   state->ground = ground;
 }
 
-body_t *make_obstacle_rectangle(vector_t *center, double width, double height, body_type_t info, vector_t velocity)
+body_t *make_obstacle_rectangle(vector_t *center, double width, double height,
+                                body_type_t info, vector_t velocity)
 {
   list_t *rectangle_shape = make_rectangle(*center, width, height);
   body_t *rectangle = body_init_with_info(rectangle_shape, INFINITY, BLACK,
@@ -83,7 +84,8 @@ body_t *make_obstacle_rectangle(vector_t *center, double width, double height, b
   return rectangle;
 }
 
-body_t *make_obstacle_circle(double radius, vector_t *center, body_type_t info, double mass, vector_t velocity)
+body_t *make_obstacle_circle(double radius, vector_t *center, body_type_t info,
+                              double mass, vector_t velocity)
 {
   center->y += radius;
   list_t *circle_shape = list_init(USER_NUM_POINTS, free);

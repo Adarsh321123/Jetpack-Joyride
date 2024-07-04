@@ -814,7 +814,7 @@ static void render_distance(game_play_state_t *game_play_state)
 {
   char distance_text[DISTANCE_TEXT_SIZE];
   size_t distance = (size_t)floor(game_play_state->distance_traveled);
-  sprintf(distance_text, "%zu %s", distance, DISTANCE_TEXT); // convert the time to a string
+  sprintf(distance_text, "%zu %s", distance, DISTANCE_TEXT); // convert time to a string
   SDL_Rect bounding_box = DISTANCE_BOX;
   TTF_Font *font = game_play_state->distance_font;
   TTF_SizeText(font, distance_text, &bounding_box.w, &bounding_box.h);
@@ -852,12 +852,14 @@ static void update_user_pos(game_play_state_t *game_play_state)
   vector_t ceiling_centroid = body_get_centroid(game_play_state->state->ceiling);
   if (user_vel.y < ZERO && user_centroid.y - ground_centroid.y < USER_RADIUS)
   {
-    vector_t new_centroid = {.x = ground_centroid.x, .y = ground_centroid.y + USER_RADIUS};
+    vector_t new_centroid = {.x = ground_centroid.x, 
+                              .y = ground_centroid.y + USER_RADIUS};
     body_set_centroid(game_play_state->state->user, new_centroid);
   }
   else if (user_vel.y > ZERO && ceiling_centroid.y - user_centroid.y < USER_RADIUS)
   {
-    vector_t new_centroid = {.x = ceiling_centroid.x, .y = ceiling_centroid.y - USER_RADIUS};
+    vector_t new_centroid = {.x = ceiling_centroid.x, 
+                              .y = ceiling_centroid.y - USER_RADIUS};
     body_set_centroid(game_play_state->state->user, new_centroid);
   }
 }

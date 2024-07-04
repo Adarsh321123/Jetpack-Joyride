@@ -282,12 +282,14 @@ SDL_Rect find_bounding_box(body_t *body)
   list_free(points);
   if (get_type(body) == USER)
   { // need to align the user image with the body
-    return make_texr(min_x - USER_X_OFFSET, (max_y - (max_y - min_y)) - USER_Y_OFFSET, USER_W_SCALE * (max_x - min_x), USER_H_SCALE * (max_y - min_y));
+    return make_texr(min_x - USER_X_OFFSET, (max_y - (max_y - min_y)) - USER_Y_OFFSET,
+                      USER_W_SCALE * (max_x - min_x), USER_H_SCALE * (max_y - min_y));
   }
 
   if (get_type(body) == LASER || get_type(body) == LASER_ACTIVE)
   {
-    return make_texr(min_x, (max_y - (max_y - min_y)) - LASER_Y_OFFSET, (max_x - min_x), (max_y - min_y) + LASER_H_OFFSET);
+    return make_texr(min_x, (max_y - (max_y - min_y)) - LASER_Y_OFFSET,
+                      (max_x - min_x), (max_y - min_y) + LASER_H_OFFSET);
   }
 
   return make_texr(min_x, (max_y - (max_y - min_y)), (max_x - min_x), (max_y - min_y));

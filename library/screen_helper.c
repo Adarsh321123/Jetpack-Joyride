@@ -4,7 +4,9 @@
 /**
  * Initializes and stores the background assets in the screen_state.
  */
-static void create_backgrounds(screen_state_t screen_state, background_info_t background_templates[], size_t num_backgrounds)
+static void create_backgrounds(screen_state_t screen_state,
+                                background_info_t background_templates[],
+                                size_t num_backgrounds)
 {
   for (size_t i = 0; i < num_backgrounds; i++)
   {
@@ -17,7 +19,8 @@ static void create_backgrounds(screen_state_t screen_state, background_info_t ba
 /**
  * Initializes and stores the text assets in the screen_state.
  */
-static void create_text(screen_state_t screen_state, text_info_t text_templates[], size_t num_text)
+static void create_text(screen_state_t screen_state, text_info_t text_templates[],
+                        size_t num_text)
 {
   for (size_t i = 0; i < num_text; i++)
   {
@@ -30,7 +33,8 @@ static void create_text(screen_state_t screen_state, text_info_t text_templates[
 /**
  * Initializes and stores the button assets in the screen_state.
  */
-static void create_buttons(screen_state_t screen_state, button_info_t button_templates[], size_t num_buttons)
+static void create_buttons(screen_state_t screen_state, button_info_t button_templates[],
+                            size_t num_buttons)
 {
   for (size_t i = 0; i < num_buttons; i++)
   {
