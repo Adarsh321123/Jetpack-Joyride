@@ -15,32 +15,32 @@ typedef struct state state_t;
 
 typedef enum
 {
-    HOME,
-    SETTINGS,
-    GAME_PLAY,
-    GAME_OVER,
-    EXIT
+  HOME,
+  SETTINGS,
+  GAME_PLAY,
+  GAME_OVER,
+  EXIT
 } state_type_t;
 
 typedef enum
 {
-    EASY,
-    MEDIUM,
-    HARD
+  EASY,
+  MEDIUM,
+  HARD
 } difficulty_type_t;
 
 typedef enum
 {
-    SHIELD,
-    MAGNETIC,
-    MORE_COIN,
-    GRAVITY_SWAP
+  SHIELD,
+  MAGNETIC,
+  MORE_COIN,
+  GRAVITY_SWAP
 } powerup_type_t;
 
 typedef enum
 {
-    LASER_INACTIVE_STATE,
-    LASER_ACTIVE_STATE
+  LASER_INACTIVE_STATE,
+  LASER_ACTIVE_STATE
 } laser_spawn_t;
 
 /**

@@ -7,9 +7,9 @@
 
 typedef enum
 {
-    EVENT_COIN_COLLECTED,
-    EVENT_DISTANCE_TRAVELED,
-    EVENT_LASERS_AVOIDED
+  EVENT_COIN_COLLECTED,
+  EVENT_DISTANCE_TRAVELED,
+  EVENT_LASERS_AVOIDED
 } event_t;
 
 /**
@@ -30,8 +30,8 @@ typedef void (*freer_t)(void *observer);
 
 struct observer
 {
-    on_notify_t on_notify;
-    freer_t freer;
+  on_notify_t on_notify;
+  freer_t freer;
 };
 
 #endif // #ifndef __OBSERVER_H__

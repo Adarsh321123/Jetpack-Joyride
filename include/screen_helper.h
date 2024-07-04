@@ -12,9 +12,9 @@
 
 typedef struct screen_state
 {
-    list_t *text;
-    list_t *backgrounds;
-    list_t *manual_buttons;
+  list_t *text;
+  list_t *backgrounds;
+  list_t *manual_buttons;
 } screen_state_t;
 
 /**
