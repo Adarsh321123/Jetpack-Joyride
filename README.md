@@ -4,6 +4,9 @@ Team Members: Adarsh Kumarappan, Dhruv Sheth, Rayhan Zirvi
 
 Welcome to our Jetpack Joyride clone written in C for Caltech's Software Design class!
 
+# For Caltech Students:
+Please do not look at this repo if you are currently taking or plan to take CS 3. The Caltech Honor Code states that "No member of the Caltech community shall take unfair advantage of any other member of the Caltech community."
+
 # Usage
 1. Install `sdl2`, `sdl2_gfx`, `sdl2_ttf`, and `sdl2_image`.
 2. If necessary, export the necessary PATH variables to point to the libraries. For example, on an M1 Mac I must use:
@@ -69,6 +72,3 @@ Rayhan:
 - Additional features such as:
     - Gravity swap: Power-up that can switch gravity of Jetpack character
     - Add a magnet powerup to the game and associate a gravitational force with all the coin objects relative to the coin powerup collected. Attribute time period for the existence of the magnetic powerup in the game.
-
-# For Caltech Students:
-Please do not look at this repo if you are currently taking or plan to take CS 3. The Caltech Honor Code states that "No member of the Caltech community shall take unfair advantage of any other member of the Caltech community."
