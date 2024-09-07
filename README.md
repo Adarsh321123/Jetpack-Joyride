@@ -72,3 +72,11 @@ Rayhan:
 - Additional features such as:
     - Gravity swap: Power-up that can switch gravity of Jetpack character
     - Add a magnet powerup to the game and associate a gravitational force with all the coin objects relative to the coin powerup collected. Attribute time period for the existence of the magnetic powerup in the game.
+
+## Citations
+
+"Jetpack Joyride Wallpapers." Wallpaper Cave, wallpapercave.com/jetpack-joyride-wallpapers. Accessed 1 June 2024.
+
+Pauli, Gustavo. "Jetpack-Goodride/assets." GitHub, github.com/Gustavo-Pauli/Jetpack-Goodride/tree/master/assets. Accessed 1 June 2024.
+
+"Jetpack Joyride Wiki." Fandom, jetpackjoyride.fandom.com/wiki/Jetpack_Joyride_Wiki. Accessed 1 June 2024.
