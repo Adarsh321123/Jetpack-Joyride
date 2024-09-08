@@ -77,6 +77,6 @@ Rayhan:
 
 "Jetpack Joyride Wallpapers." Wallpaper Cave, wallpapercave.com/jetpack-joyride-wallpapers. Accessed 1 June 2024.
 
-Pauli, Gustavo. "Jetpack-Goodride/assets." GitHub, github.com/Gustavo-Pauli/Jetpack-Goodride/tree/master/assets. Accessed 1 June 2024.
-
 "Jetpack Joyride Wiki." Fandom, jetpackjoyride.fandom.com/wiki/Jetpack_Joyride_Wiki. Accessed 1 June 2024.
+
+Pauli, Gustavo. "Jetpack-Goodride/assets." GitHub, github.com/Gustavo-Pauli/Jetpack-Goodride/tree/master/assets. Accessed 1 June 2024.
