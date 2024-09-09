@@ -4,7 +4,7 @@ Team Members: Adarsh Kumarappan, Dhruv Sheth, Rayhan Zirvi
 
 Welcome to our Jetpack Joyride clone written in C for Caltech's Software Design class!
 
-[![Jetpack Joyride Demo YpuTube](http://i.ytimg.com/vi/y3pyTwI8THE/hqdefault.jpg)](https://www.youtube.com/watch?v=y3pyTwI8THE)
+[![Jetpack Joyride Demo YpuTube](assets/jj_thumbnail.png)](https://www.youtube.com/watch?v=y3pyTwI8THE "Jetpack Joyride Demo")
 
 # For Caltech Students:
 Please do not look at this repo if you are currently taking or plan to take CS 3. The Caltech Honor Code states that "No member of the Caltech community shall take unfair advantage of any other member of the Caltech community."
